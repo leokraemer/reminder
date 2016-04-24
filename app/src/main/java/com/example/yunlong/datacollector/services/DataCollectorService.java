@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.yunlong.datacollector.utils.TimeUtils;
 
@@ -49,7 +48,9 @@ public class DataCollectorService extends Service implements MyLocationListener,
     String wifiName="null";
     boolean isRunning;
     String placeName="null";
-    private int uploadCnt = 0;
+    private int updateCnt = 0;
+    private int uploadTimeForStill = 10;
+    private int miniSeconds = 5;
 
     public DataCollectorService() {
 
@@ -96,16 +97,19 @@ public class DataCollectorService extends Service implements MyLocationListener,
                     public void run() {
                         try {
                             if(isRunning) {
-                                if(uploadCnt==1){ //foursquare limit: 5,000 times requests per hour
-                                    getPlaces();
-                                }else if(uploadCnt==10){
-                                    uploadCnt=0;
+                            //    if(!myActivity.getConfidentActivity().equals("Still")) {  //update only when move
+
+                                    if (updateCnt == 1) { //foursquare limit: 5,000 times requests per hour
+                                        getPlaces();
+                                    } else if (updateCnt == 10) {
+                                        updateCnt = 0;
+                                    }
+                                    updateCnt++;
+                                    getWiFiName();
+                                    uploadDataSet();
+                                    //Log.d("scheduled", "runnnnnnnnnnnnn");
                                 }
-                                uploadCnt++;
-                                getWiFiName();
-                                uploadDataSet();
-                                //Log.d("scheduled", "runnnnnnnnnnnnn");
-                            }
+                           // }
 
                         }catch (Exception e){
                             System.err.println("error in executing: " + ". It will no longer be run!");
@@ -115,7 +119,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
                         }
 
                     }
-                }, 0, 5, TimeUnit.SECONDS);
+                }, 0, miniSeconds, TimeUnit.SECONDS);
     }
 
     private void getPlaces(){
