@@ -2,8 +2,24 @@
     <string name="app_name">DataCollector</string>
     <string name="action_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_orientation_sensor_example">OrientationSensorExampleActivity
     </string>
+
+    <string name="in_vehicle">In a vehicle</string>
+    <string name="on_bicycle">On a bicycle</string>
+    <string name="on_foot">On foot</string>
+    <string name="running">Running</string>
+    <string name="walking">Walking</string>
+    <string name="still">Still</string>
+    <string name="tilting">Tilting</string>
+    <string name="unknown">Unknown activity</string>
+    <string name="unidentifiable_activity">Unidentifiable activity: %1$d</string>
+
+    <string name="pref_title_display_name">User name</string>
+    <string name="pref_default_display_name">Name</string>
+
+    <string name="google_app_id">DataCollector</string>
+
 </resources>

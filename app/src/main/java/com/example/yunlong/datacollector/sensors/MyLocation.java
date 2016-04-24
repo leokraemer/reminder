@@ -1,4 +1,4 @@
-package com.example.yunlong.datacollector;
+package com.example.yunlong.datacollector.sensors;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 
 /**
@@ -25,7 +24,7 @@ public class MyLocation {
 
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-    Location currentBestLocation = null;
+    public Location currentBestLocation = null;
     LocationManager locationManager;
     LocationListener locationListener;
 

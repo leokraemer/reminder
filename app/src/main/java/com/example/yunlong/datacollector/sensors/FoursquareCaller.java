@@ -1,4 +1,4 @@
-package com.example.yunlong.datacollector;
+package com.example.yunlong.datacollector.sensors;
 
 import android.content.Context;
 import android.location.Location;
@@ -90,7 +90,6 @@ public class FoursquareCaller {
                         name = name + "\n" + f.getName();
                     }
                 }
-                Log.d("foursquare",name);
 
             }
             myFourSquareListener.placesFound(name);

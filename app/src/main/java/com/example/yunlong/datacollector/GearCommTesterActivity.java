@@ -12,11 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.yunlong.datacollector.services.HelloAccessoryProviderService;
 
 import java.io.IOException;
 
-public class GearCommTester extends AppCompatActivity {
+public class GearCommTesterActivity extends AppCompatActivity {
 
     MyReceiver myReceiver;
     Context context;

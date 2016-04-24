@@ -1,7 +1,7 @@
 /*
  * DTW.java
  */
-package com.example.yunlong.datacollector;
+package com.example.yunlong.datacollector.algorithms;
 
 /**
  * This class implements the Dynamic Time Warping algorithm

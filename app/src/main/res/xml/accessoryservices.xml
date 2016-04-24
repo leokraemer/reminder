@@ -32,7 +32,7 @@
             id="/system/helloaccessory"
             name="helloaccessory"
             role="provider"
-            serviceImpl="com.example.yunlong.datacollector.HelloAccessoryProviderService"
+            serviceImpl="com.example.yunlong.datacollector.services.HelloAccessoryProviderService"
             version="1.0"
             serviceLimit="ANY"
 	    serviceTimeout="10">

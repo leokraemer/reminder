@@ -1,77 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.yunlong.datacollector" >
+<manifest package="com.example.yunlong.datacollector"
+          xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK" />
-    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY" />
-    <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Integrated" />
-    <uses-permission android:name="com.samsung.wmanager.APP" />
-    <uses-permission android:name="com.samsung.wmanager.ENABLE_NOTIFICATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK"/>
+    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
+    <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Integrated"/>
+    <uses-permission android:name="com.samsung.wmanager.APP"/>
+    <uses-permission android:name="com.samsung.wmanager.ENABLE_NOTIFICATION"/>
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
 
     <uses-feature
         android:name="android.hardware.location"
-        android:required="true" />
+        android:required="true"/>
     <uses-feature
         android:name="android.hardware.location.gps"
-        android:required="false" />
+        android:required="false"/>
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
+        android:name=".application.DataCollectorApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/fp_s"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme.NoActionBar">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".OrientationSensorExampleActivity"
             android:label="@string/title_activity_orientation_sensor_example"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
-        <service android:name=".HelloAccessoryProviderService" >
-        </service>
-
-        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver" >
-            <intent-filter>
-                <action android:name="android.accessory.service.action.ACCESSORY_SERVICE_CONNECTION_IND" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver" >
-            <intent-filter>
-                <action android:name="android.accessory.device.action.REGISTER_AFTER_INSTALL" />
-            </intent-filter>
-        </receiver>
 
         <meta-data
             android:name="AccessoryServicesLocation"
-            android:value="/res/xml/accessoryservices.xml" />
+            android:value="/res/xml/accessoryservices.xml"/>
         <meta-data
             android:name="GearAppType"
-            android:value="wgt" />
+            android:value="wgt"/>
 
-        <activity android:name=".GearCommTester" >
+        <activity android:name=".GearCommTesterActivity">
         </activity>
-        <activity android:name=".RemoteSensorDataActivity"
-                  android:screenOrientation="landscape">
+        <activity
+            android:name=".RemoteSensorDataActivity"
+            android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".settings.FingerPrintSettingsActivity">
+        </activity>
+
+        <service
+            android:name=".services.ActivitiesIntentService"
+            android:exported="false">
+        </service>
+        <service android:name=".services.HelloAccessoryProviderService">
+        </service>
+
+        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.accessory.service.action.ACCESSORY_SERVICE_CONNECTION_IND"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
+            <intent-filter>
+                <action android:name="android.accessory.device.action.REGISTER_AFTER_INSTALL"/>
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".services.DataCollectorService"
+            android:enabled="true"
+            android:exported="true">
+        </service>
+
+        <activity android:name=".EntryActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
     </application>
 

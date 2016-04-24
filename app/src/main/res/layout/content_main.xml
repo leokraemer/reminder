@@ -22,6 +22,43 @@
         android:layout_alignParentTop="true">
 
         <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            android:background="@drawable/custom_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Activity:"/>
+
+            <TextView
+                android:id="@+id/detected_activities_textview"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            android:background="@drawable/custom_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="WiFi:"/>
+            <TextView
+                android:id="@+id/wifi_textview"
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/location"
             android:orientation="vertical"
             android:layout_margin="5dp"
@@ -74,9 +111,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Show Chart"/>
+                android:text="Show Gear 2 Data"/>
         </LinearLayout>
-
 
         <LinearLayout
             android:id="@+id/places"
@@ -85,12 +121,7 @@
             android:background="@drawable/custom_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/places_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Get near places"/>
+
             <TextView
                 android:padding="5dp"
                 android:layout_width="match_parent"
@@ -107,5 +138,36 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/environment"
+            android:orientation="vertical"
+            android:layout_margin="5dp"
+            android:background="@drawable/custom_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Environment:"/>
+
+            <TextView
+                android:padding="5dp"
+                android:id="@+id/environment_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"/>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:text="Data Set Upload"
+            android:onClick="uploadDataSet"/>
+
     </LinearLayout>
+
 </ScrollView>

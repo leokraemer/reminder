@@ -1,4 +1,4 @@
-package com.example.yunlong.datacollector;
+package com.example.yunlong.datacollector.sensors;
 
 import android.location.Location;
 

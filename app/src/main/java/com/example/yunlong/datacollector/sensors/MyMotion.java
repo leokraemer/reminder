@@ -1,4 +1,4 @@
-package com.example.yunlong.datacollector;
+package com.example.yunlong.datacollector.sensors;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -54,7 +54,7 @@ public class MyMotion {
         mSensorManager.registerListener(myListener,mSensorRotation,SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void stopSensor(){
+    public void stopMotionSensor(){
         mSensorManager.unregisterListener(myListener);
     }
 
