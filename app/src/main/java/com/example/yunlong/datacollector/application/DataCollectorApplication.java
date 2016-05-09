@@ -16,7 +16,7 @@ public class DataCollectorApplication extends Application {
 
     public static boolean WIFI_NAME_ENABLED = true;
     public static boolean LOCATION__ENABLED = true;
-    public static boolean INERTIAL_SENSOR_ENABLED = true;
+    public static boolean INERTIAL_SENSOR_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
 

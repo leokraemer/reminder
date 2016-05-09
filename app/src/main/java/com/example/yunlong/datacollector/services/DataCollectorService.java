@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.yunlong.datacollector.application.DataCollectorApplication;
 import com.example.yunlong.datacollector.utils.TimeUtils;
 
 import com.example.yunlong.datacollector.R;
@@ -66,10 +67,18 @@ public class DataCollectorService extends Service implements MyLocationListener,
         Log.d(TAG,"service started");
         if(!this.isRunning) {
             this.isRunning = true;
-            myLocation = new MyLocation(this);
-            myMotion = new MyMotion(this);
-            myActivity = new MyActivity(this);
-            myEnvironmentSensor = new MyEnvironmentSensor(this);
+            if(DataCollectorApplication.LOCATION__ENABLED) {
+                myLocation = new MyLocation(this);
+            }
+            if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+                myMotion = new MyMotion(this);
+            }
+            if(DataCollectorApplication.ACTIVITY_ENABLED) {
+                myActivity = new MyActivity(this);
+            }
+            if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+                myEnvironmentSensor = new MyEnvironmentSensor(this);
+            }
             startScheduledUpdate();
             startNotification();
         }
@@ -87,6 +96,18 @@ public class DataCollectorService extends Service implements MyLocationListener,
         super.onDestroy();
         isRunning = false;
         cancelNotification();
+        if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+            stopMotionSensor();
+        }
+        if(DataCollectorApplication.LOCATION__ENABLED) {
+            stopLocationUpdate();
+        }
+        if(DataCollectorApplication.ACTIVITY_ENABLED) {
+            stopActivityDetection();
+        }
+        if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+            stopEnvironmentSensor();
+        }
     }
 
     private void startScheduledUpdate(){
@@ -159,13 +180,21 @@ public class DataCollectorService extends Service implements MyLocationListener,
             sensorDataSet.setTitle("test_April");
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
             sensorDataSet.setUserName(userName);
-            sensorDataSet.setActivity(myActivity.getConfidentActivity());
-            sensorDataSet.setWifiName(wifiName);
-            sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
-            sensorDataSet.setLight(myEnvironmentSensor.light);
-            sensorDataSet.setPressure(myEnvironmentSensor.pressure);
-            sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
-            sensorDataSet.setLocation(placeName);
+            if(DataCollectorApplication.ACTIVITY_ENABLED) {
+                sensorDataSet.setActivity(myActivity.getConfidentActivity());
+            }
+            if(DataCollectorApplication.WIFI_NAME_ENABLED) {
+                sensorDataSet.setWifiName(wifiName);
+            }
+            if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+                sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
+                sensorDataSet.setLight(myEnvironmentSensor.light);
+                sensorDataSet.setPressure(myEnvironmentSensor.pressure);
+                sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
+            }
+            if(DataCollectorApplication.LOCATION__ENABLED) {
+                sensorDataSet.setLocation(placeName);
+            }
             sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
 
             try {
@@ -193,17 +222,18 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void stopActivityDetection() {
-
+        myActivity.removeActivityUpdates();
+        myActivity.disconnect();
+        myActivity.unregisterReceiver();
     }
 
     @Override
     public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
-
     }
 
     @Override
     public void stopEnvironmentSensor() {
-
+        myEnvironmentSensor.stopEnvironmentSensor();
     }
 
     @Override
@@ -225,7 +255,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void stopLocationUpdate() {
-
+        myLocation.stopLocationUpdate();
     }
 
     @Override
@@ -235,7 +265,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void stopMotionSensor() {
-
+        myMotion.stopMotionSensor();
     }
 
 
