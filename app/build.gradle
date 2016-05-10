@@ -19,7 +19,7 @@ android {
         }
 
     }
-    packagingOptions{
+    packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/LICENSE'
@@ -38,13 +38,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
-    compile 'org.apache.httpcomponents.client5:httpclient5:5.0-alpha1'
     compile 'com.androidplot:androidplot-core:0.9.6'
     compile files('libs/accessory-v2.2.2.jar')
     compile files('libs/sdk-v1.0.0.jar')
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.parse:parse-android:1.13.0'
-    compile 'com.parse:parseinterceptors:0.0.2' // for logging API calls to LogCat
-
-
+    compile 'com.parse:parseinterceptors:0.0.2'
+    // for logging API calls to LogCat
+    compile 'cz.msebera.android:httpclient:4.4.1.2'
 }

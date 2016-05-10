@@ -1,6 +1,8 @@
 package com.example.yunlong.datacollector.application;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.example.yunlong.datacollector.models.LabelData;
 import com.example.yunlong.datacollector.models.SensorDataSet;
@@ -41,5 +43,11 @@ public class DataCollectorApplication extends Application {
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }

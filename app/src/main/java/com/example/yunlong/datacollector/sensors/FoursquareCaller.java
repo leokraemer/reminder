@@ -5,17 +5,18 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.hc.client5.http.impl.sync.HttpClientBuilder;
-import org.apache.hc.client5.http.methods.HttpGet;
-import org.apache.hc.client5.http.sync.HttpClient;
-import org.apache.hc.core5.http.HttpResponse;
-import org.apache.hc.core5.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.util.ByteArrayBuffer;
 
 /**
  * Created by Yunlong on 3/3/2016.
@@ -104,6 +105,7 @@ public class FoursquareCaller {
 
         // instanciate an HttpClient
         HttpClient httpclient = HttpClientBuilder.create().build();        // instanciate an HttpGet
+
         HttpGet httpget = new HttpGet(buffer_string.toString());
 
         try {

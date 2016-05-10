@@ -177,7 +177,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             Log.d(TAG,"please type in your name in settings");
             return;
         }else {
-            sensorDataSet.setTitle("test_April");
+            sensorDataSet.setTitle("test_April");//change this later
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
             sensorDataSet.setUserName(userName);
             if(DataCollectorApplication.ACTIVITY_ENABLED) {
