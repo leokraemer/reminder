@@ -19,4 +19,10 @@
     <declare-styleable name="XYPlot">
         <attr name="androidplot.title" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="ComboSeekBar">
+        <attr name="multiline" format="boolean" />
+        <attr name="myColor" format="color" />
+        <attr name="textSize" format="dimension" />
+    </declare-styleable>
 </resources>

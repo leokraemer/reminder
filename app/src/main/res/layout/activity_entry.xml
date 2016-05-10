@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".EntryActivity">
+    android:gravity="center"
+    android:orientation="vertical">
 
 
-    <Button
+<!--    <Button
         android:id="@+id/button_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,31 +15,111 @@
         android:onClick="startActivity"
         android:layout_above="@+id/button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="40dp"/>-->
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:background="@drawable/custom_background"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start Service"
-        android:onClick="startService"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/button"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stop Service"
-        android:onClick="stopService"
-        android:layout_below="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
-        android:id="@+id/buttonStop"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/entry_activity_text"
-        android:layout_below="@+id/buttonStop"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"/>
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/entry_activity_text"
+            android:layout_centerHorizontal="true"
+            android:text="Background Service Control"/>
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Service"
+                android:onClick="OnClickStartService"
+                android:id="@+id/button_start_service"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop Service"
+                android:onClick="OnClickStopService"
+                android:id="@+id/button_stop_service"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/custom_background"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <Button
+            android:layout_margin="5dp"
+            android:id="@+id/button_view_sensor_data"
+            android:onClick="OnClickViewSensorData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Sensor Data"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/custom_background"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+        <RadioGroup
+            android:layout_margin="5dp"
+            android:id="@+id/radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/uni"
+                android:buttonTint="@android:color/holo_blue_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Going to the university."/>
+            <RadioButton
+                android:id="@+id/mensa"
+                android:buttonTint="@android:color/holo_blue_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Going to have meal."/>
+            <RadioButton
+                android:id="@+id/home"
+                android:buttonTint="@android:color/holo_blue_light"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Going home."/>
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Label"
+                android:onClick="OnClickStartLabel"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stop Label"
+                android:onClick="OnClickStopLabel"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

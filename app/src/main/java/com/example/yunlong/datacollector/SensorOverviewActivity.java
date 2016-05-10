@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.yunlong.datacollector.application.DataCollectorApplication;
 import com.example.yunlong.datacollector.models.SensorDataSet;
 import com.example.yunlong.datacollector.sensors.FoursquareCaller;
 import com.example.yunlong.datacollector.sensors.MyActivity;
@@ -39,9 +40,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements MyLocationListener, MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener{
+public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener, MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener{
     TextView textViewLocation,textViewRotation,textViewAccelerometer,textViewPlaces,mDetectedActivityTextView,wifiTextView,environmentTextView;
-    MyMotion myMotion;
+    //MyMotion myMotion;
     MyLocation myLocation;
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
@@ -65,14 +66,14 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
         context = this;
 
         textViewLocation = (TextView)findViewById(R.id.location_text);
-        textViewRotation = (TextView)findViewById(R.id.rotation_text);
-        textViewAccelerometer = (TextView)findViewById(R.id.accelerometer_text);
+        //textViewRotation = (TextView)findViewById(R.id.rotation_text);
+        //textViewAccelerometer = (TextView)findViewById(R.id.accelerometer_text);
         textViewPlaces = (TextView)findViewById(R.id.places_text);
         mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
         wifiTextView =(TextView) findViewById(R.id.wifi_textview);
         environmentTextView = (TextView) findViewById(R.id.environment_text);
 
-        buttonChart = (Button)findViewById(R.id.button_show_chart);
+/*        buttonChart = (Button)findViewById(R.id.button_show_chart);
         buttonChart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
                 Intent intent = new Intent(context,RemoteSensorDataActivity.class);
                 startActivity(intent);
             }
-        });
+        });*/
     }
 
     @Override
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
 
     @Override
     public void stopMotionSensor() {
-        myMotion.stopMotionSensor();
+        //myMotion.stopMotionSensor();
     }
 
     @Override
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
 
     @Override
     protected void onPause() {
-        stopMotionSensor();
+        //stopMotionSensor();
         stopLocationUpdate();
         stopActivityDetection();
         stopEnvironmentSensor();
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
     protected void onResume() {
         super.onResume();
         myLocation = new MyLocation(this);
-        myMotion =new MyMotion(this);
+        //myMotion =new MyMotion(this);
         myActivity = new MyActivity(this);
         myEnvironmentSensor = new MyEnvironmentSensor(this);
         startScheduledUpdate();
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
                         }
 
                     }
-                }, 5, 5, TimeUnit.SECONDS);
+                }, 0, 5, TimeUnit.SECONDS);
     }
 
     private void getPlaces(){
@@ -253,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements MyLocationListene
             Toast.makeText(context,"please type in your name in settings",Toast.LENGTH_SHORT).show();
         }else {
             try {
-                sensorDataSet.setTitle("test_April");
+                sensorDataSet.setTitle(DataCollectorApplication.ParseObjectTitle);
                 sensorDataSet.setAuthor(ParseUser.getCurrentUser());
                 sensorDataSet.setUserName(userName);
                 sensorDataSet.setActivity(myActivity.getConfidentActivity());

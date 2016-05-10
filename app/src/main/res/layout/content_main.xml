@@ -11,7 +11,7 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/activity_main"
-    tools:context=".MainActivity">
+    tools:context=".SensorOverviewActivity">
 
 
     <LinearLayout
@@ -84,7 +84,8 @@
             android:layout_margin="5dp"
             android:background="@drawable/custom_background"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:visibility="gone">
             <TextView
                 android:padding="5dp"
                 android:layout_width="match_parent"
@@ -162,6 +163,7 @@
         </LinearLayout>
 
         <Button
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"

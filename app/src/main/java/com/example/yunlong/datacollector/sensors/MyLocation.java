@@ -1,6 +1,7 @@
 package com.example.yunlong.datacollector.sensors;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
@@ -10,7 +11,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by Yunlong on 3/2/2016.
@@ -27,18 +31,15 @@ public class MyLocation {
     public Location currentBestLocation = null;
     LocationManager locationManager;
     LocationListener locationListener;
+    Context context;
 
     public MyLocation(Context context) {
+        this.context = context;
         myLocationListener = (MyLocationListener)context;
-        if(canToggleGPS(context)) {
-            turnGPSOn(context);
-        }else {
-            Log.d("MyLocation","GPS cannot be changed");
-        }
         initLocation(context);
     }
 
-    private void initLocation(Context context){
+    private void initLocation(final Context context){
         // Acquire a reference to the system MyLocation Manager
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
@@ -60,7 +61,18 @@ public class MyLocation {
             @Override
             public void onProviderDisabled(String provider) {
             }
+
         };
+
+        try {
+            Location lastKnownLocation_byNetwork =locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(lastKnownLocation_byNetwork!=null){
+                currentBestLocation = lastKnownLocation_byNetwork;
+                myLocationListener.locationChanged(currentBestLocation);
+            }
+        }catch (SecurityException e){
+            Log.e("MyLocation","SecurityException");
+        }
 
         try {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
@@ -134,42 +146,5 @@ public class MyLocation {
         }
     }
 
-    private void turnGPSOn(Context context) {
 
-        String provider = android.provider.Settings.Secure.getString(
-                context.getContentResolver(),
-                android.provider.Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if (!provider.contains("gps")) { // if gps is disabled
-            Log.d("MyLocation","turn on GPS");
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings",
-                    "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3"));
-            context.sendBroadcast(poke);
-
-        }
-    }
-
-    private boolean canToggleGPS(Context context) {
-        PackageManager pacman = context.getPackageManager();
-        PackageInfo pacInfo = null;
-
-        try {
-            pacInfo = pacman.getPackageInfo("com.android.settings", PackageManager.GET_RECEIVERS);
-        } catch (PackageManager.NameNotFoundException e) {
-            return false; //package not found
-        }
-
-        if(pacInfo != null){
-            for(ActivityInfo actInfo : pacInfo.receivers){
-                //test if recevier is exported. if so, we can toggle GPS.
-                if(actInfo.name.equals("com.android.settings.widget.SettingsAppWidgetProvider") && actInfo.exported){
-                    return true;
-                }
-            }
-        }
-
-        return false; //default
-    }
 }

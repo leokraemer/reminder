@@ -9,10 +9,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import com.example.yunlong.datacollector.MainActivity;
 import com.example.yunlong.datacollector.R;
 import com.example.yunlong.datacollector.services.ActivitiesIntentService;
 import com.example.yunlong.datacollector.utils.Constants;
@@ -107,7 +104,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
     @Override
     public void onResult(Status status) {
         if (status.isSuccess()) {
-            Log.e("Activity Detection", "Successfully added activity detection.");
+            Log.d("Activity Detection", "Successfully added activity detection.");
 
         } else {
             Log.e("Activity Detection", "Error: " + status.getStatusMessage());

@@ -1,41 +1,78 @@
 package com.example.yunlong.datacollector;
 
+import android.Manifest;
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.LocationManager;
+import android.os.Build;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.yunlong.datacollector.MainActivity;
-import com.example.yunlong.datacollector.R;
+import com.example.yunlong.datacollector.ComboSeekBar.ComboSeekBar;
+import com.example.yunlong.datacollector.application.DataCollectorApplication;
+import com.example.yunlong.datacollector.models.LabelData;
 import com.example.yunlong.datacollector.services.DataCollectorService;
 import com.example.yunlong.datacollector.settings.FingerPrintSettingsActivity;
+import com.example.yunlong.datacollector.utils.TimeUtils;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class EntryActivity extends AppCompatActivity {
-
+    String TAG = "EntryActivity";
+    final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0;
+    final int MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION = 1;
+    final int VIEW_SENSOR_DATA = 0;
+    final int START_SERVICE = 1;
+    final int START_LABEL = 2;
+    final int STOP_LABEL = 3;
     TextView textView;
-    Button buttonActivity;
+    RadioGroup radioGroupLabelType,radioGroupStartLabel,radioGroupStopLabel;
+    String currentLabel=null;
+    int mood = -1;
+    int action=-1;
+    ComboSeekBar comboStartLabel,comboStopLabel;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
-
+        context = this;
 
         textView = (TextView)findViewById(R.id.entry_activity_text);
-        buttonActivity = (Button)findViewById(R.id.button_activity);
         startScheduledUpdate();
+        radioGroupLabelType = (RadioGroup)findViewById(R.id.radio_group);
     }
 
     @Override
@@ -62,21 +99,84 @@ public class EntryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     public void startActivity(View view){
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, SensorOverviewActivity.class);
         startActivity(intent);
     }
-    public void startService(View view){
-        Intent intent = new Intent(this, DataCollectorService.class);
-        startService(intent);
-        updateUI();
+
+    public void OnClickStartService(View view){
+
+        if(!CheckGPS()){
+            action = START_SERVICE;
+            return;
+        }
+        if(!CheckPermission()){
+            return;
+        }
+
+        boolean running = isMyServiceRunning(DataCollectorService.class);
+        if(!running) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+            if(userName.equals("userName") || userName.equals("Name")){
+                Toast.makeText(this,"please type in your name in settings",Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"please type in your name in settings");
+                return;
+            }else {
+                Intent intent = new Intent(this, DataCollectorService.class);
+                startService(intent);
+                updateUI();
+            }
+        }
     }
 
-    public void stopService(View view){
-        Intent intent = new Intent(this, DataCollectorService.class);
-        stopService(intent);
-        updateUI();
+    public void OnClickStopService(View view){
+        boolean running = isMyServiceRunning(DataCollectorService.class);
+        if(running) {
+            Intent intent = new Intent(this, DataCollectorService.class);
+            stopService(intent);
+            updateUI();
+        }
+    }
+
+    public void OnClickViewSensorData(View view){
+        if(!CheckGPS()){
+            action = VIEW_SENSOR_DATA;
+            return;
+        }
+        if(!CheckPermission()){
+            return;
+        }
+
+        Intent intent = new Intent(this, SensorOverviewActivity.class);
+        startActivity(intent);
+    }
+
+    public void OnClickStartLabel(View view){
+        boolean running = isMyServiceRunning(DataCollectorService.class);
+        if(running) {
+            int id = radioGroupLabelType.getCheckedRadioButtonId();
+            View radioButton = radioGroupLabelType.findViewById(id);
+            int idx = radioGroupLabelType.indexOfChild(radioButton);
+            if (idx < 0) {
+                Toast.makeText(this, "Please select one of the options.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            currentLabel =  (String)((RadioButton) radioButton).getText();
+            //Toast.makeText(this, idx + " " + currentLabel, Toast.LENGTH_SHORT).show();
+            action = START_LABEL;
+            ShowDialog(action);
+        }else {
+            Toast.makeText(this, "Please start service first.", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+
+    public void OnClickStopLabel(View view){
+        if(currentLabel != null){
+            action = STOP_LABEL;
+            ShowDialog(action);
+        }
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -117,7 +217,7 @@ public class EntryActivity extends AppCompatActivity {
     private void updateUI(){
         boolean running = isMyServiceRunning(DataCollectorService.class);
         textView.setText("Data Collector Service: " + running);
-        if(running){
+      /*  if(running){
             if(buttonActivity.isEnabled()){
                 buttonActivity.setEnabled(false);
             }
@@ -125,6 +225,271 @@ public class EntryActivity extends AppCompatActivity {
             if(!buttonActivity.isEnabled()){
                 buttonActivity.setEnabled(true);
             }
-        };
+        };*/
     }
+
+    private boolean CheckGPS(){
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        try {
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled || !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setMessage("GPS is disabled in your device. Would you like to enable it?");
+            dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                    Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                }
+            });
+            dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+                }
+            });
+            dialog.show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean CheckPermission(){
+        if (Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)){
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION);
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(action == START_SERVICE) {
+                        boolean running = isMyServiceRunning(DataCollectorService.class);
+                        if (!running) {
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+                            if (userName.equals("userName") || userName.equals("Name")) {
+                                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "please type in your name in settings");
+                                return;
+                            } else {
+                                Intent intent = new Intent(this, DataCollectorService.class);
+                                startService(intent);
+                                updateUI();
+                            }
+                        }
+                    }else if(action == VIEW_SENSOR_DATA){
+                        Intent intent = new Intent(this, SensorOverviewActivity.class);
+                        startActivity(intent);
+                    }
+                } else {
+                    return;
+                }
+                return;
+            }
+            case MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(action == START_SERVICE) {
+                        boolean running = isMyServiceRunning(DataCollectorService.class);
+                        if (!running) {
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+                            if (userName.equals("userName") || userName.equals("Name")) {
+                                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "please type in your name in settings");
+                                return;
+                            } else {
+                                Intent intent = new Intent(this, DataCollectorService.class);
+                                startService(intent);
+                                updateUI();
+                            }
+                        }
+                    }else if(action == VIEW_SENSOR_DATA){
+
+                    }
+                } else {
+                    return;
+                }
+                return;
+            }
+            default:
+                return;
+        }
+    }
+
+    private void ShowDialog(int action){
+        if(action == START_LABEL){
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_start_label);
+            setUpSeekBarStartLabel(dialog);
+
+            Button button = (Button)dialog.findViewById(R.id.button_done_dialog_start_label);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if(currentLabel!=null && mood>0) {
+                        uploadLabel("Start", currentLabel, mood, null);
+                    }else {
+                        Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+
+        }else if(action==STOP_LABEL){
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.dialog_stop_label);
+            setUpSeekBarStopLabel(dialog);
+            radioGroupStopLabel = (RadioGroup) dialog.findViewById(R.id.radio_group_typical_routine_dialog_stop_label);
+
+            Button button = (Button)dialog.findViewById(R.id.button_done_dialog_stop_label);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int id = radioGroupStopLabel.getCheckedRadioButtonId();
+                    View radioButton = radioGroupStopLabel.findViewById(id);
+                    int idx = radioGroupStopLabel.indexOfChild(radioButton);
+                    if (idx < 0) {
+                        Toast.makeText(context, "Please select one of the options.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    String isTypicalRoutine =  (String)((RadioButton) radioButton).getText();
+                    if(currentLabel!=null && mood>0) {
+                        uploadLabel("Stop", currentLabel, mood, isTypicalRoutine);
+                    }else {
+                        Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
+                    }
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+    }
+
+    private void setUpSeekBarStartLabel(Dialog view){
+        final float scale = getResources().getDisplayMetrics().density;
+        comboStartLabel = new ComboSeekBar(this);
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very | good");
+        comboStartLabel.setAdapter(seekBarStep);
+        comboStartLabel.setSelection(3);
+        comboStartLabel.setColor(Color.WHITE);
+        int textSize = (int) (15 * scale + 0.5f);
+        comboStartLabel.setTextSize(textSize);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        comboStartLabel.setLayoutParams(layoutParams);
+        comboStartLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                comboStartLabel.setColor(Color.BLUE);
+                mood = i;
+            }
+        });
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.bar_holder_dialog_start_label);
+        linearLayout.addView(comboStartLabel);
+        mood = -1;
+    }
+
+    private void setUpSeekBarStopLabel(Dialog view){
+        final float scale = getResources().getDisplayMetrics().density;
+        comboStartLabel = new ComboSeekBar(this);
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very | good");
+        comboStartLabel.setAdapter(seekBarStep);
+        comboStartLabel.setSelection(3);
+        comboStartLabel.setColor(Color.WHITE);
+        int textSize = (int) (15 * scale + 0.5f);
+        comboStartLabel.setTextSize(textSize);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        comboStartLabel.setLayoutParams(layoutParams);
+        comboStartLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                comboStartLabel.setColor(Color.BLUE);
+                mood = i;
+            }
+        });
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.bar_holder_dialog_stop_label);
+        linearLayout.addView(comboStartLabel);
+        mood = -1;
+    }
+
+    private void uploadLabel(String type,String activityLabel, int mood,String isTypicalRoutine){
+        if(isTypicalRoutine == null){
+            isTypicalRoutine = "null";
+        }
+        LabelData label = new LabelData();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+        if(userName.equals("userName")){
+            Toast.makeText(context,"please type in your name in settings",Toast.LENGTH_SHORT).show();
+        }else {
+            try {
+                label.setTitle(DataCollectorApplication.ParseObjectTitle);
+                label.setAuthor(ParseUser.getCurrentUser());
+                label.setUserName(userName);
+                label.setTime(TimeUtils.getCurrentTimeStr());
+                label.setType(type);
+                label.setMood(mood);
+                label.setIsTypicalRoutine(isTypicalRoutine);
+                label.setActivityLabel(activityLabel);
+                label.saveEventually(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e==null) {
+                            Log.d("DataCollector", "parse save done");
+                        }else {
+                            Toast.makeText(getApplicationContext(),
+                                    "Error saving: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+                /*sensorDataSet.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if(e==null) {
+                            Log.d("DataCollector", "parse save done");
+                        }else {
+                            Toast.makeText(getApplicationContext(),
+                                    "Error saving: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });*/
+            }catch (Exception e){
+                Toast.makeText(context,"upload data exception",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }

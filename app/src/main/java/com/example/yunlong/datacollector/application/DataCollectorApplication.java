@@ -2,6 +2,7 @@ package com.example.yunlong.datacollector.application;
 
 import android.app.Application;
 
+import com.example.yunlong.datacollector.models.LabelData;
 import com.example.yunlong.datacollector.models.SensorDataSet;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -19,12 +20,14 @@ public class DataCollectorApplication extends Application {
     public static boolean INERTIAL_SENSOR_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
+    public static String ParseObjectTitle = "Feasibility Study";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         ParseObject.registerSubclass(SensorDataSet.class);
+        ParseObject.registerSubclass(LabelData.class);
 
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("fingerprint") // should correspond to APP_ID env variable

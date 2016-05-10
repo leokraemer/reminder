@@ -44,7 +44,7 @@ public class GearCommTesterActivity extends AppCompatActivity {
 //	      //Start our own service
 //	      Intent intent = new Intent(main.this,
 //	      com.AndroidServiceTest.MyService.class);
-//	      startService(intent);
+//	      OnClickStartService(intent);
 
         super.onStart();
     }
