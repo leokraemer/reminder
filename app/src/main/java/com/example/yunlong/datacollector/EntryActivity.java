@@ -57,12 +57,13 @@ public class EntryActivity extends AppCompatActivity {
     final int START_LABEL = 2;
     final int STOP_LABEL = 3;
     TextView textView;
-    RadioGroup radioGroupLabelType,radioGroupStartLabel,radioGroupStopLabel;
+    RadioGroup radioGroupLabelType,radioGroupStopLabel;
     String currentLabel=null;
     int mood = -1;
-    int action=-1;
+    int state =-1;
     ComboSeekBar comboStartLabel,comboStopLabel;
     Context context;
+    Button buttonStartService,buttonStopService,buttonStartLabel,buttonStopLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +72,15 @@ public class EntryActivity extends AppCompatActivity {
         context = this;
 
         textView = (TextView)findViewById(R.id.entry_activity_text);
-        startScheduledUpdate();
         radioGroupLabelType = (RadioGroup)findViewById(R.id.radio_group);
+        buttonStartService = (Button) findViewById(R.id.button_start_service);
+        buttonStopService = (Button)findViewById(R.id.button_stop_service);
+        buttonStartLabel = (Button)findViewById(R.id.button_start_label);
+        buttonStopLabel = (Button)findViewById(R.id.button_stop_label);
+
+        startScheduledUpdate();
+        updateUI();
+
     }
 
     @Override
@@ -84,7 +92,7 @@ public class EntryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // Handle state bar item clicks here. The state bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
@@ -107,7 +115,7 @@ public class EntryActivity extends AppCompatActivity {
     public void OnClickStartService(View view){
 
         if(!CheckGPS()){
-            action = START_SERVICE;
+            state = START_SERVICE;
             return;
         }
         if(!CheckPermission()){
@@ -141,7 +149,7 @@ public class EntryActivity extends AppCompatActivity {
 
     public void OnClickViewSensorData(View view){
         if(!CheckGPS()){
-            action = VIEW_SENSOR_DATA;
+            state = VIEW_SENSOR_DATA;
             return;
         }
         if(!CheckPermission()){
@@ -164,18 +172,17 @@ public class EntryActivity extends AppCompatActivity {
             }
             currentLabel =  (String)((RadioButton) radioButton).getText();
             //Toast.makeText(this, idx + " " + currentLabel, Toast.LENGTH_SHORT).show();
-            action = START_LABEL;
-            ShowDialog(action);
+            state = START_LABEL;
+            ShowDialog(state);
         }else {
             Toast.makeText(this, "Please start service first.", Toast.LENGTH_SHORT).show();
-
         }
     }
 
     public void OnClickStopLabel(View view){
         if(currentLabel != null){
-            action = STOP_LABEL;
-            ShowDialog(action);
+            state = STOP_LABEL;
+            ShowDialog(state);
         }
     }
 
@@ -215,17 +222,28 @@ public class EntryActivity extends AppCompatActivity {
     }
 
     private void updateUI(){
+
+        if(state == START_LABEL){
+            buttonStartLabel.setEnabled(false);
+            buttonStopLabel.setEnabled(true);
+        }else {
+            buttonStartLabel.setEnabled(true);
+            buttonStopLabel.setEnabled(false);
+        }
+
         boolean running = isMyServiceRunning(DataCollectorService.class);
         textView.setText("Data Collector Service: " + running);
-      /*  if(running){
-            if(buttonActivity.isEnabled()){
-                buttonActivity.setEnabled(false);
-            }
-        }else{
-            if(!buttonActivity.isEnabled()){
-                buttonActivity.setEnabled(true);
-            }
-        };*/
+        if(running){
+            buttonStartService.setEnabled(false);
+            buttonStopService.setEnabled(true);
+
+        }else {
+            buttonStartService.setEnabled(true);
+            buttonStopService.setEnabled(false);
+            buttonStartLabel.setEnabled(false);
+            buttonStopLabel.setEnabled(false);
+        }
+
     }
 
     private boolean CheckGPS(){
@@ -289,7 +307,7 @@ public class EntryActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(action == START_SERVICE) {
+                    if(state == START_SERVICE) {
                         boolean running = isMyServiceRunning(DataCollectorService.class);
                         if (!running) {
                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -304,7 +322,7 @@ public class EntryActivity extends AppCompatActivity {
                                 updateUI();
                             }
                         }
-                    }else if(action == VIEW_SENSOR_DATA){
+                    }else if(state == VIEW_SENSOR_DATA){
                         Intent intent = new Intent(this, SensorOverviewActivity.class);
                         startActivity(intent);
                     }
@@ -317,7 +335,7 @@ public class EntryActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(action == START_SERVICE) {
+                    if(state == START_SERVICE) {
                         boolean running = isMyServiceRunning(DataCollectorService.class);
                         if (!running) {
                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -332,7 +350,7 @@ public class EntryActivity extends AppCompatActivity {
                                 updateUI();
                             }
                         }
-                    }else if(action == VIEW_SENSOR_DATA){
+                    }else if(state == VIEW_SENSOR_DATA){
 
                     }
                 } else {
@@ -387,6 +405,8 @@ public class EntryActivity extends AppCompatActivity {
                     String isTypicalRoutine =  (String)((RadioButton) radioButton).getText();
                     if(currentLabel!=null && mood>0) {
                         uploadLabel("Stop", currentLabel, mood, isTypicalRoutine);
+                        currentLabel = null;
+                        radioGroupLabelType.clearCheck();
                     }else {
                         Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
                     }
@@ -422,24 +442,24 @@ public class EntryActivity extends AppCompatActivity {
 
     private void setUpSeekBarStopLabel(Dialog view){
         final float scale = getResources().getDisplayMetrics().density;
-        comboStartLabel = new ComboSeekBar(this);
+        comboStopLabel = new ComboSeekBar(this);
         List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very | good");
-        comboStartLabel.setAdapter(seekBarStep);
-        comboStartLabel.setSelection(3);
-        comboStartLabel.setColor(Color.WHITE);
+        comboStopLabel.setAdapter(seekBarStep);
+        comboStopLabel.setSelection(3);
+        comboStopLabel.setColor(Color.WHITE);
         int textSize = (int) (15 * scale + 0.5f);
-        comboStartLabel.setTextSize(textSize);
+        comboStopLabel.setTextSize(textSize);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        comboStartLabel.setLayoutParams(layoutParams);
-        comboStartLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        comboStopLabel.setLayoutParams(layoutParams);
+        comboStopLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                comboStartLabel.setColor(Color.BLUE);
+                comboStopLabel.setColor(Color.BLUE);
                 mood = i;
             }
         });
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.bar_holder_dialog_stop_label);
-        linearLayout.addView(comboStartLabel);
+        linearLayout.addView(comboStopLabel);
         mood = -1;
     }
 
@@ -486,6 +506,8 @@ public class EntryActivity extends AppCompatActivity {
                         }
                     }
                 });*/
+
+                updateUI();
             }catch (Exception e){
                 Toast.makeText(context,"upload data exception",Toast.LENGTH_SHORT).show();
             }

@@ -53,21 +53,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:background="@drawable/custom_background"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
-        <Button
-            android:layout_margin="5dp"
-            android:id="@+id/button_view_sensor_data"
-            android:onClick="OnClickViewSensorData"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="View Sensor Data"
-            />
-    </LinearLayout>
+
 
     <LinearLayout
         android:background="@drawable/custom_background"
@@ -108,17 +94,35 @@
             android:layout_margin="10dp"
             android:orientation="horizontal">
             <Button
+                android:id="@+id/button_start_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start Label"
                 android:onClick="OnClickStartLabel"/>
             <Button
+                android:id="@+id/button_stop_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stop Label"
                 android:onClick="OnClickStopLabel"/>
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/custom_background"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+        <Button
+            android:layout_margin="5dp"
+            android:id="@+id/button_view_sensor_data"
+            android:onClick="OnClickViewSensorData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Sensor Data"
+            />
     </LinearLayout>
 
 
