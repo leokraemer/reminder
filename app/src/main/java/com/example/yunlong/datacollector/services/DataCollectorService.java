@@ -1,9 +1,12 @@
 package com.example.yunlong.datacollector.services;
 
+import android.app.Application;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.wifi.WifiInfo;
@@ -11,6 +14,7 @@ import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.yunlong.datacollector.application.DataCollectorApplication;
@@ -45,13 +49,13 @@ public class DataCollectorService extends Service implements MyLocationListener,
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
     Location currentLocation;
+    boolean ifLocationChanged;
     MyEnvironmentSensor myEnvironmentSensor;
-    String wifiName="null";
     boolean isRunning;
-    String placeName="null";
-    private int updateCnt = 0;
-    private int uploadTimeForStill = 10;
     private int miniSeconds = 5;
+    String preActivity,currentActivity,preWifiName,currentWifiName,prePlaceName,currentPlaceName,currentLabel;
+    float preAmbientLight,currentAmbientLight;
+
 
     public DataCollectorService() {
 
@@ -69,16 +73,31 @@ public class DataCollectorService extends Service implements MyLocationListener,
             this.isRunning = true;
             if(DataCollectorApplication.LOCATION__ENABLED) {
                 myLocation = new MyLocation(this);
+                prePlaceName = "null";
+                currentPlaceName = "null";
+                ifLocationChanged = true;
             }
             if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
                 myMotion = new MyMotion(this);
             }
             if(DataCollectorApplication.ACTIVITY_ENABLED) {
                 myActivity = new MyActivity(this);
+                preActivity = "null";
+                currentActivity = "null";
             }
             if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
                 myEnvironmentSensor = new MyEnvironmentSensor(this);
+                preAmbientLight = 0;
+                currentAmbientLight = 0;
             }
+
+            preWifiName = "null";
+            currentWifiName = "null";
+            currentLabel = "null";
+
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                    new IntentFilter(DataCollectorApplication.BROADCAST_EVENT));
+
             startScheduledUpdate();
             startNotification();
         }
@@ -96,6 +115,8 @@ public class DataCollectorService extends Service implements MyLocationListener,
         super.onDestroy();
         isRunning = false;
         cancelNotification();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+
         if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
             stopMotionSensor();
         }
@@ -118,20 +139,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
                     public void run() {
                         try {
                             if(isRunning) {
-                            //    if(!myActivity.getConfidentActivity().equals("Still")) {  //update only when move
-
-                                    if (updateCnt == 1) { //foursquare limit: 5,000 times requests per hour
-                                        getPlaces();
-                                    } else if (updateCnt == 10) {
-                                        updateCnt = 0;
-                                    }
-                                    updateCnt++;
-                                    getWiFiName();
+                                getWiFiName();
+                                if(checkChange()){
                                     uploadDataSet();
-                                    //Log.d("scheduled", "runnnnnnnnnnnnn");
                                 }
-                           // }
-
+                            }
                         }catch (Exception e){
                             System.err.println("error in executing: " + ". It will no longer be run!");
                             e.printStackTrace();
@@ -147,9 +159,10 @@ public class DataCollectorService extends Service implements MyLocationListener,
         try {
             foursquareCaller = new FoursquareCaller(this, currentLocation);
             foursquareCaller.findPlaces();
-        }catch (Exception e){
-            Log.d(TAG,"Foursquare API Exception");
+        } catch (Exception e) {
+            Log.d(TAG, "Foursquare API Exception");
         }
+
     }
     private void getWiFiName(){
         try{
@@ -157,9 +170,9 @@ public class DataCollectorService extends Service implements MyLocationListener,
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String name = wifiInfo.getSSID();
             if(name == null){
-                wifiName = "no wifi";
+                currentWifiName = "no wifi";
             }else {
-                wifiName = name;
+                currentWifiName = name;
             }
 
         }catch (Exception e){
@@ -177,14 +190,14 @@ public class DataCollectorService extends Service implements MyLocationListener,
             Log.d(TAG,"please type in your name in settings");
             return;
         }else {
-            sensorDataSet.setTitle("test_April");//change this later
+            sensorDataSet.setTitle(DataCollectorApplication.ParseObjectTitle);//change this later
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
             sensorDataSet.setUserName(userName);
             if(DataCollectorApplication.ACTIVITY_ENABLED) {
                 sensorDataSet.setActivity(myActivity.getConfidentActivity());
             }
             if(DataCollectorApplication.WIFI_NAME_ENABLED) {
-                sensorDataSet.setWifiName(wifiName);
+                sensorDataSet.setWifiName(currentWifiName);
             }
             if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
                 sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
@@ -193,9 +206,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
             }
             if(DataCollectorApplication.LOCATION__ENABLED) {
-                sensorDataSet.setLocation(placeName);
+                sensorDataSet.setGPS(currentLocation.getLatitude()+","+currentLocation.getLongitude()+","+currentLocation.getAccuracy());
+                sensorDataSet.setLocation(currentPlaceName);
             }
             sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
+            sensorDataSet.setLabel(currentLabel);
 
             try {
                 sensorDataSet.saveEventually(new SaveCallback() {
@@ -217,7 +232,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void activityUpdate(String activity) {
-
+        currentActivity = activity;
     }
 
     @Override
@@ -229,6 +244,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
+        currentAmbientLight = light;
     }
 
     @Override
@@ -240,16 +256,17 @@ public class DataCollectorService extends Service implements MyLocationListener,
     public void placesFound(String place) {
         if(place !=null) {
             String[] places = place.split("\n");
-            placeName = places[0];
+            currentPlaceName = places[0];
             return;
         }
-        placeName = "null";
+        currentPlaceName = "null";
     }
 
     @Override
     public void locationChanged(Location location) {
         if(location != null) {
             currentLocation = location;
+            getPlaces();
         }
     }
 
@@ -288,4 +305,28 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(notificationID);
     }
+
+    private boolean checkChange(){
+        if(!currentActivity.equals(preActivity)) {
+            preActivity = currentActivity;
+            return true;
+        }
+        if(!currentWifiName.equals(preWifiName)){
+            preWifiName = currentWifiName;
+            return true;
+        }
+        if(!currentPlaceName.equals(prePlaceName)){
+            prePlaceName = currentPlaceName;
+            return  true;
+        }
+        return false;
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            currentLabel = intent.getStringExtra("label");
+            //Log.d("receiver", "Got message: " + message);
+        }
+    };
 }

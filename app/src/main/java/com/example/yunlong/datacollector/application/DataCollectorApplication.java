@@ -22,7 +22,8 @@ public class DataCollectorApplication extends Application {
     public static boolean INERTIAL_SENSOR_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
-    public static String ParseObjectTitle = "Feasibility Study";
+    public static String ParseObjectTitle = "TestMay";
+    public static String BROADCAST_EVENT = "com.example.yunlong.datacollector";
 
     @Override
     public void onCreate() {

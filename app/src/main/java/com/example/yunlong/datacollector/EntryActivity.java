@@ -16,6 +16,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -144,6 +145,7 @@ public class EntryActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DataCollectorService.class);
             stopService(intent);
             updateUI();
+            radioGroupLabelType.clearCheck();
         }
     }
 
@@ -376,6 +378,8 @@ public class EntryActivity extends AppCompatActivity {
 
                     if(currentLabel!=null && mood>0) {
                         uploadLabel("Start", currentLabel, mood, null);
+                        sendMessage2Service(currentLabel);
+
                     }else {
                         Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
                     }
@@ -384,6 +388,13 @@ public class EntryActivity extends AppCompatActivity {
                 }
             });
             dialog.show();
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    state = -1;
+                    updateUI();
+                }
+            });
 
         }else if(action==STOP_LABEL){
             final Dialog dialog = new Dialog(this);
@@ -405,6 +416,7 @@ public class EntryActivity extends AppCompatActivity {
                     String isTypicalRoutine =  (String)((RadioButton) radioButton).getText();
                     if(currentLabel!=null && mood>0) {
                         uploadLabel("Stop", currentLabel, mood, isTypicalRoutine);
+                        sendMessage2Service("null");
                         currentLabel = null;
                         radioGroupLabelType.clearCheck();
                     }else {
@@ -414,13 +426,20 @@ public class EntryActivity extends AppCompatActivity {
                 }
             });
             dialog.show();
+            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    state = -1;
+                    updateUI();
+                }
+            });
         }
     }
 
     private void setUpSeekBarStartLabel(Dialog view){
         final float scale = getResources().getDisplayMetrics().density;
         comboStartLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very | good");
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very |good ");
         comboStartLabel.setAdapter(seekBarStep);
         comboStartLabel.setSelection(3);
         comboStartLabel.setColor(Color.WHITE);
@@ -443,7 +462,7 @@ public class EntryActivity extends AppCompatActivity {
     private void setUpSeekBarStopLabel(Dialog view){
         final float scale = getResources().getDisplayMetrics().density;
         comboStopLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very | good");
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very |good ");
         comboStopLabel.setAdapter(seekBarStep);
         comboStopLabel.setSelection(3);
         comboStopLabel.setColor(Color.WHITE);
@@ -512,6 +531,13 @@ public class EntryActivity extends AppCompatActivity {
                 Toast.makeText(context,"upload data exception",Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void sendMessage2Service(String label) {
+        Intent intent = new Intent(DataCollectorApplication.BROADCAST_EVENT);
+        // add data
+        intent.putExtra("label", label);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 }

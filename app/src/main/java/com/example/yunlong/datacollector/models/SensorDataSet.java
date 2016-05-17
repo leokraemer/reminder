@@ -59,6 +59,9 @@ public class SensorDataSet extends ParseObject {
     public void setLocation(String location){
         put("location",location);
     }
+    public void setGPS(String GPS){
+        put("GPS",GPS);
+    }
     public void setTemperature(float temperature){
         put("temperature",temperature);
     }
@@ -70,6 +73,9 @@ public class SensorDataSet extends ParseObject {
     }
     public void setHumidity(float humidity){
         put("humidity",humidity);
+    }
+    public void setLabel(String label){
+        put("label",label);
     }
 
 }
