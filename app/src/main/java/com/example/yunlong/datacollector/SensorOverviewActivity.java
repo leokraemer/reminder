@@ -83,6 +83,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                 startActivity(intent);
             }
         });*/
+
     }
 
     @Override
