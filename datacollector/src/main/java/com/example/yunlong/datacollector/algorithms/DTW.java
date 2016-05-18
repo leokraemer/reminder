@@ -29,7 +29,7 @@ public class DTW {
 	/**
 	 * Constructor
 	 * 
-	 * @param query		
+	 * @param sample
 	 * @param templete	
 	 */
 	public DTW(float[] sample, float[] templete) {

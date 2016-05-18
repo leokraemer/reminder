@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DataCollector.iml" filepath="$PROJECT_DIR$/DataCollector.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Fingerprint.iml" filepath="$PROJECT_DIR$/Fingerprint.iml" />
+      <module fileurl="file://$PROJECT_DIR$/datacollector/app.iml" filepath="$PROJECT_DIR$/datacollector/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/datacollector/datacollector.iml" filepath="$PROJECT_DIR$/datacollector/datacollector.iml" />
     </modules>
   </component>
 </project>
