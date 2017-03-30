@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "559711984271",
+    "project_id": "datacollector-e5cc9"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:559711984271:android:a964531752ba4902",
+        "android_client_info": {
+          "package_name": "com.example.yunlong.datacollector"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAby4jSKQuqvAr6Uh_nuzMFDCjzABT6eKA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

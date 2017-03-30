@@ -7,13 +7,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-    <uses-permission android:name="com.samsung.accessory.permission.ACCESSORY_FRAMEWORK"/>
-    <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
-    <uses-permission android:name="com.samsung.WATCH_APP_TYPE.Integrated"/>
-    <uses-permission android:name="com.samsung.wmanager.APP"/>
-    <uses-permission android:name="com.samsung.wmanager.ENABLE_NOTIFICATION"/>
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
 
     <uses-feature
@@ -34,27 +27,17 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".SensorOverviewActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/study_name">
-
+            android:label="@string/study_name"
+            android:theme="@style/AppTheme">
+            <intent-filter
+                android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".OrientationSensorExampleActivity"
             android:label="@string/title_activity_orientation_sensor_example"
-            android:screenOrientation="landscape">
-        </activity>
-
-        <meta-data
-            android:name="AccessoryServicesLocation"
-            android:value="/res/xml/accessoryservices.xml"/>
-        <meta-data
-            android:name="GearAppType"
-            android:value="wgt"/>
-
-        <activity android:name=".GearCommTesterActivity">
-        </activity>
-        <activity
-            android:name=".RemoteSensorDataActivity"
             android:screenOrientation="landscape">
         </activity>
         <activity android:name=".settings.FingerPrintSettingsActivity">
@@ -64,33 +47,34 @@
             android:name=".services.ActivitiesIntentService"
             android:exported="false">
         </service>
-        <service android:name=".services.HelloAccessoryProviderService">
-        </service>
-
-        <receiver android:name="com.samsung.android.sdk.accessory.ServiceConnectionIndicationBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.accessory.service.action.ACCESSORY_SERVICE_CONNECTION_IND"/>
-            </intent-filter>
-        </receiver>
-        <receiver android:name="com.samsung.android.sdk.accessory.RegisterUponInstallReceiver">
-            <intent-filter>
-                <action android:name="android.accessory.device.action.REGISTER_AFTER_INSTALL"/>
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".services.DataCollectorService"
             android:enabled="true"
             android:exported="true">
         </service>
 
-        <activity android:name=".EntryActivity"
-                  android:theme="@style/AppTheme"
-            android:label="@string/study_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity
+            android:name=".EntryActivity"
+            android:label="@string/study_name"
+            android:theme="@style/AppTheme">
+
+        </activity>
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps">
+
         </activity>
     </application>
 

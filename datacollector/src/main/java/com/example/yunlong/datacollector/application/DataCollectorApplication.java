@@ -2,15 +2,19 @@ package com.example.yunlong.datacollector.application;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 
 import com.example.yunlong.datacollector.models.LabelData;
 import com.example.yunlong.datacollector.models.SensorDataSet;
+import com.facebook.stetho.Stetho;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.interceptors.ParseLogInterceptor;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by Yunlong on 4/22/2016.
@@ -28,7 +32,18 @@ public class DataCollectorApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        //realm
+        Realm.init(this);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().build();
+        Realm.setDefaultConfiguration(realmConfiguration);
+        //stetho
+        //Stetho.initializeWithDefaults(this);
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                        .build());
+        //parse
         ParseObject.registerSubclass(SensorDataSet.class);
         ParseObject.registerSubclass(LabelData.class);
 
@@ -46,9 +61,5 @@ public class DataCollectorApplication extends Application {
         ParseACL.setDefaultACL(defaultACL, true);
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
-    }
+
 }

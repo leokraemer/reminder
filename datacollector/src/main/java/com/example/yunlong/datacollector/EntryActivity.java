@@ -108,11 +108,6 @@ public class EntryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void startActivity(View view){
-        Intent intent = new Intent(this, SensorOverviewActivity.class);
-        startActivity(intent);
-    }
-
     public void OnClickStartService(View view){
 
         if(!CheckGPS()){

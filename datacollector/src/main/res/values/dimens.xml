@@ -14,4 +14,5 @@
 
     <dimen name="sample_widget_height">72dp</dimen>
     <dimen name="sample_widget_width">294dp</dimen>
+    <dimen name="text_padding">0dp</dimen>
 </resources>

@@ -1,13 +1,16 @@
 package com.example.yunlong.datacollector;
 
+import android.*;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.yunlong.datacollector.application.DataCollectorApplication;
 import com.example.yunlong.datacollector.models.SensorDataSet;
+import com.example.yunlong.datacollector.realm.StateRealm;
 import com.example.yunlong.datacollector.sensors.FoursquareCaller;
 import com.example.yunlong.datacollector.sensors.MyActivity;
 import com.example.yunlong.datacollector.sensors.MyActivityListener;
@@ -31,7 +35,17 @@ import com.example.yunlong.datacollector.sensors.MyLocationListener;
 import com.example.yunlong.datacollector.sensors.MyMotion;
 import com.example.yunlong.datacollector.sensors.MyMotionListener;
 import com.example.yunlong.datacollector.settings.FingerPrintSettingsActivity;
+import com.example.yunlong.datacollector.utils.PermissionUtils;
 import com.example.yunlong.datacollector.utils.TimeUtils;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -40,28 +54,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener, MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener{
+import io.realm.Realm;
+
+public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener,
+        MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener,
+        OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     TextView textViewLocation,textViewRotation,textViewAccelerometer,textViewPlaces,mDetectedActivityTextView,wifiTextView,environmentTextView;
     //MyMotion myMotion;
     MyLocation myLocation;
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
     Location currentLocation;
-    MyEnvironmentSensor myEnvironmentSensor;
+    //MyEnvironmentSensor myEnvironmentSensor;
     Context context;
     Button buttonChart;
     String wifiName="null";
     String placeName="null";
     int uploadCnt = 0;
-
+    //map
+    private GoogleMap mMap;
+    private static final LatLng Uni = new LatLng(47.6890, 9.1886);
+    private static final LatLng Home = new LatLng(47.681417, 9.189508);
+    private static final LatLng Gym = new LatLng(47.694066, 9.189717);
+    //realm
+    private Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.content_main);
+/*        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);*/
 
         context = this;
 
@@ -71,7 +99,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         textViewPlaces = (TextView)findViewById(R.id.places_text);
         mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
         wifiTextView =(TextView) findViewById(R.id.wifi_textview);
-        environmentTextView = (TextView) findViewById(R.id.environment_text);
+        //environmentTextView = (TextView) findViewById(R.id.environment_text);
 
 /*        buttonChart = (Button)findViewById(R.id.button_show_chart);
         buttonChart.setOnClickListener(new View.OnClickListener() {
@@ -82,10 +110,58 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                 Intent intent = new Intent(context,RemoteSensorDataActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
+*/
+
+        //map
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_in);
+        mapFragment.getMapAsync(this);
 
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        enableMyLocation();
+
+        // Add a marker in Sydney and move the camera
+        // Add some markers to the map, and add a data object to each marker.
+        Marker mUni = mMap.addMarker(new MarkerOptions()
+                .position(Uni)
+                .title("Uni"));
+        mUni.setTag(0);
+
+        Marker mHome = mMap.addMarker(new MarkerOptions()
+                .position(Home)
+                .title("Home"));
+        mHome.setTag(0);
+
+        Marker mGym = mMap.addMarker(new MarkerOptions()
+                .position(Gym)
+                .title("Gym"));
+        mGym.setTag(0);
+
+        // Set a listener for marker click.
+        mMap.setOnMarkerClickListener(this);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
+
+    private void enableMyLocation() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission to access the location is missing.
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION, true);
+        } else if (mMap != null) {
+            // Access to the location has been granted to the app.
+            mMap.setMyLocationEnabled(true);
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the state bar if it is present.
@@ -114,7 +190,19 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     public void locationChanged(Location location) {
         if(location != null) {
             currentLocation = location;
-            textViewLocation.setText("" + location.getLatitude() + "\n" + location.getLongitude() + "\n" + location.getAccuracy());
+            textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy());
+            if(mMap!=null) {
+                LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+                  // Showing the current location in Google Map
+              CameraPosition camPos = new CameraPosition.Builder()
+                .target(current)
+                .zoom(15)
+                .bearing(location.getBearing())
+                .tilt(10)
+                .build();
+              CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
+              mMap.animateCamera(camUpd3);
+            }
         }
     }
 
@@ -161,7 +249,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         myLocation = new MyLocation(this);
         //myMotion =new MyMotion(this);
         myActivity = new MyActivity(this);
-        myEnvironmentSensor = new MyEnvironmentSensor(this);
+        //myEnvironmentSensor = new MyEnvironmentSensor(this);
         startScheduledUpdate();
     }
 
@@ -230,7 +318,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     }
     private void getWiFiName(){
         try{
-            WifiManager wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String name = wifiInfo.getSSID();
             if(name == null){
@@ -260,10 +348,10 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                 sensorDataSet.setUserName(userName);
                 sensorDataSet.setActivity(myActivity.getConfidentActivity());
                 sensorDataSet.setWifiName(wifiName);
-                sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
-                sensorDataSet.setLight(myEnvironmentSensor.light);
-                sensorDataSet.setPressure(myEnvironmentSensor.pressure);
-                sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
+                //sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
+                //sensorDataSet.setLight(myEnvironmentSensor.light);
+                //sensorDataSet.setPressure(myEnvironmentSensor.pressure);
+                //sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
                 sensorDataSet.setLocation(placeName);
                 sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
 
@@ -297,6 +385,34 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         }
     }
 
+    private void storeStateReal(){
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        final String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+        if(userName.equals("userName")){
+            Toast.makeText(context,"please type in your name in settings",Toast.LENGTH_SHORT).show();
+        }else {
+            try {
+                // Create the Realm instance
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        StateRealm stateRealm = realm.createObject(StateRealm.class);
+                        stateRealm.setUserNameStr(userName);
+                        stateRealm.setActivityStr(myActivity.getConfidentActivity());
+                        stateRealm.setWifiStr(wifiName);
+                        stateRealm.setPlaceStr(placeName);
+                        stateRealm.setLatitude(currentLocation.getLatitude());
+                        stateRealm.setLongitude(currentLocation.getLongitude());
+                        stateRealm.setTimeStr(TimeUtils.getCurrentTimeStr());
+                    }
+                });
+            }catch (Exception e){
+                Toast.makeText(context,"upload data exception",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     @Override
     public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
         environmentTextView.setText("Light: " + light + " lx"+ "\n" +"Temperature: " + temperature + " C"+ "\n"+"Pressure: " + pressure +" hPa"+  "\n"+"Humidity: " + humidity+" %");
@@ -304,10 +420,12 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     @Override
     public void stopEnvironmentSensor() {
-        myEnvironmentSensor.stopEnvironmentSensor();
+        //myEnvironmentSensor.stopEnvironmentSensor();
     }
 
     public void uploadDataSet(View view){
-        uploadDataSet();
+        //uploadDataSet();
+        //test realm
+        storeStateReal();
     }
 }
