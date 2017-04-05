@@ -36,15 +36,16 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // for logging API calls to LogCat
+    compile(name: 'stetho_realm-2.0.0', ext: 'aar')
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.parse:parse-android:1.13.0'
     compile 'com.parse:parseinterceptors:0.0.2'
     compile 'cz.msebera.android:httpclient:4.4.1.2'
-    testCompile 'junit:junit:4.12'
     compile 'com.google.maps.android:android-maps-utils:0.5'
     compile 'com.facebook.stetho:stetho:1.4.2'
-    compile(name: 'stetho_realm-2.0.0', ext: 'aar')
     compile 'com.androidplot:androidplot-core:0.9.7'
     compile 'com.android.support:appcompat-v7:23.0.0'
     compile 'com.android.support:design:23.0.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    testCompile 'junit:junit:4.12'
 }

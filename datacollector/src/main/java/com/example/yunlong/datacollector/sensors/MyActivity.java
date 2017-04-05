@@ -120,12 +120,13 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
             if(detectedActivities.get(0).getConfidence()>40){
                 setConfidentActivity(getDetectedActivity(detectedActivities.get(0).getType())+"");
             }else {
-                setConfidentActivity("unknown");
+                setConfidentActivity("Unknown Activity");
             }
             for(DetectedActivity activity: detectedActivities){
-                activityString +=  "Activity: " + getDetectedActivity(activity.getType()) + ", Confidence: " + activity.getConfidence() + "%\n";
+                activityString +=  getDetectedActivity(activity.getType()) + ":" + activity.getConfidence() + ";";
             }
-            myActivityListener.activityUpdate(confidentActivity);
+            //myActivityListener.activityUpdate(confidentActivity);
+            myActivityListener.activityUpdate(activityString);
         }
     }
 

@@ -22,11 +22,11 @@ import io.realm.RealmConfiguration;
 public class DataCollectorApplication extends Application {
 
     public static boolean WIFI_NAME_ENABLED = true;
-    public static boolean LOCATION__ENABLED = true;
+    public static boolean LOCATION_ENABLED = true;
     public static boolean INERTIAL_SENSOR_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
-    public static String ParseObjectTitle = "TestMay";
+    public static String ParseObjectTitle = "Test2017April";
     public static String BROADCAST_EVENT = "com.example.yunlong.datacollector";
 
     @Override

@@ -138,8 +138,7 @@
             android:layout_margin="5dp"
             android:background="@drawable/custom_background"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:padding="@dimen/text_padding"
@@ -157,7 +156,7 @@
         </LinearLayout>
 
         <Button
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
@@ -168,7 +167,7 @@
 
     <fragment android:id="@+id/map_in"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
               android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
 </LinearLayout>

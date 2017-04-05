@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.yunlong.datacollector.NavigationActivity">
+
+    <Button
+        android:id="@+id/Entry"
+        android:text="Entry"
+        android:onClick="onButtonEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/Maps"
+        android:text="Maps"
+        android:onClick="onButtonMaps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/SensorOverview"
+        android:text="SensorOverview"
+        android:onClick="onButtonSensorOverview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/SensorFigure"
+        android:text="SensorFigure"
+        android:onClick="onButtonSensorFigur"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

@@ -25,6 +25,8 @@ import com.example.yunlong.datacollector.application.DataCollectorApplication;
 import com.example.yunlong.datacollector.models.SensorDataSet;
 import com.example.yunlong.datacollector.realm.StateRealm;
 import com.example.yunlong.datacollector.sensors.FoursquareCaller;
+import com.example.yunlong.datacollector.sensors.GooglePlacesCaller;
+import com.example.yunlong.datacollector.sensors.GooglePlacesListener;
 import com.example.yunlong.datacollector.sensors.MyActivity;
 import com.example.yunlong.datacollector.sensors.MyActivityListener;
 import com.example.yunlong.datacollector.sensors.MyEnvironmentSensor;
@@ -50,6 +52,12 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -58,7 +66,7 @@ import io.realm.Realm;
 
 public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener,
         MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener,
-        OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
+        OnMapReadyCallback,GoogleMap.OnMarkerClickListener,GooglePlacesListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
@@ -68,7 +76,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
     Location currentLocation;
-    //MyEnvironmentSensor myEnvironmentSensor;
+    MyEnvironmentSensor myEnvironmentSensor;
     Context context;
     Button buttonChart;
     String wifiName="null";
@@ -82,13 +90,16 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     //realm
     private Realm realm;
 
+    //google places
+    private GooglePlacesCaller googlePlacesCaller;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
-/*        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.content_main);
+        setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+/*        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);*/
 
         context = this;
@@ -99,7 +110,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         textViewPlaces = (TextView)findViewById(R.id.places_text);
         mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
         wifiTextView =(TextView) findViewById(R.id.wifi_textview);
-        //environmentTextView = (TextView) findViewById(R.id.environment_text);
+        environmentTextView = (TextView) findViewById(R.id.environment_text);
 
 /*        buttonChart = (Button)findViewById(R.id.button_show_chart);
         buttonChart.setOnClickListener(new View.OnClickListener() {
@@ -231,6 +242,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     @Override
     public void stopLocationUpdate() {
         myLocation.stopLocationUpdate();
+        googlePlacesCaller.disconnect();
     }
 
     @Override
@@ -249,7 +261,8 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         myLocation = new MyLocation(this);
         //myMotion =new MyMotion(this);
         myActivity = new MyActivity(this);
-        //myEnvironmentSensor = new MyEnvironmentSensor(this);
+        myEnvironmentSensor = new MyEnvironmentSensor(this);
+        googlePlacesCaller = new GooglePlacesCaller(this);
         startScheduledUpdate();
     }
 
@@ -312,6 +325,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         try {
             foursquareCaller = new FoursquareCaller(context, currentLocation);
             foursquareCaller.findPlaces();
+            googlePlacesCaller.getCurrentPlace();
         }catch (Exception e){
             Toast.makeText(context,"Foursquare API Exception",Toast.LENGTH_SHORT).show();
         }
@@ -320,13 +334,13 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         try{
             WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            String name = wifiInfo.getSSID();
-            if(name == null){
-                wifiTextView.setText("no wifi");
-                wifiName = "no wifi";
+            String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
+            if(wifi == null){
+                wifiTextView.setText("null");
+                wifiName = "null";
             }else {
-                wifiTextView.setText(name);
-                wifiName = name;
+                wifiTextView.setText(wifi);
+                wifiName = wifi;
             }
 
         }catch (Exception e){
@@ -415,17 +429,44 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     @Override
     public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
-        environmentTextView.setText("Light: " + light + " lx"+ "\n" +"Temperature: " + temperature + " C"+ "\n"+"Pressure: " + pressure +" hPa"+  "\n"+"Humidity: " + humidity+" %");
+        //environmentTextView.setText("Light: " + light + " lx"+ "\n" +"Temperature: " + temperature + " C"+ "\n"+"Pressure: " + pressure +" hPa"+  "\n"+"Humidity: " + humidity+" %");
+        //environmentTextView.setText("Light: " + light + " lx"+ "\n"+"Pressure: " + pressure +" hPa");
     }
 
     @Override
     public void stopEnvironmentSensor() {
-        //myEnvironmentSensor.stopEnvironmentSensor();
+        myEnvironmentSensor.stopEnvironmentSensor();
     }
 
     public void uploadDataSet(View view){
         //uploadDataSet();
         //test realm
         storeStateReal();
+    }
+
+    @Override
+    public void onReceivedPlaces(HashMap<String, Float> places) {
+        Iterator it = places.entrySet().iterator();
+        String place  = "";
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if((float)pair.getValue()>0) {
+                place +=  pair.getKey() + " : " + pair.getValue() + "\n";
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+
+        }
+
+        if(place.isEmpty()) {
+            if(places.entrySet().size()>0){
+                place = "Unknown Places";
+            }else {
+                place = "null";
+            }
+        }else {
+            placeName = place;
+        }
+
+        environmentTextView.setText(place);
     }
 }

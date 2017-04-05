@@ -1,6 +1,5 @@
 package com.example.yunlong.datacollector.services;
 
-import android.app.Application;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -18,6 +17,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.example.yunlong.datacollector.application.DataCollectorApplication;
+import com.example.yunlong.datacollector.sensors.GooglePlacesCaller;
+import com.example.yunlong.datacollector.sensors.GooglePlacesListener;
 import com.example.yunlong.datacollector.utils.TimeUtils;
 
 import com.example.yunlong.datacollector.R;
@@ -36,11 +37,15 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DataCollectorService extends Service implements MyLocationListener, MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener {
+public class DataCollectorService extends Service implements MyLocationListener, MyMotionListener, MyFourSquareListener,MyActivityListener,
+        MyEnvironmentSensorListener, GooglePlacesListener {
 
     public static String TAG = "DataCollectorService";
     public static int notificationID = 1001;
@@ -48,13 +53,18 @@ public class DataCollectorService extends Service implements MyLocationListener,
     MyLocation myLocation;
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
+    GooglePlacesCaller googlePlacesCaller;
     Location currentLocation;
+    double currentLatitude;
+    double currentLongitude;
+    double currentAccurate;
     boolean ifLocationChanged;
     MyEnvironmentSensor myEnvironmentSensor;
     boolean isRunning;
     private int miniSeconds = 5;
     String preActivity,currentActivity,preWifiName,currentWifiName,prePlaceName,currentPlaceName,currentLabel;
     float preAmbientLight,currentAmbientLight;
+    private boolean useGooglePlaces = true;
 
 
     public DataCollectorService() {
@@ -71,8 +81,9 @@ public class DataCollectorService extends Service implements MyLocationListener,
         Log.d(TAG,"service started");
         if(!this.isRunning) {
             this.isRunning = true;
-            if(DataCollectorApplication.LOCATION__ENABLED) {
+            if(DataCollectorApplication.LOCATION_ENABLED) {
                 myLocation = new MyLocation(this);
+                googlePlacesCaller = new GooglePlacesCaller(this);
                 prePlaceName = "null";
                 currentPlaceName = "null";
                 ifLocationChanged = true;
@@ -120,7 +131,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
         if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
             stopMotionSensor();
         }
-        if(DataCollectorApplication.LOCATION__ENABLED) {
+        if(DataCollectorApplication.LOCATION_ENABLED) {
             stopLocationUpdate();
         }
         if(DataCollectorApplication.ACTIVITY_ENABLED) {
@@ -157,22 +168,27 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     private void getPlaces(){
         try {
-            foursquareCaller = new FoursquareCaller(this, currentLocation);
-            foursquareCaller.findPlaces();
+            if(useGooglePlaces){
+                googlePlacesCaller.getCurrentPlace();
+            }else {
+                foursquareCaller = new FoursquareCaller(this, currentLocation);
+                foursquareCaller.findPlaces();
+            }
         } catch (Exception e) {
-            Log.d(TAG, "Foursquare API Exception");
+            Log.d(TAG, "getPlaces Exception");
         }
 
     }
     private void getWiFiName(){
         try{
-            WifiManager wifiMgr = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiMgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            String name = wifiInfo.getSSID();
-            if(name == null){
+            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
+            String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId();
+            if(wifi == null){
                 currentWifiName = "no wifi";
             }else {
-                currentWifiName = name;
+                currentWifiName = wifi;
             }
 
         }catch (Exception e){
@@ -188,7 +204,6 @@ public class DataCollectorService extends Service implements MyLocationListener,
         if(userName.equals("userName")){
             //Toast.makeText(context,"please type in your name in settings",Toast.LENGTH_SHORT).show();
             Log.d(TAG,"please type in your name in settings");
-            return;
         }else {
             sensorDataSet.setTitle(DataCollectorApplication.ParseObjectTitle);//change this later
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
@@ -205,8 +220,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 sensorDataSet.setPressure(myEnvironmentSensor.pressure);
                 sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
             }
-            if(DataCollectorApplication.LOCATION__ENABLED) {
-                sensorDataSet.setGPS(currentLocation.getLatitude()+","+currentLocation.getLongitude()+","+currentLocation.getAccuracy());
+            if(DataCollectorApplication.LOCATION_ENABLED) {
+                Log.d(TAG,currentLatitude+"");
+                Log.d(TAG,currentLongitude+"");
+                Log.d(TAG,""+currentAccurate);
+                sensorDataSet.setGPS(currentLatitude+","+currentLongitude+","+currentAccurate);
                 sensorDataSet.setLocation(currentPlaceName);
             }
             sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
@@ -252,6 +270,67 @@ public class DataCollectorService extends Service implements MyLocationListener,
         myEnvironmentSensor.stopEnvironmentSensor();
     }
 
+
+    @Override
+    public void locationChanged(Location location) {
+        if(location != null) {
+            currentLocation = location;
+            currentLatitude = location.getLatitude();
+            currentLongitude = location.getLongitude();
+            currentAccurate = location.getAccuracy();
+            getPlaces();
+        }
+    }
+
+    // google places handler
+    @Override
+    public void onReceivedPlaces(HashMap<String, Float> places) {
+    //get the most likely one
+    /*    Iterator it = places.entrySet().iterator();
+        String placeName  = null;
+        float probability = 0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if((float)pair.getValue()>probability) {
+                probability = (float)pair.getValue();
+                placeName = pair.getKey().toString();
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        if(placeName.equals(null)) {
+            if(places.entrySet().size()>0){
+                currentPlaceName = "Unknown Places";
+            }else {
+                currentPlaceName = "null";
+            }
+        }else {
+            currentPlaceName = placeName + ":" + probability;
+        }*/
+
+        //get all potential places
+        Iterator it = places.entrySet().iterator();
+        String placeName  = "";
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            if((float)pair.getValue()>0) {
+                placeName += pair.getKey() + " : " + pair.getValue() + ";";
+            }
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+        if(placeName.isEmpty()) {
+            if(places.entrySet().size()>0){
+                placeName = "Unknown Places";
+            }else {
+                placeName = "null";
+            }
+        }else {
+            currentPlaceName = placeName;
+        }
+
+    }
+
+    //foursquare place handler
     @Override
     public void placesFound(String place) {
         if(place !=null) {
@@ -263,16 +342,9 @@ public class DataCollectorService extends Service implements MyLocationListener,
     }
 
     @Override
-    public void locationChanged(Location location) {
-        if(location != null) {
-            currentLocation = location;
-            getPlaces();
-        }
-    }
-
-    @Override
     public void stopLocationUpdate() {
         myLocation.stopLocationUpdate();
+        googlePlacesCaller.disconnect();
     }
 
     @Override
