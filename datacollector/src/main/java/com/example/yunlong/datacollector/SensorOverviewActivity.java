@@ -262,6 +262,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         //myMotion =new MyMotion(this);
         myActivity = new MyActivity(this);
         myEnvironmentSensor = new MyEnvironmentSensor(this);
+        foursquareCaller = new FoursquareCaller(this, currentLocation);
         googlePlacesCaller = new GooglePlacesCaller(this);
         startScheduledUpdate();
     }
@@ -323,9 +324,10 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     private void getPlaces(){
         try {
-            foursquareCaller = new FoursquareCaller(context, currentLocation);
-            foursquareCaller.findPlaces();
+            //show both
             googlePlacesCaller.getCurrentPlace();
+            foursquareCaller.findPlaces();
+
         }catch (Exception e){
             Toast.makeText(context,"Foursquare API Exception",Toast.LENGTH_SHORT).show();
         }
@@ -444,6 +446,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         storeStateReal();
     }
 
+    // google places handler
     @Override
     public void onReceivedPlaces(HashMap<String, Float> places) {
         Iterator it = places.entrySet().iterator();

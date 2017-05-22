@@ -117,7 +117,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
         public void onReceive(Context context, Intent intent) {
             ArrayList<DetectedActivity> detectedActivities = intent.getParcelableArrayListExtra(Constants.STRING_EXTRA);
             String activityString = "";
-            if(detectedActivities.get(0).getConfidence()>40){
+            if(detectedActivities.get(0).getConfidence()>20){
                 setConfidentActivity(getDetectedActivity(detectedActivities.get(0).getType())+"");
             }else {
                 setConfidentActivity("Unknown Activity");
@@ -125,8 +125,8 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
             for(DetectedActivity activity: detectedActivities){
                 activityString +=  getDetectedActivity(activity.getType()) + ":" + activity.getConfidence() + ";";
             }
-            //myActivityListener.activityUpdate(confidentActivity);
-            myActivityListener.activityUpdate(activityString);
+            myActivityListener.activityUpdate(confidentActivity);
+            //myActivityListener.activityUpdate(activityString);
         }
     }
 

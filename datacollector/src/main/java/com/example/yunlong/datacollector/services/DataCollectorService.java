@@ -64,8 +64,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
     private int miniSeconds = 5;
     String preActivity,currentActivity,preWifiName,currentWifiName,prePlaceName,currentPlaceName,currentLabel;
     float preAmbientLight,currentAmbientLight;
-    private boolean useGooglePlaces = true;
-
+    private boolean useGooglePlaces = false;
 
     public DataCollectorService() {
 
@@ -83,6 +82,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             this.isRunning = true;
             if(DataCollectorApplication.LOCATION_ENABLED) {
                 myLocation = new MyLocation(this);
+                foursquareCaller = new FoursquareCaller(this, currentLocation);
                 googlePlacesCaller = new GooglePlacesCaller(this);
                 prePlaceName = "null";
                 currentPlaceName = "null";
@@ -171,7 +171,6 @@ public class DataCollectorService extends Service implements MyLocationListener,
             if(useGooglePlaces){
                 googlePlacesCaller.getCurrentPlace();
             }else {
-                foursquareCaller = new FoursquareCaller(this, currentLocation);
                 foursquareCaller.findPlaces();
             }
         } catch (Exception e) {
@@ -209,7 +208,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
             sensorDataSet.setUserName(userName);
             if(DataCollectorApplication.ACTIVITY_ENABLED) {
-                sensorDataSet.setActivity(myActivity.getConfidentActivity());
+                sensorDataSet.setActivity(currentActivity);
             }
             if(DataCollectorApplication.WIFI_NAME_ENABLED) {
                 sensorDataSet.setWifiName(currentWifiName);
@@ -286,30 +285,25 @@ public class DataCollectorService extends Service implements MyLocationListener,
     @Override
     public void onReceivedPlaces(HashMap<String, Float> places) {
     //get the most likely one
-    /*    Iterator it = places.entrySet().iterator();
         String placeName  = null;
         float probability = 0;
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            if((float)pair.getValue()>probability) {
+        for(Map.Entry<String, Float> pair : places.entrySet()){
+            if((float)pair.getValue()>=probability) {
                 probability = (float)pair.getValue();
-                placeName = pair.getKey().toString();
+                if(placeName==null) {
+                    placeName = pair.getKey();
+                }
             }
-            it.remove(); // avoids a ConcurrentModificationException
         }
 
-        if(placeName.equals(null)) {
-            if(places.entrySet().size()>0){
-                currentPlaceName = "Unknown Places";
-            }else {
-                currentPlaceName = "null";
-            }
+        if(placeName==null) {
+            currentPlaceName = "null";
         }else {
             currentPlaceName = placeName + ":" + probability;
-        }*/
+        }
 
         //get all potential places
-        Iterator it = places.entrySet().iterator();
+/*        Iterator it = places.entrySet().iterator();
         String placeName  = "";
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -326,7 +320,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             }
         }else {
             currentPlaceName = placeName;
-        }
+        }*/
 
     }
 
@@ -379,19 +373,20 @@ public class DataCollectorService extends Service implements MyLocationListener,
     }
 
     private boolean checkChange(){
+        boolean result=false;
         if(!currentActivity.equals(preActivity)) {
             preActivity = currentActivity;
-            return true;
+            result=true;
         }
         if(!currentWifiName.equals(preWifiName)){
             preWifiName = currentWifiName;
-            return true;
+            result=true;
         }
         if(!currentPlaceName.equals(prePlaceName)){
             prePlaceName = currentPlaceName;
-            return  true;
+            result=true;
         }
-        return false;
+        return result;
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
