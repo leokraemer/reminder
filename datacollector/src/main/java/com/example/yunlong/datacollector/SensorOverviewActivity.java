@@ -56,6 +56,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -87,6 +88,10 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     private static final LatLng Uni = new LatLng(47.6890, 9.1886);
     private static final LatLng Home = new LatLng(47.681417, 9.189508);
     private static final LatLng Gym = new LatLng(47.694066, 9.189717);
+    private static final LatLng Mensa = new LatLng(47.69052,9.18912);
+    List<Double> dist2Mensa = new ArrayList<Double>();
+    int distCounter = 0;
+    boolean goToMensa = false;
     //realm
     private Realm realm;
 
@@ -201,7 +206,11 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     public void locationChanged(Location location) {
         if(location != null) {
             currentLocation = location;
-            textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy());
+            if(goToMensa){
+                textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy() + ": GoToMensa" );
+            }else {
+                textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy());
+            }
             if(mMap!=null) {
                 LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
                   // Showing the current location in Google Map
@@ -213,6 +222,28 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                 .build();
               CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
               mMap.animateCamera(camUpd3);
+            }
+            if(location.getAccuracy()<20) {
+                double dist = Math.abs(location.getLatitude() - Mensa.latitude) + Math.abs(location.getLongitude() - Mensa.longitude);
+                dist2Mensa.add(dist);
+                distCounter++;
+                final int maxCounter = 5;
+                if (distCounter == maxCounter) {
+                    double direct = 1;
+                    for (int i = 0; i < maxCounter - 1; i++) {
+                        double temp = dist2Mensa.get(i + 1) - dist2Mensa.get(i);
+                        if (temp > 0) {
+                            direct = 0;
+                        }
+                    }
+                    if (direct == 1) {
+                        goToMensa = true;
+                    } else {
+                        goToMensa = false;
+                    }
+                    dist2Mensa.clear();
+                    distCounter = 0;
+                }
             }
         }
     }
