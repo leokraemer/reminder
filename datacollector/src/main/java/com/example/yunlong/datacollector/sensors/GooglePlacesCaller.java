@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.yunlong.datacollector.utils.PermissionUtils;
@@ -37,6 +38,7 @@ public class GooglePlacesCaller implements GoogleApiClient.OnConnectionFailedLis
                 .Builder(context)
                 .addApi(Places.GEO_DATA_API)
                 .addApi(Places.PLACE_DETECTION_API)
+                //.enableAutoManage((AppCompatActivity)context, 1, this)
                 .build();
         connect();
     }
@@ -50,6 +52,7 @@ public class GooglePlacesCaller implements GoogleApiClient.OnConnectionFailedLis
         mGoogleApiClient.connect();
     }
     public void disconnect(){
+        //mGoogleApiClient.stopAutoManage((AppCompatActivity)context);
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }

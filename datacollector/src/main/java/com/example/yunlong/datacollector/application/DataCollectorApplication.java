@@ -1,7 +1,12 @@
 package com.example.yunlong.datacollector.application;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
 import com.example.yunlong.datacollector.models.LabelData;
 import com.example.yunlong.datacollector.models.SensorDataSet;
@@ -26,6 +31,9 @@ public class DataCollectorApplication extends Application {
     public static boolean INERTIAL_SENSOR_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
+    public static boolean GOOGLE_FITNESS_ENABLED = true;
+    public static boolean AMBIENT_SOUND_ENABLED = true;
+    public static boolean WEATHER_ENABLED = true;
     public static String ParseObjectTitle = "Test2017April";
     public static String BROADCAST_EVENT = "com.example.yunlong.datacollector";
 
@@ -59,6 +67,7 @@ public class DataCollectorApplication extends Application {
         ParseUser.enableAutomaticUser();
         ParseACL defaultACL = new ParseACL();
         ParseACL.setDefaultACL(defaultACL, true);
+
     }
 
 

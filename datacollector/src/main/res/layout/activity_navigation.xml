@@ -31,7 +31,21 @@
     <Button
         android:id="@+id/SensorFigure"
         android:text="SensorFigure"
-        android:onClick="onButtonSensorFigur"
+        android:onClick="onButtonSensorFigure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/StepCounter"
+        android:text="StepCounter"
+        android:onClick="onButtonStepCounter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/LocalData"
+        android:text="LocalData"
+        android:onClick="onButtonLocalData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
