@@ -2,6 +2,7 @@ package com.example.yunlong.datacollector.models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 /**
@@ -50,17 +51,50 @@ public class SensorDataSet extends ParseObject {
         return getString("wifiName");
     }
 
+    public void setAmbientSound(double volume){
+        put("ambientSound",volume);
+    }
+    public double getAmbientSound(){
+        return getDouble("ambientSound");
+    }
+    public void setSteps(long steps){
+        put("steps",steps);
+    }
+    public long getSteps(){
+        return getLong("steps");
+    }
+    public void setWeather(String weather){
+        put("weather",weather);
+    }
+    public String getWeather(){
+        return getString("weather");
+    }
+    public void setScreenState(boolean isScreenOn){
+        put("screenOn",isScreenOn);
+    }
+    public boolean getScreenState(){
+        return getBoolean("screenOn");
+    }
     public void setWifiName(String wifiName) {
         put("wifiName", wifiName);
     }
     public void setTime(String time){
         put("time",time);
     }
+    public String getTime(){
+       return getString("time");
+    }
     public void setLocation(String location){
         put("location",location);
     }
+    public String getLocation(){
+        return getString("location");
+    }
     public void setGPS(String GPS){
         put("GPS",GPS);
+    }
+    public String getGPS(){
+        return getString("GPS");
     }
     public void setTemperature(float temperature){
         put("temperature",temperature);
@@ -76,6 +110,10 @@ public class SensorDataSet extends ParseObject {
     }
     public void setLabel(String label){
         put("label",label);
+    }
+
+    public static ParseQuery<SensorDataSet> getQuery() {
+        return ParseQuery.getQuery(SensorDataSet.class);
     }
 
 }

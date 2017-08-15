@@ -32,7 +32,6 @@ public class LabelData extends ParseObject {
     public void setTime(String time){
         put("time",time);
     }
-
     public void setActivityLabel(String activityLabel){
         put("activityLabel",activityLabel);
     }

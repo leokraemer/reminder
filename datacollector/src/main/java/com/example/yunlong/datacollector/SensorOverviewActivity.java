@@ -1,19 +1,23 @@
 package com.example.yunlong.datacollector;
 
-import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.hardware.display.DisplayManager;
 import android.location.Location;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,18 +28,23 @@ import android.widget.Toast;
 import com.example.yunlong.datacollector.application.DataCollectorApplication;
 import com.example.yunlong.datacollector.models.SensorDataSet;
 import com.example.yunlong.datacollector.realm.StateRealm;
+import com.example.yunlong.datacollector.sensors.AmbientSound;
+import com.example.yunlong.datacollector.sensors.AmbientSoundListener;
 import com.example.yunlong.datacollector.sensors.FoursquareCaller;
+import com.example.yunlong.datacollector.sensors.GoogleFitness;
+import com.example.yunlong.datacollector.sensors.GoogleFitnessListener;
 import com.example.yunlong.datacollector.sensors.GooglePlacesCaller;
 import com.example.yunlong.datacollector.sensors.GooglePlacesListener;
 import com.example.yunlong.datacollector.sensors.MyActivity;
 import com.example.yunlong.datacollector.sensors.MyActivityListener;
 import com.example.yunlong.datacollector.sensors.MyEnvironmentSensor;
 import com.example.yunlong.datacollector.sensors.MyEnvironmentSensorListener;
-import com.example.yunlong.datacollector.sensors.MyFourSquareListener;
+import com.example.yunlong.datacollector.sensors.FourSquareListener;
 import com.example.yunlong.datacollector.sensors.MyLocation;
 import com.example.yunlong.datacollector.sensors.MyLocationListener;
-import com.example.yunlong.datacollector.sensors.MyMotion;
 import com.example.yunlong.datacollector.sensors.MyMotionListener;
+import com.example.yunlong.datacollector.sensors.WeatherCaller;
+import com.example.yunlong.datacollector.sensors.WeatherCallerListener;
 import com.example.yunlong.datacollector.settings.FingerPrintSettingsActivity;
 import com.example.yunlong.datacollector.utils.PermissionUtils;
 import com.example.yunlong.datacollector.utils.TimeUtils;
@@ -52,13 +61,11 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -66,18 +73,25 @@ import java.util.concurrent.TimeUnit;
 import io.realm.Realm;
 
 public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener,
-        MyMotionListener, MyFourSquareListener,MyActivityListener,MyEnvironmentSensorListener,
-        OnMapReadyCallback,GoogleMap.OnMarkerClickListener,GooglePlacesListener {
+        MyMotionListener, FourSquareListener,MyActivityListener,MyEnvironmentSensorListener,
+        OnMapReadyCallback,GoogleMap.OnMarkerClickListener,GooglePlacesListener,AmbientSoundListener,
+        GoogleFitnessListener, WeatherCallerListener{
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String TAG = "SensorOverviewActivity";
 
     TextView textViewLocation,textViewRotation,textViewAccelerometer,textViewPlaces,mDetectedActivityTextView,wifiTextView,environmentTextView;
     //MyMotion myMotion;
     MyLocation myLocation;
     MyActivity myActivity;
     FoursquareCaller foursquareCaller;
+    GooglePlacesCaller googlePlacesCaller;
     Location currentLocation;
     MyEnvironmentSensor myEnvironmentSensor;
+    GoogleFitness googleFitness;
+    WeatherCaller weather;
+    AmbientSound ambientSound;
+
     Context context;
     Button buttonChart;
     String wifiName="null";
@@ -95,8 +109,6 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     //realm
     private Realm realm;
 
-    //google places
-    private GooglePlacesCaller googlePlacesCaller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,6 +294,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         stopLocationUpdate();
         stopActivityDetection();
         stopEnvironmentSensor();
+        googleFitness.disconnect();//FIXME: put into interface
         super.onPause();
     }
 
@@ -295,6 +308,9 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         myEnvironmentSensor = new MyEnvironmentSensor(this);
         foursquareCaller = new FoursquareCaller(this, currentLocation);
         googlePlacesCaller = new GooglePlacesCaller(this);
+        googleFitness = new GoogleFitness(this);
+        weather = new WeatherCaller(this);//FIXME: init here, call somewhere else
+        ambientSound = new AmbientSound(this);//FIXME: init here, call somewhere else
         startScheduledUpdate();
     }
 
@@ -379,7 +395,23 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         }catch (Exception e){
             Toast.makeText(context,"get wifi name error",Toast.LENGTH_SHORT).show();
         }
+    }
 
+    public boolean isScreenOn(Context context) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+            DisplayManager dm = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+            boolean screenOn = false;
+            for (Display display : dm.getDisplays()) {
+                if (display.getState() != Display.STATE_OFF) {
+                    screenOn = true;
+                }
+            }
+            return screenOn;
+        } else {
+            PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            //noinspection deprecation
+            return pm.isScreenOn();
+        }
     }
 
     private void uploadDataSet(){
@@ -502,5 +534,20 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         }
 
         environmentTextView.setText(place);
+    }
+
+    @Override
+    public void onReceivedAmbientSound(double volume) {
+
+    }
+
+    @Override
+    public void onReceivedStepsCounter(long steps) {
+
+    }
+
+    @Override
+    public void onReceivedWeather(String condition, float temperature) {
+
     }
 }

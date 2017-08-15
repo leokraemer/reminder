@@ -5,6 +5,8 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.yunlong.datacollector.models.FoursquareModel;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,12 +31,12 @@ public class FoursquareCaller {
 
     Context context;
     ArrayList<FoursquareModel> resultList;
-    MyFourSquareListener myFourSquareListener;
+    FourSquareListener fourSquareListener;
     Location location;
 
     public FoursquareCaller(Context context, Location location) {
         this.context = context;
-        myFourSquareListener = (MyFourSquareListener)context;
+        fourSquareListener = (FourSquareListener)context;
         resultList = new ArrayList<FoursquareModel>();
         this.location = location;
     }
@@ -93,7 +95,7 @@ public class FoursquareCaller {
                 }
 
             }
-            myFourSquareListener.placesFound(name);
+            fourSquareListener.placesFound(name);
         }
     }
 

@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.yunlong.datacollector.R;
@@ -32,6 +33,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
     private Context context;
     private MyActivityListener myActivityListener;
     public String confidentActivity;
+    private static final String TAG = "MyActivity";
 
     public MyActivity(Context context) {
         this.context = context;
@@ -44,6 +46,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
                 .addOnConnectionFailedListener(this)
                         //.addApi(LocationServices.API)
                 .addApi(ActivityRecognition.API)
+                //.enableAutoManage((AppCompatActivity)context, 0, this)
                 .build();
         connect();
     }
@@ -52,6 +55,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
         mGoogleApiClient.connect();
     }
     public void disconnect(){
+        //mGoogleApiClient.stopAutoManage((AppCompatActivity)context);
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -67,7 +71,7 @@ public class MyActivity implements  GoogleApiClient.ConnectionCallbacks, GoogleA
         if (!mGoogleApiClient.isConnected()) {
             //Toast.makeText(context, "GoogleApiClient not yet connected", Toast.LENGTH_SHORT).show();
         } else {
-            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, 0, getActivityDetectionPendingIntent()).setResultCallback(this);
+            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient, 5000, getActivityDetectionPendingIntent()).setResultCallback(this);
         }
     }
 
