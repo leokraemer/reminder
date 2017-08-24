@@ -107,13 +107,13 @@ public class ActivitiesIntentService extends IntentService {
 
 
         mNotificationManager.notify(
-                notificationID,
+                notificationID+1,
                 mNotifyBuilder.build());
     }
 
     public void cancelNotification() {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(notificationID);
+        mNotificationManager.cancel(notificationID+1);
     }
 }

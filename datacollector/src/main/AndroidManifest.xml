@@ -68,7 +68,7 @@
             android:value="AIzaSyCSGYsy8lIRCLzHT4LLRrDHtQDj5rF_DF8 "/>
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".DailyRoutines.MapsActivity"
             android:label="@string/title_activity_maps">
         </activity>
         <activity android:name=".NavigationActivity">
