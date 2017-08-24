@@ -80,7 +80,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
     WeatherCaller weatherCaller;
 
     double currentLatitude, currentLongitude, currentAccurate, currentAmbientSound;
-    boolean ifLocationChanged, isRunning, isScreenOn;
+    boolean ifLocationChanged, isRunning,isPreScreenOn,isCurrentScreenOn;
     String preActivity, currentActivity, preWifiName, currentWifiName, prePlaceName, currentPlaceName, currentLabel, currentWeatherCondition;
     float preAmbientLight, currentAmbientLight, currentTemperature;
     long preSteps, currentSteps;
@@ -259,15 +259,15 @@ public class DataCollectorService extends Service implements MyLocationListener,
             DisplayManager dm = (DisplayManager) getApplicationContext().getSystemService(Context.DISPLAY_SERVICE);
             for (Display display : dm.getDisplays()) {
                 if (display.getState() == Display.STATE_OFF) {
-                    isScreenOn = false;
+                    isCurrentScreenOn = false;
                 } else {
-                    isScreenOn = true;
+                    isCurrentScreenOn = true;
                 }
             }
         } else {
             PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
             //noinspection deprecation
-            isScreenOn = pm.isScreenOn();
+            isCurrentScreenOn = pm.isScreenOn();
         }
     }
 
@@ -312,7 +312,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             }
             sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
             sensorDataSet.setLabel(currentLabel);
-            sensorDataSet.setScreenState(isScreenOn);
+            sensorDataSet.setScreenState(isCurrentScreenOn);
 
             try {
                 sensorDataSet.saveEventually(new SaveCallback() {
@@ -494,6 +494,10 @@ public class DataCollectorService extends Service implements MyLocationListener,
         }
         if (!currentPlaceName.equals(prePlaceName)) {
             prePlaceName = currentPlaceName;
+            change++;
+        }
+        if(!isCurrentScreenOn == isPreScreenOn){
+            isPreScreenOn = isCurrentScreenOn;
             change++;
         }
         if (change > 0) {
