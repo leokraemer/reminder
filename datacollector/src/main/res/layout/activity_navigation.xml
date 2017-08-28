@@ -16,7 +16,7 @@
 
     <Button
         android:id="@+id/Maps"
-        android:text="Maps"
+        android:text="Daily Routines"
         android:onClick="onButtonMaps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

@@ -230,8 +230,8 @@ public class DataCollectorService extends Service implements MyLocationListener,
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String wifi = wifiInfo.getSSID()+":"+wifiInfo.getBSSID()+ ":" +wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
             //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId();
-            if(wifi == null){
-                currentWifiName = "no wifi";
+            if(wifiInfo.getSSID() == null){
+                currentWifiName = "null";
             }else {
                 currentWifiName = wifi;
             }

@@ -384,7 +384,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
             WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
             String wifi = wifiInfo.getSSID()+":"+wifiInfo.getBSSID()+ ":" +wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
-            if(wifi == null){
+            if(wifiInfo.getSSID() == null){
                 wifiTextView.setText("null");
                 wifiName = "null";
             }else {

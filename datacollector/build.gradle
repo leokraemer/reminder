@@ -3,18 +3,18 @@ apply plugin: 'realm-android'
 
 android {
     signingConfigs {
-        config {
-            keyAlias 'MyAndroidKey'
-            keyPassword 'winter'
-            storeFile file('D:/Dropbox/Dropbox/MyAndroidKeyRelease.jks')
-            storePassword 'winter'
+        release {
+            keyAlias 'key0'
+            keyPassword 'werter'
+            storeFile file('C:\\Users\\Leo\\Documents\\uni-key.jks')
+            storePassword 'werter'
         }
     }
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId 'com.example.yunlong.datacollector'
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -24,6 +24,10 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug{
+            signingConfig signingConfigs.release
         }
 
     }
