@@ -1,6 +1,7 @@
 package com.example.yunlong.datacollector.services;
 
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,6 +61,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
     public static final int notificationID = 1001;
     private static final int miniSeconds = 5;
     private static final boolean useGooglePlaces = false;
+    public static final String ACTIVITY = "activity";
+    public static final String TYPE = "type";
+    public static final String MINUTES = "minutes";
+    public static final String SNACK = "snack";
+    public static final String DELETED = "deleted";
     private int weatherUpdateCnt = 0;
 
     MyMotion myMotion;
@@ -173,6 +179,10 @@ public class DataCollectorService extends Service implements MyLocationListener,
         if(DataCollectorApplication.GOOGLE_FITNESS_ENABLED){
             stopGoogleFitness();
         }
+        if(ambientSound != null){
+            ambientSound.stop();
+            ambientSound = null;
+        }
     }
 
     private void startScheduledUpdate(){
@@ -192,6 +202,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
                                 updateUnAutomaticData();
                                 if(checkChange()){
                                     uploadDataSet();
+                                    postStatusChangedNotification();
                                 }
                             }
                         }catch (Exception e){
@@ -450,7 +461,10 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setContentText("Background service is running.")
-                .setSmallIcon(R.drawable.fp_s);
+                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent.getService(this, 19921, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
+                .addAction(0, "activity", PendingIntent.getService(this, 19922, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent.FLAG_ONE_SHOT))
+                .addAction(0, "snack", PendingIntent.getService(this, 19923, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent.FLAG_ONE_SHOT));
+
 
         mNotificationManager.notify(
                 notificationID,
@@ -497,4 +511,26 @@ public class DataCollectorService extends Service implements MyLocationListener,
             //Log.d("receiver", "Got message: " + message);
         }
     };
+
+    public void postStatusChangedNotification() {
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("DataCollector")
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setContentText("Share your activity")
+                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent.getService(this, 19921, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
+                .addAction(0, "activity time", PendingIntent.getService(this, 19922, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent.FLAG_ONE_SHOT))
+                .addAction(0, "snack time", PendingIntent.getService(this, 19923, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent.FLAG_ONE_SHOT))
+                //.setVibrate(new long[]{100,100,200,100,100})
+                .setDeleteIntent(PendingIntent.getService(this, 19924, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, DELETED), PendingIntent.FLAG_ONE_SHOT)
+                );
+
+
+
+        mNotificationManager.notify(
+                notificationID,
+                mNotifyBuilder.build());
+    }
 }

@@ -19,7 +19,6 @@
         android:layout_weight="1"
         android:choiceMode="singleChoice"
         android:dividerHeight="2dp"
-        android:drawSelectorOnTop="true"
-        android:listSelector="#55cccccc"
+        android:drawSelectorOnTop="false"
         tools:listitem="@layout/routinepathinfo" />
 </LinearLayout>
