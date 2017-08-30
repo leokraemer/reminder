@@ -716,7 +716,7 @@
 					"Second": 8,
 					"SystemTimeZone": "Europe\/Berlin"
 				},
-				"poi_end": 5,
+				"poi_end": 6,
 				"arriving_time": {
 					"Format": "dd-MMM-uuuu HH:mm:ss",
 					"TimeZone": "",
@@ -743,7 +743,7 @@
 					"Second": 0,
 					"SystemTimeZone": "Europe\/Berlin"
 				},
-				"poi_end": 5,
+				"poi_end": 6,
 				"arriving_time": {
 					"Format": "dd-MMM-uuuu HH:mm:ss",
 					"TimeZone": "",

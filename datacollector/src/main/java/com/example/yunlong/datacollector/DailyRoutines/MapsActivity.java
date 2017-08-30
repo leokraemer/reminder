@@ -1,12 +1,13 @@
 package com.example.yunlong.datacollector.DailyRoutines;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.example.yunlong.datacollector.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -14,10 +15,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.CustomCap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -33,18 +34,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, AdapterView.OnItemClickListener {
 
-    public static final String POI_S_CENTER_LONGITUDE = "POIs_center_longitude";
-    public static final String POI_S_CENTER_LATITUDE = "POIs_center_latitude";
     public static final String POPULAR_PLACES_CLUSTER_INDEX = "popularPlacesClusterIndex";
     private GoogleMap mMap;
-    private Map<Integer, JSONObject> globalPOIs;
+    private ListView mapExtraInfo;
+    private Map<Integer, POI> globalPOIs;
+    private List<Routine> routines = new ArrayList<>();
     private int largestPOIIndex = 0;
     private JSONArray globalPOI_visits;
     private JSONArray globalPOI_routine_patterns;
@@ -52,6 +59,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private String URLStart = "http://maps.googleapis.com/maps/api/distancematrix/json?origins=";
     private String URLMiddle = "&destinations=";
     private String URLEnd = "&mode=walking&sensor=false";
+    private RoutineProvider rp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,22 +68,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        mapExtraInfo = (ListView) findViewById(R.id.mapExtraInfo);
+        MapExtraInfoListAdapter mapExtraInfoAdapter = new MapExtraInfoListAdapter(this, R.layout.routinepathinfo, routines);
+        mapExtraInfo.setAdapter(mapExtraInfoAdapter);
+        mapExtraInfo.setOnItemClickListener(this);
         mapFragment.getMapAsync(this);
-        RoutineProvider rp = new RoutineProvider(this);
+        rp = new RoutineProvider(this);
         globalPOI_routine_patterns = rp.getGlobalPOI_routine_patterns();
         globalPOI_visits = rp.getGlobalPOI_visits();
         JSONArray globalPOIsArray = rp.getGlobalPOIs();
         globalPOIs = new HashMap<>();
         for (int i = 0; i < globalPOIsArray.length(); i++) {
             try {
-                int index = ((JSONObject) globalPOIsArray.get(i)).getInt(POPULAR_PLACES_CLUSTER_INDEX);
-                globalPOIs.put(index, ((JSONObject) globalPOIsArray.get(i)));
+                int index = getPOIClusterIndex(globalPOIsArray, i);
+                globalPOIs.put(index, new POI((JSONObject) globalPOIsArray.get(i)));
                 if (index > largestPOIIndex)
                     largestPOIIndex = index;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private int getPOIClusterIndex(JSONArray globalPOIsArray, int i) throws JSONException {
+        return ((JSONObject) globalPOIsArray.get(i)).getInt(POPULAR_PLACES_CLUSTER_INDEX);
     }
 
 
@@ -91,17 +107,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         try {
-            addRoutineMarkers();
+            addRoutineEndpointMarkers();
             addRoutineLines();
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+        mMap.setOnMarkerClickListener(this);
     }
 
-    private void addRoutineLines() throws JSONException, IOException {
+    private void addRoutineLines() throws JSONException, IOException, ParseException {
+        List<GlobalPOIsRoutinePattern> routinePatterns = new ArrayList<>();
+        for (int i = 0; i < globalPOI_routine_patterns.length(); i++) {
+            routinePatterns.add(new GlobalPOIsRoutinePattern(globalPOI_routine_patterns.getJSONObject(i), globalPOIs));
+        }
         //get information about routines
+        //create sparse visitation matrix
         int[][] visits = new int[largestPOIIndex + 1][largestPOIIndex + 1];
         for (int i = 0; i < globalPOI_routine_patterns.length(); i++) {
             try {
@@ -114,47 +138,105 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
         }
+        //get maximum visitations of poi
         for (int from : globalPOIs.keySet()) {
             for (int to : globalPOIs.keySet()) {
-                if (globalPOIs.get(from).optInt("count", 0) < visits[from][to])
-                    globalPOIs.get(from).put("count", visits[from][to]);
+                if (globalPOIs.get(from).maxVisits < visits[from][to])
+                    globalPOIs.get(from).maxVisits = visits[from][to];
             }
         }
         for (int from : globalPOIs.keySet()) {
             for (int to : globalPOIs.keySet()) {
                 //add lines
                 if (visits[from][to] > 0) {
-                    JSONObject fromPOI = globalPOIs.get(from);
-                    JSONObject toPOI = globalPOIs.get(to);
-                    LatLng fromlatlang = getPOILatLng(fromPOI);
-                    LatLng tolatlang = getPOILatLng(toPOI);
+                    LatLng fromlatlang = globalPOIs.get(from).getPOILatLng();
+                    LatLng tolatlang = globalPOIs.get(to).getPOILatLng();
                     Polyline line = mMap.addPolyline(new PolylineOptions()
                             .add(fromlatlang, tolatlang)
-                            .width(globalPOIs.get(from).getInt("count"))
+                            .width(visits[from][to])
                             .color(Color.RED)
                             .endCap(new CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.arrow), 32))
                             .clickable(true)
                     );
+                    globalPOIs.get(from).outgoingPolylines.add(line);
                     //add step data
                     IconGenerator iconFactory = new IconGenerator(this);
-                    MarkerLoader ml = new MarkerLoader(line, iconFactory);
+                    Calendar[] averageTimes = getAverageTimes(from, to, routinePatterns);
+                    Routine routine = new Routine(line, null, null, globalPOIs.get(from), globalPOIs.get(to), visits[from][to], averageTimes[0], averageTimes[1]);
+                    routines.add(routine);
+                    MarkerLoader ml = new MarkerLoader(line, iconFactory, routine);
                     ml.execute();
                 }
             }
         }
     }
 
+    private Calendar[] getAverageTimes(int from, int to, List<GlobalPOIsRoutinePattern> routinePatterns) throws ParseException {
+        List<Long> leaving = new ArrayList<>();
+        List<Long> arriving = new ArrayList<>();
+        for (GlobalPOIsRoutinePattern g : routinePatterns) {
+            if (g.start.popularPlacesClusterIndex == from && g.dest.popularPlacesClusterIndex == to) {
+                leaving.add(g.leavingTime.getTimeInMillis());
+                arriving.add(g.arrivingTime.getTimeInMillis());
+            }
+        }
+        Long avgLeaving = 0l;
+        Long avgAriving = 0l;
+        //hacky way to get the average hour, minute and second of day, but way more concise than accessing through Calendar.getHours.
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        for (int i = 0; i < leaving.size(); i++) {
+            avgLeaving += sdf.parse(sdf.format(leaving.get(i))).getTime();
+            avgAriving += sdf.parse(sdf.format(arriving.get(i))).getTime();
+        }
+        Calendar arrivingC = new GregorianCalendar();
+        Calendar leavingC = new GregorianCalendar();
+        arrivingC.setTime(new Date(avgAriving / leaving.size()));
+        leavingC.setTime(new Date(avgLeaving / leaving.size()));
+        return new Calendar[]{arrivingC, leavingC};
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        boolean returnvalue = false;
+        for (int i = 0; i < routines.size(); i++) {
+            Routine r = routines.get(i);
+            if (r.marker.equals(marker)) {
+                returnvalue = true;
+                LinearLayout.LayoutParams extraInfoLP = new LinearLayout.LayoutParams((mapExtraInfo.getLayoutParams()));
+                extraInfoLP.height = LinearLayout.LayoutParams.MATCH_PARENT;
+                extraInfoLP.weight = 1;
+                mapExtraInfo.setLayoutParams(extraInfoLP);
+                mapExtraInfo.invalidate();
+                //scroll to info
+                mapExtraInfo.setItemChecked(i, true);
+                mapExtraInfo.setSelection(i);
+                break;
+            }
+        }
+        return returnvalue;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mapExtraInfo.setItemChecked(position, true);
+        mapExtraInfo.setSelection(position);
+        Routine r = (Routine) mapExtraInfo.getAdapter().getItem(position);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(r.marker.getPosition()));
+    }
+
     private class MarkerLoader extends AsyncTask<Void, Void, Void> {
 
         private Polyline line;
         private IconGenerator iconFactory;
-        private int walkinDistanceMeters;
         private LatLng start;
         private LatLng dest;
+        private Routine routine;
+        private JSONObject stepData;
 
-        public MarkerLoader(Polyline line, IconGenerator iconFactory) {
+        public MarkerLoader(Polyline line, IconGenerator iconFactory, Routine routine) {
             this.line = line;
             this.iconFactory = iconFactory;
+            this.routine = routine;
         }
 
         @Override
@@ -179,15 +261,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 while ((line = reader.readLine()) != null) {
                     result.append(line);
                 }
-                JSONObject stepData = new JSONObject(result.toString());
-                //https://stackoverflow.com/questions/20074496/walking-distance-android-maps
-                //see also https://maps.googleapis.com/maps/api/distancematrix/json?origins=41.995908,%2021.431491&destinations=41.996097,%2021.422419&mode=walking&sensor=false
-                walkinDistanceMeters = stepData.getJSONArray("rows")
-                        .getJSONObject(0)
-                        .getJSONArray("elements")
-                        .getJSONObject(0)
-                        .getJSONObject("distance")
-                        .getInt("value");
+                stepData = new JSONObject(result.toString());
             } catch (JSONException | IOException e) {
                 e.printStackTrace();
             } finally {
@@ -201,37 +275,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             super.onPostExecute(aVoid);
             LatLng start = line.getPoints().get(0);
             LatLng dest = line.getPoints().get(line.getPoints().size() - 1);
+            //get mid point.
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
             builder.include(start).include(dest);
-            LatLngBounds bounds = builder.build();
-            bounds.getCenter();
-            addIcon(iconFactory, "0/" + Math.round(walkinDistanceMeters / MapsActivity.STEP_LENGTH), bounds.getCenter());
+            LatLngBounds halfWayBounds = builder.build();
+            //get fourth of the way point.
+            builder = new LatLngBounds.Builder();
+            builder.include(start).include(halfWayBounds.getCenter());
+            LatLngBounds fourthOfTheWaybounds = builder.build();
+            //save stepData
+            routine.walkingInfo = stepData;
+            //create marker at one fourth of the way from the start.
+            routine.marker = addIcon(iconFactory,
+                    "0/" + Math.round(routine.getDistance() / MapsActivity.STEP_LENGTH),
+                    fourthOfTheWaybounds.getCenter());
+            globalPOIs.get(routine.from.popularPlacesClusterIndex).locationText = routine.getFromText();
+            globalPOIs.get(routine.to.popularPlacesClusterIndex).locationText = routine.getToText();
+            mapExtraInfo.deferNotifyDataSetChanged();
         }
     }
 
-    @NonNull
-    private LatLng getPOILatLng(JSONObject fromPOI) throws JSONException {
-        return new LatLng(fromPOI.getDouble(POI_S_CENTER_LATITUDE), fromPOI.getDouble(POI_S_CENTER_LONGITUDE));
-    }
 
-    private void addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {
+    private Marker addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {
         MarkerOptions markerOptions = new MarkerOptions().
                 icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
                 position(position).
                 anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
-        mMap.addMarker(markerOptions);
+        return mMap.addMarker(markerOptions);
     }
 
-    private void addRoutineMarkers() throws JSONException {
+    private void addRoutineEndpointMarkers() throws JSONException {
         for (int i : globalPOIs.keySet()) {
             //Add markers
-            JSONObject poi = globalPOIs.get(i);
-            LatLng latlang = getPOILatLng(poi);
-            mMap.addMarker(new MarkerOptions().position(latlang).title(poi.getString(POPULAR_PLACES_CLUSTER_INDEX)));
+            POI poi = globalPOIs.get(i);
+            LatLng latlang = poi.getPOILatLng();
+            poi.marker = mMap.addMarker(new MarkerOptions().position(latlang).title(poi.popularPlacesClusterIndex + ""));
+            routines.add(new Routine(null, poi.marker, null, poi, null, poi.POIs_visit_times, null, null));
         }
         //zoom too markers
-        JSONObject poi = globalPOIs.get(globalPOIs.keySet().toArray()[0]);
-        LatLng latlang = getPOILatLng(poi);
+        POI poi = globalPOIs.get(globalPOIs.keySet().toArray()[0]);
+        LatLng latlang = poi.getPOILatLng();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlang, 12));
     }
 }
