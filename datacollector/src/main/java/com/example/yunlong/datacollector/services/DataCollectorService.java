@@ -1,7 +1,6 @@
 package com.example.yunlong.datacollector.services;
 
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -54,18 +53,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class DataCollectorService extends Service implements MyLocationListener, MyMotionListener, FourSquareListener, MyActivityListener,
-        MyEnvironmentSensorListener, GooglePlacesListener, AmbientSoundListener, GoogleFitnessListener, WeatherCallerListener {
+public class DataCollectorService extends Service implements MyLocationListener, MyMotionListener, FourSquareListener,MyActivityListener,
+        MyEnvironmentSensorListener, GooglePlacesListener, AmbientSoundListener, GoogleFitnessListener,WeatherCallerListener{
 
     public static final String TAG = "DataCollectorService";
     public static final int notificationID = 1001;
     private static final int miniSeconds = 5;
     private static final boolean useGooglePlaces = false;
-    public static final String ACTIVITY = "activity";
-    public static final String TYPE = "type";
-    public static final String MINUTES = "minutes";
-    public static final String SNACK = "snack";
-    public static final String DELETED = "deleted";
     private int weatherUpdateCnt = 0;
 
     MyMotion myMotion;
@@ -79,11 +73,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
     GoogleFitness googleFitness;
     WeatherCaller weatherCaller;
 
-    double currentLatitude, currentLongitude, currentAccurate, currentAmbientSound;
+    double currentLatitude, currentLongitude, currentAccurate,currentAmbientSound;
     boolean ifLocationChanged, isRunning,isPreScreenOn,isCurrentScreenOn;
-    String preActivity, currentActivity, preWifiName, currentWifiName, prePlaceName, currentPlaceName, currentLabel, currentWeatherCondition;
-    float preAmbientLight, currentAmbientLight, currentTemperature;
-    long preSteps, currentSteps;
+    String preActivity,currentActivity,preWifiName,currentWifiName,prePlaceName,currentPlaceName,currentLabel,currentWeatherCondition;
+    float preAmbientLight,currentAmbientLight,currentTemperature;
+    long preSteps,currentSteps;
 
     public DataCollectorService() {
 
@@ -96,10 +90,10 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "service started");
-        if (!this.isRunning) {
+        Log.d(TAG,"service started");
+        if(!this.isRunning) {
             this.isRunning = true;
-            if (DataCollectorApplication.LOCATION_ENABLED) {
+            if(DataCollectorApplication.LOCATION_ENABLED) {
                 myLocation = new MyLocation(this);
                 foursquareCaller = new FoursquareCaller(this, currentLocation);
                 googlePlacesCaller = new GooglePlacesCaller(this);
@@ -107,32 +101,32 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 currentPlaceName = "null";
                 ifLocationChanged = true;
             }
-            if (DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+            if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
                 myMotion = new MyMotion(this);
             }
-            if (DataCollectorApplication.ACTIVITY_ENABLED) {
+            if(DataCollectorApplication.ACTIVITY_ENABLED) {
                 myActivity = new MyActivity(this);
                 preActivity = "null";
                 currentActivity = "null";
             }
-            if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+            if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
                 myEnvironmentSensor = new MyEnvironmentSensor(this);
                 preAmbientLight = 0;
                 currentAmbientLight = 0;
             }
 
-            if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
+            if(DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
                 googleFitness = new GoogleFitness(this);
                 currentSteps = 0;
                 preSteps = 0;
             }
 
-            if (DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
+            if(DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
                 ambientSound = new AmbientSound(this);
                 currentAmbientSound = 0;
             }
 
-            if (DataCollectorApplication.WEATHER_ENABLED) {
+            if(DataCollectorApplication.WEATHER_ENABLED) {
                 weatherCaller = new WeatherCaller(this);
                 currentWeatherCondition = "null";
                 currentTemperature = 0;
@@ -164,48 +158,43 @@ public class DataCollectorService extends Service implements MyLocationListener,
         cancelNotification();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
-        if (DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+        if(DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
             stopMotionSensor();
         }
-        if (DataCollectorApplication.LOCATION_ENABLED) {
+        if(DataCollectorApplication.LOCATION_ENABLED) {
             stopLocationUpdate();
         }
-        if (DataCollectorApplication.ACTIVITY_ENABLED) {
+        if(DataCollectorApplication.ACTIVITY_ENABLED) {
             stopActivityDetection();
         }
-        if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+        if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
             stopEnvironmentSensor();
         }
-        if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
+        if(DataCollectorApplication.GOOGLE_FITNESS_ENABLED){
             stopGoogleFitness();
-        }
-        if(ambientSound != null){
-            ambientSound.stop();
-            ambientSound = null;
         }
     }
 
-    private void startScheduledUpdate() {
+    private void startScheduledUpdate(){
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate
                 (new Runnable() {
                     public void run() {
                         try {
-                            if (isRunning) {
-                                if (weatherUpdateCnt == 1) {
+                            if(isRunning) {
+                                if(weatherUpdateCnt==1){
                                     weatherCaller.getCurrentWeather();
-                                } else if (weatherUpdateCnt == 3600 / miniSeconds) {//update per hour
-                                    weatherUpdateCnt = 0;
+                                }else if(weatherUpdateCnt==3600/miniSeconds){//update per hour
+                                    weatherUpdateCnt=0;
                                 }
                                 weatherUpdateCnt++;
                                 updateUnAutomaticData();
-                                if (checkChange()) {
+                                if(checkChange()){
                                     uploadDataSet();
-                                    postStatusChangedNotification();
                                 }
                             }
-                        } catch (Exception e) {
+                        }catch (Exception e){
                             System.err.println("error in executing: " + ". It will no longer be run!");
                             e.printStackTrace();
                             // and re throw it so that the Executor also gets this error so that it can do what it would
@@ -216,11 +205,11 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 }, 0, miniSeconds, TimeUnit.SECONDS);
     }
 
-    private void getPlaces() {
+    private void getPlaces(){
         try {
-            if (useGooglePlaces) {
+            if(useGooglePlaces){
                 googlePlacesCaller.getCurrentPlace();
-            } else {
+            }else {
                 foursquareCaller.findPlaces();
             }
         } catch (Exception e) {
@@ -229,27 +218,26 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     }
 
-    private void updateUnAutomaticData() {
+    private void updateUnAutomaticData(){
         getWiFiName();
         checkScreenOn();
         ambientSound.getAmbientSound();
         googleFitness.readData();
     }
-
-    private void getWiFiName() {
-        try {
+    private void getWiFiName(){
+        try{
             WifiManager wifiMgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
-            String wifi = wifiInfo.getSSID() + ":" + wifiInfo.getIpAddress() + ":" + wifiInfo.getNetworkId();
-            if (wifi == null) {
-                currentWifiName = "no wifi";
-            } else {
+            String wifi = wifiInfo.getSSID()+":"+wifiInfo.getBSSID()+ ":" +wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
+            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId();
+            if(wifiInfo.getSSID() == null){
+                currentWifiName = "null";
+            }else {
                 currentWifiName = wifi;
             }
 
-        } catch (Exception e) {
-            Log.d(TAG, "get wifi name error");
+        }catch (Exception e){
+            Log.d(TAG,"get wifi name error");
         }
 
     }
@@ -260,7 +248,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             for (Display display : dm.getDisplays()) {
                 if (display.getState() == Display.STATE_OFF) {
                     isCurrentScreenOn = false;
-                } else {
+                }else {
                     isCurrentScreenOn = true;
                 }
             }
@@ -271,44 +259,44 @@ public class DataCollectorService extends Service implements MyLocationListener,
         }
     }
 
-    private void uploadDataSet() {
+    private void uploadDataSet(){
         SensorDataSet sensorDataSet = new SensorDataSet();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
-        if (userName.equals("userName")) {
+        if(userName.equals("userName")){
             //Toast.makeText(context,"please type in your name in settings",Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "please type in your name in settings");
-        } else {
+            Log.d(TAG,"please type in your name in settings");
+        }else {
             sensorDataSet.setTitle(DataCollectorApplication.ParseObjectTitle);//change this later
             sensorDataSet.setAuthor(ParseUser.getCurrentUser());
             sensorDataSet.setUserName(userName);
-            if (DataCollectorApplication.ACTIVITY_ENABLED) {
+            if(DataCollectorApplication.ACTIVITY_ENABLED) {
                 sensorDataSet.setActivity(currentActivity);
             }
-            if (DataCollectorApplication.WIFI_NAME_ENABLED) {
+            if(DataCollectorApplication.WIFI_NAME_ENABLED) {
                 sensorDataSet.setWifiName(currentWifiName);
             }
-            if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+            if(DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
                 sensorDataSet.setHumidity(myEnvironmentSensor.humidity);
                 sensorDataSet.setLight(myEnvironmentSensor.light);
                 sensorDataSet.setPressure(myEnvironmentSensor.pressure);
                 sensorDataSet.setTemperature(myEnvironmentSensor.temperature);
             }
-            if (DataCollectorApplication.LOCATION_ENABLED) {
-                Log.d(TAG, currentLatitude + "");
-                Log.d(TAG, currentLongitude + "");
-                Log.d(TAG, "" + currentAccurate);
-                sensorDataSet.setGPS(currentLatitude + "," + currentLongitude + "," + currentAccurate);
+            if(DataCollectorApplication.LOCATION_ENABLED) {
+                Log.d(TAG,currentLatitude+"");
+                Log.d(TAG,currentLongitude+"");
+                Log.d(TAG,""+currentAccurate);
+                sensorDataSet.setGPS(currentLatitude+","+currentLongitude+","+currentAccurate);
                 sensorDataSet.setLocation(currentPlaceName);
             }
-            if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
+            if(DataCollectorApplication.GOOGLE_FITNESS_ENABLED){
                 sensorDataSet.setSteps(currentSteps);
             }
-            if (DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
+            if(DataCollectorApplication.AMBIENT_SOUND_ENABLED){
                 sensorDataSet.setAmbientSound(currentAmbientSound);
             }
-            if (DataCollectorApplication.WEATHER_ENABLED) {
-                sensorDataSet.setWeather(currentWeatherCondition + ":" + currentTemperature);
+            if(DataCollectorApplication.WEATHER_ENABLED){
+                sensorDataSet.setWeather(currentWeatherCondition+":"+currentTemperature);
             }
             sensorDataSet.setTime(TimeUtils.getCurrentTimeStr());
             sensorDataSet.setLabel(currentLabel);
@@ -318,16 +306,16 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 sensorDataSet.saveEventually(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
-                        if (e == null) {
+                        if(e==null) {
                             Log.d("DataCollector", "parse save done");
-                        } else {
+                        }else {
                             Log.d("DataCollector", "parse save error");
                         }
                     }
                 });
-            } catch (Exception e) {
+            }catch (Exception e){
                 //Toast.makeText(context,"upload data exception",Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "upload data exception");
+                Log.d(TAG,"upload data exception");
             }
         }
     }
@@ -357,7 +345,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     @Override
     public void locationChanged(Location location) {
-        if (location != null) {
+        if(location != null) {
             currentLocation = location;
             currentLatitude = location.getLatitude();
             currentLongitude = location.getLongitude();
@@ -369,19 +357,19 @@ public class DataCollectorService extends Service implements MyLocationListener,
     // google places handler
     @Override
     public void onReceivedPlaces(HashMap<String, Float> places) {
-        //get the most likely one
-        String placeName = null;
+    //get the most likely one
+        String placeName  = null;
         float probability = 0;
-        for (Map.Entry<String, Float> pair : places.entrySet()) {
-            if ((float) pair.getValue() >= probability) {
-                probability = (float) pair.getValue();
+        for(Map.Entry<String, Float> pair : places.entrySet()){
+            if((float)pair.getValue()>=probability) {
+                probability = (float)pair.getValue();
                 placeName = pair.getKey();
             }
         }
 
-        if (placeName == null) {
+        if(placeName==null) {
             currentPlaceName = "null";
-        } else {
+        }else {
             currentPlaceName = placeName + ":" + probability;
         }
 
@@ -410,7 +398,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
     //foursquare place handler
     @Override
     public void placesFound(String place) {
-        if (place != null) {
+        if(place !=null) {
             String[] places = place.split("\n");
             currentPlaceName = places[0];
             return;
@@ -434,7 +422,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
         myMotion.stopMotionSensor();
     }
 
-    public void stopGoogleFitness() {
+    public void stopGoogleFitness(){
         googleFitness.disconnect();
     }
 
@@ -454,7 +442,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
         currentTemperature = temperature;
     }
 
-    public void startNotification() {
+    public void startNotification(){
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
@@ -462,37 +450,33 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setContentText("Background service is running.")
-                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent.getService(this, 19921, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "activity", PendingIntent.getService(this, 19922, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "snack", PendingIntent.getService(this, 19923, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent.FLAG_ONE_SHOT));
-
+                .setSmallIcon(R.drawable.fp_s);
 
         mNotificationManager.notify(
                 notificationID,
                 mNotifyBuilder.build());
     }
-
-    public void cancelNotification() {
+    public void cancelNotification(){
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancel(notificationID);
     }
 
-    private boolean checkChange() {
-        int change = 0;
-        if (!currentActivity.equals(preActivity)) {
+    private boolean checkChange(){
+        int change=0;
+        if(!currentActivity.equals(preActivity)) {
             preActivity = currentActivity;
             change++;
         }
-        if (currentSteps != preSteps) {
+        if(currentSteps!=preSteps){
             preSteps = currentSteps;
             change++;
         }
-        if (!currentWifiName.equals(preWifiName)) {
+        if(!currentWifiName.equals(preWifiName)){
             preWifiName = currentWifiName;
             change++;
         }
-        if (!currentPlaceName.equals(prePlaceName)) {
+        if(!currentPlaceName.equals(prePlaceName)){
             prePlaceName = currentPlaceName;
             change++;
         }
@@ -500,7 +484,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             isPreScreenOn = isCurrentScreenOn;
             change++;
         }
-        if (change > 0) {
+        if(change>0){
             return true;
         }
         return false;
@@ -513,26 +497,4 @@ public class DataCollectorService extends Service implements MyLocationListener,
             //Log.d("receiver", "Got message: " + message);
         }
     };
-
-    public void postStatusChangedNotification() {
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("DataCollector")
-                .setAutoCancel(false)
-                .setOngoing(true)
-                .setContentText("Share your activity")
-                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent.getService(this, 19921, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "activity time", PendingIntent.getService(this, 19922, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "snack time", PendingIntent.getService(this, 19923, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent.FLAG_ONE_SHOT))
-                //.setVibrate(new long[]{100,100,200,100,100})
-                .setDeleteIntent(PendingIntent.getService(this, 19924, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, DELETED), PendingIntent.FLAG_ONE_SHOT)
-                );
-
-
-
-        mNotificationManager.notify(
-                notificationID,
-                mNotifyBuilder.build());
-    }
 }
