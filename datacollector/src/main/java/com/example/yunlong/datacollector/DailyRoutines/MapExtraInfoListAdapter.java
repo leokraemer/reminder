@@ -58,11 +58,13 @@ class MapExtraInfoListAdapter extends ArrayAdapter<Routine> {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.poiinfo, parent, false);
                 TextView routineTV = (TextView) convertView.findViewById(R.id.routine);
+                TextView area = (TextView) convertView.findViewById(R.id.area);
                 TextView start = (TextView) convertView.findViewById(R.id.start);
                 TextView duration = (TextView) convertView.findViewById(R.id.duration);
                 TextView visits = (TextView) convertView.findViewById(R.id.visits);
                 routineTV.setText("Ort " + routine.from.popularPlacesClusterIndex);
                 start.setText(routine.from.locationText);
+                area.setText(Math.round(routine.from.area / 10000) + " ha");
                 visits.setText(routine.times + " / 12");
                 int hours = ((int) Math.floor(routine.from.POIs_average_duration));
                 long minutes = Math.round((routine.from.POIs_average_duration - hours) * 60);

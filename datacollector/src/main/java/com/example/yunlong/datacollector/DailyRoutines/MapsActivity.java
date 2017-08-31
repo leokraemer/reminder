@@ -20,8 +20,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.geometry.Bounds;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.json.JSONArray;
@@ -46,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, AdapterView.OnItemClickListener {
-
+    private final static int ALPHA_ADJUSTMENT = 0x77000000;
     public static final String POPULAR_PLACES_CLUSTER_INDEX = "popularPlacesClusterIndex";
     private GoogleMap mMap;
     private ListView mapExtraInfo;
@@ -158,7 +161,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .endCap(new CustomCap(BitmapDescriptorFactory.fromResource(R.drawable.arrow), 32))
                             .clickable(true)
                     );
-                    globalPOIs.get(from).outgoingPolylines.add(line);
                     //add step data
                     IconGenerator iconFactory = new IconGenerator(this);
                     Calendar[] averageTimes = getAverageTimes(from, to, routinePatterns);
@@ -287,7 +289,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             routine.walkingInfo = stepData;
             //create marker at one fourth of the way from the start.
             routine.marker = addIcon(iconFactory,
-                    "0/" + Math.round(routine.getDistance() / MapsActivity.STEP_LENGTH),
+                    routine.from.popularPlacesClusterIndex + " -> " + routine.to.popularPlacesClusterIndex + "\n 0/" + Math.round(routine.getDistance() / MapsActivity.STEP_LENGTH),
                     fourthOfTheWaybounds.getCenter());
             globalPOIs.get(routine.from.popularPlacesClusterIndex).locationText = routine.getFromText();
             globalPOIs.get(routine.to.popularPlacesClusterIndex).locationText = routine.getToText();
@@ -311,6 +313,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             LatLng latlang = poi.getPOILatLng();
             poi.marker = mMap.addMarker(new MarkerOptions().position(latlang).title(poi.popularPlacesClusterIndex + ""));
             routines.add(new Routine(null, poi.marker, null, poi, null, poi.POIs_visit_times, null, null));
+            ArrayList<LatLng> triangle = new ArrayList<>();
+            triangle.add(new LatLng(poi.POIs_min_latitude, poi.POIs_min_longitude));  // Should match last point
+            triangle.add(new LatLng(poi.POIs_min_latitude, poi.POIs_max_longitude));
+            triangle.add(new LatLng(poi.POIs_max_latitude, poi.POIs_max_longitude));
+            triangle.add(new LatLng(poi.POIs_max_latitude, poi.POIs_min_longitude));
+            mMap.addPolygon(new PolygonOptions()
+                    .addAll(triangle)
+                    .fillColor(Color.BLUE - ALPHA_ADJUSTMENT)
+                    .strokeColor(Color.BLUE)
+                    .strokeWidth(2));
         }
         //zoom too markers
         POI poi = globalPOIs.get(globalPOIs.keySet().toArray()[0]);

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.maps.android.SphericalUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +21,6 @@ public class POI {
     public JSONObject raw;
     public Marker marker;
     public int maxVisits;
-    public List<Polyline> outgoingPolylines;
     public int popularPlacesClusterIndex;
     public double POIs_center_latitude;
     public double POIs_center_longitude;
@@ -32,6 +32,8 @@ public class POI {
     public int POIs_coverage_days;
     public double POIs_average_duration;
     public String locationText = "";
+    public double area;
+    public double diameter;
 
     public POI(JSONObject jsonObject) throws JSONException {
         raw = jsonObject;
@@ -45,7 +47,13 @@ public class POI {
         POIs_visit_times = jsonObject.getInt("POIs_visit_times");
         POIs_coverage_days = jsonObject.getInt("POIs_coverage_days");
         POIs_average_duration = jsonObject.getDouble("POIs_average_duration");
-        outgoingPolylines = new ArrayList<>();
+        ArrayList<LatLng> triangle = new ArrayList<>();
+        triangle.add(new LatLng(POIs_min_latitude, POIs_min_longitude));  // Should match last point
+        triangle.add(new LatLng(POIs_min_latitude, POIs_max_longitude));
+        triangle.add(new LatLng(POIs_max_latitude, POIs_max_longitude));
+        triangle.add(new LatLng(POIs_max_latitude, POIs_min_longitude));
+        area = SphericalUtil.computeArea(triangle);
+        diameter = SphericalUtil.computeDistanceBetween(new LatLng(POIs_min_latitude, POIs_min_longitude), new LatLng(POIs_max_latitude, POIs_max_longitude));
     }
 
     @NonNull
