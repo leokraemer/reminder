@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.yunlong.datacollector.NavigationActivity">
+    tools:context="com.example.leo.datacollector.NavigationActivity">
 
     <Button
         android:id="@+id/Entry"
@@ -48,5 +48,24 @@
         android:onClick="onButtonLocalData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/geofence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonGeofence"
+        android:text="Geofence" />
+    <Button
+        android:id="@+id/jitai"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonJitai"
+        android:text="Jitai Manager" />
+    <Button
+        android:id="@+id/recoder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonRecorder"
+        android:text="Activity Recorder" />
 
 </LinearLayout>
