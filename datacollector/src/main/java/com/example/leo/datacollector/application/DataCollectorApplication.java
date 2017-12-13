@@ -17,7 +17,7 @@ public class DataCollectorApplication extends Application {
 
     public static boolean WIFI_NAME_ENABLED = true;
     public static boolean LOCATION_ENABLED = true;
-    public static boolean INERTIAL_SENSOR_ENABLED = false;
+    public static boolean ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED = true;
     public static boolean ACTIVITY_ENABLED = true;
     public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
     public static boolean GOOGLE_FITNESS_ENABLED = true;

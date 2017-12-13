@@ -20,23 +20,23 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.leo.datacollector.sensors.AmbientSound;
-import com.example.leo.datacollector.sensors.AmbientSoundListener;
-import com.example.leo.datacollector.sensors.FourSquareListener;
-import com.example.leo.datacollector.sensors.FoursquareCaller;
-import com.example.leo.datacollector.sensors.GoogleFitness;
-import com.example.leo.datacollector.sensors.GoogleFitnessListener;
-import com.example.leo.datacollector.sensors.GooglePlacesCaller;
-import com.example.leo.datacollector.sensors.GooglePlacesListener;
-import com.example.leo.datacollector.sensors.MyActivity;
-import com.example.leo.datacollector.sensors.MyActivityListener;
-import com.example.leo.datacollector.sensors.MyEnvironmentSensor;
-import com.example.leo.datacollector.sensors.MyEnvironmentSensorListener;
-import com.example.leo.datacollector.sensors.MyLocation;
-import com.example.leo.datacollector.sensors.MyLocationListener;
-import com.example.leo.datacollector.sensors.MyMotionListener;
-import com.example.leo.datacollector.sensors.WeatherCaller;
-import com.example.leo.datacollector.sensors.WeatherCallerListener;
+import com.example.leo.datacollector.datacollection.sensors.AmbientSound;
+import com.example.leo.datacollector.datacollection.sensors.AmbientSoundListener;
+import com.example.leo.datacollector.datacollection.sensors.FourSquareListener;
+import com.example.leo.datacollector.datacollection.sensors.FoursquareCaller;
+import com.example.leo.datacollector.datacollection.sensors.GoogleFitness;
+import com.example.leo.datacollector.datacollection.sensors.GoogleFitnessListener;
+import com.example.leo.datacollector.datacollection.sensors.GooglePlacesCaller;
+import com.example.leo.datacollector.datacollection.sensors.GooglePlacesListener;
+import com.example.leo.datacollector.datacollection.sensors.MyActivity;
+import com.example.leo.datacollector.datacollection.sensors.MyActivityListener;
+import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensor;
+import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensorListener;
+import com.example.leo.datacollector.datacollection.sensors.MyLocation;
+import com.example.leo.datacollector.datacollection.sensors.MyLocationListener;
+import com.example.leo.datacollector.datacollection.sensors.MyMotionListener;
+import com.example.leo.datacollector.datacollection.sensors.WeatherCaller;
+import com.example.leo.datacollector.datacollection.sensors.WeatherCallerListener;
 import com.example.leo.datacollector.settings.FingerPrintSettingsActivity;
 import com.example.leo.datacollector.utils.PermissionUtils;
 import com.google.android.gms.location.DetectedActivity;
@@ -247,12 +247,6 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     }
 
     @Override
-    public void motionDataChanged(float[] accData, float[] rotData) {
-        textViewAccelerometer.setText("" + accData[0] + "\n" + accData[1] + "\n" + accData[2] + "\n");
-        textViewRotation.setText("" + rotData[0] + "\n" + rotData[1] + "\n" + rotData[2] + "\n");
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
 
@@ -261,6 +255,12 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    public void motionDataChanged(float[] accData, float[] rotData, float[] magData) {
+        textViewAccelerometer.setText("" + accData[0] + "\n" + accData[1] + "\n" + accData[2] + "\n");
+        textViewRotation.setText("" + rotData[0] + "\n" + rotData[1] + "\n" + rotData[2] + "\n");
     }
 
     @Override
@@ -454,7 +454,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     }
 
     @Override
-    public void onReceivedWeather(String condition, float temperature) {
+    public void onReceivedWeather(String weather) {
 
     }
 }

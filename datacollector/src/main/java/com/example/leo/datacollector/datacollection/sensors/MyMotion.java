@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors;
+package com.example.leo.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -13,9 +13,10 @@ public class MyMotion {
 
     MyMotionListener motionListener;
     SensorManager mSensorManager;
-    Sensor mSensorAcc,mSensorRotation;
-    float[] accData = {0f,0f,0f};
-    float[] rotData = {0f,0f,0f};
+    Sensor mSensorAcc, mSensorRotation, mSensorMagnetometer;
+    float[] accData = {0f, 0f, 0f};
+    float[] rotData = {0f, 0f, 0f};
+    float[] magData = {0f, 0f, 0f};
     final SensorEventListener myListener = new SensorEventListener() {
 
         @Override
@@ -31,12 +32,14 @@ public class MyMotion {
                 case Sensor.TYPE_ROTATION_VECTOR:
                     rotData = event.values;
                     break;
+                case Sensor.TYPE_MAGNETIC_FIELD:
+                    magData = event.values;
+                    break;
                 default:
                     break;
             }
-
-            if(motionListener != null) {
-                motionListener.motionDataChanged(accData, rotData);
+            if (motionListener != null) {
+                motionListener.motionDataChanged(accData, rotData, magData);
             }
         }
     };
@@ -44,17 +47,21 @@ public class MyMotion {
 
     public MyMotion(Context context) {
 
-        motionListener = (MyMotionListener)context;
+        motionListener = (MyMotionListener) context;
 
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mSensorAcc = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+        mSensorMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-        mSensorManager.registerListener(myListener,mSensorAcc,SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(myListener,mSensorRotation,SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(myListener, mSensorAcc, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(myListener, mSensorRotation, SensorManager
+                .SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(myListener, mSensorMagnetometer, SensorManager
+                .SENSOR_DELAY_NORMAL);
     }
 
-    public void stopMotionSensor(){
+    public void stopMotionSensor() {
         mSensorManager.unregisterListener(myListener);
     }
 

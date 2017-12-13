@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.services;
+package com.example.leo.datacollector.datacollection;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.hardware.SensorManager;
 import android.hardware.display.DisplayManager;
 import android.location.Location;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -22,32 +24,33 @@ import android.util.Log;
 import android.view.Display;
 
 import com.example.leo.datacollector.R;
-import com.example.leo.datacollector.activityRecording.RecordingActivity;
 import com.example.leo.datacollector.application.DataCollectorApplication;
 import com.example.leo.datacollector.database.SqliteDatabase;
 import com.example.leo.datacollector.models.SensorDataSet;
-import com.example.leo.datacollector.sensors.AmbientSound;
-import com.example.leo.datacollector.sensors.AmbientSoundListener;
-import com.example.leo.datacollector.sensors.FourSquareListener;
-import com.example.leo.datacollector.sensors.FoursquareCaller;
-import com.example.leo.datacollector.sensors.GoogleFitness;
-import com.example.leo.datacollector.sensors.GoogleFitnessListener;
-import com.example.leo.datacollector.sensors.GooglePlacesCaller;
-import com.example.leo.datacollector.sensors.GooglePlacesListener;
-import com.example.leo.datacollector.sensors.MyActivity;
-import com.example.leo.datacollector.sensors.MyActivityListener;
-import com.example.leo.datacollector.sensors.MyEnvironmentSensor;
-import com.example.leo.datacollector.sensors.MyEnvironmentSensorListener;
-import com.example.leo.datacollector.sensors.MyLocation;
-import com.example.leo.datacollector.sensors.MyLocationListener;
-import com.example.leo.datacollector.sensors.MyMotion;
-import com.example.leo.datacollector.sensors.MyMotionListener;
-import com.example.leo.datacollector.sensors.WeatherCaller;
-import com.example.leo.datacollector.sensors.WeatherCallerListener;
+import com.example.leo.datacollector.datacollection.sensors.AmbientSound;
+import com.example.leo.datacollector.datacollection.sensors.AmbientSoundListener;
+import com.example.leo.datacollector.datacollection.sensors.FourSquareListener;
+import com.example.leo.datacollector.datacollection.sensors.FoursquareCaller;
+import com.example.leo.datacollector.datacollection.sensors.GoogleFitness;
+import com.example.leo.datacollector.datacollection.sensors.GoogleFitnessListener;
+import com.example.leo.datacollector.datacollection.sensors.GooglePlacesCaller;
+import com.example.leo.datacollector.datacollection.sensors.GooglePlacesListener;
+import com.example.leo.datacollector.datacollection.sensors.MyActivity;
+import com.example.leo.datacollector.datacollection.sensors.MyActivityListener;
+import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensor;
+import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensorListener;
+import com.example.leo.datacollector.datacollection.sensors.MyLocation;
+import com.example.leo.datacollector.datacollection.sensors.MyLocationListener;
+import com.example.leo.datacollector.datacollection.sensors.MyMotion;
+import com.example.leo.datacollector.datacollection.sensors.MyMotionListener;
+import com.example.leo.datacollector.datacollection.sensors.WeatherCaller;
+import com.example.leo.datacollector.datacollection.sensors.WeatherCallerListener;
+import com.example.leo.datacollector.services.ActivitiesIntentService;
 import com.google.android.gms.location.DetectedActivity;
 
 import org.threeten.bp.LocalDateTime;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -58,9 +61,12 @@ import static com.example.leo.datacollector.activityRecording.RecordingActivityK
 import static com.example.leo.datacollector.utils.ConstantsKt.IS_RECORDING;
 import static com.example.leo.datacollector.utils.ConstantsKt.START_RECORDING;
 import static com.example.leo.datacollector.utils.ConstantsKt.STOP_RECORDING;
+import static com.example.leo.datacollector.utils.UtilsKt.averageDequeue;
 
-public class DataCollectorService extends Service implements MyLocationListener, MyMotionListener, FourSquareListener, MyActivityListener,
-        MyEnvironmentSensorListener, GooglePlacesListener, AmbientSoundListener, GoogleFitnessListener, WeatherCallerListener {
+public class DataCollectorService extends Service implements MyLocationListener,
+        MyMotionListener, FourSquareListener, MyActivityListener,
+        MyEnvironmentSensorListener, GooglePlacesListener, AmbientSoundListener,
+        GoogleFitnessListener, WeatherCallerListener {
 
     public static final String TAG = "DataCollectorService";
     public static final int notificationID = 1001;
@@ -93,10 +99,12 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     double currentLatitude, currentLongitude, currentAccurate, currentAmbientSound;
     boolean ifLocationChanged, isRunning, isPreScreenOn, isCurrentScreenOn;
-    String preWifiName, currentWifiName, prePlaceName, currentPlaceName, currentLabel, currentWeatherCondition;
+    String preWifiName, currentWifiName, prePlaceName, currentPlaceName, currentLabel,
+            currentWeatherCondition;
     private DetectedActivity preActivity = new DetectedActivity(DetectedActivity.UNKNOWN, 0);
     private DetectedActivity currentActivity = new DetectedActivity(DetectedActivity.UNKNOWN, 0);
     float preAmbientLight, currentAmbientLight, currentTemperature;
+    private long currentWeatherId = -1;
     long preSteps, currentSteps;
     private String userName;
     private SqliteDatabase db;
@@ -114,32 +122,34 @@ public class DataCollectorService extends Service implements MyLocationListener,
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         db = SqliteDatabase.Companion.getInstance(getApplicationContext());
+        currentWeatherId = db.getLatestWeather().id;
         Log.d(TAG, "service started");
         if (!this.isRunning) {
             startDataCollection();
         }
-        switch (intent.getAction()) {
-            case (START_RECORDING): {
-                recordingId = intent.getIntExtra(RECORDING_ID, -1);
-                Intent answer = new Intent(START_RECORDING);
-                answer.putExtra(RECORDING_ID, recordingId);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
-                break;
+        if (intent != null && intent.getAction() != null)
+            switch (intent.getAction()) {
+                case (START_RECORDING): {
+                    recordingId = intent.getIntExtra(RECORDING_ID, -1);
+                    Intent answer = new Intent(START_RECORDING);
+                    answer.putExtra(RECORDING_ID, recordingId);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
+                    break;
+                }
+                case (STOP_RECORDING): {
+                    recordingId = -1;
+                    Intent answer = new Intent(STOP_RECORDING);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
+                    break;
+                }
+                case (IS_RECORDING): {
+                    Intent answer = new Intent(IS_RECORDING);
+                    answer.putExtra(RECORDING_ID, recordingId);
+                    answer.putExtra(IS_RECORDING, isRunning);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
+                    break;
+                }
             }
-            case (STOP_RECORDING): {
-                recordingId = -1;
-                Intent answer = new Intent(STOP_RECORDING);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
-                break;
-            }
-            case (IS_RECORDING): {
-                Intent answer = new Intent(IS_RECORDING);
-                answer.putExtra(RECORDING_ID, recordingId);
-                answer.putExtra(IS_RECORDING, isRunning);
-                LocalBroadcastManager.getInstance(this).sendBroadcast(answer);
-                break;
-            }
-        }
         return START_STICKY;
     }
 
@@ -153,7 +163,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
             currentPlaceName = "null";
             ifLocationChanged = true;
         }
-        if (DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
             myMotion = new MyMotion(this);
         }
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
@@ -207,7 +217,7 @@ public class DataCollectorService extends Service implements MyLocationListener,
         cancelNotification();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
 
-        if (DataCollectorApplication.INERTIAL_SENSOR_ENABLED) {
+        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
             stopMotionSensor();
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
@@ -229,31 +239,24 @@ public class DataCollectorService extends Service implements MyLocationListener,
     }
 
     private void startScheduledUpdate() {
-        ScheduledExecutorService scheduler =
-                Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        try {
-                            if (isRunning) {
-                                if (weatherUpdateCnt == 1) {
-                                    weatherCaller.getCurrentWeather();
-                                } else if (weatherUpdateCnt == 3600 / secondsUntilNextUpdate) {//update per hour
-                                    weatherUpdateCnt = 0;
-                                }
-                                weatherUpdateCnt++;
-                                updateUnAutomaticData();
-                                uploadDataSet();
-                            }
-                        } catch (Exception e) {
-                            System.err.println("error in executing: " + ". It will no longer be run!");
-                            e.printStackTrace();
-                            // and re throw it so that the Executor also gets this error so that it can do what it would
-                            throw new RuntimeException(e);
-                        }
-
+        final Handler handler = new Handler();
+        handler.post((new Runnable() {
+            public void run() {
+                //we assume that the operation finishes before it must be called again
+                handler.postDelayed(this, TimeUnit.SECONDS.toMillis(secondsUntilNextUpdate));
+                if (isRunning) {
+                    if (weatherUpdateCnt == 1) {
+                        weatherCaller.getCurrentWeather();
+                    } else if (weatherUpdateCnt == 3600 / secondsUntilNextUpdate) {//update
+                        // per hour
+                        weatherUpdateCnt = 0;
                     }
-                }, 0, secondsUntilNextUpdate, TimeUnit.SECONDS);
+                    weatherUpdateCnt++;
+                    updateUnAutomaticData();
+                    uploadDataSet();
+                }
+            }
+        }));
     }
 
     private void getPlaces() {
@@ -278,10 +281,13 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     private void getWiFiName() {
         try {
-            WifiManager wifiMgr = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiMgr = (WifiManager) getApplicationContext().getSystemService(Context
+                    .WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            String wifi = wifiInfo.getSSID() + ":" + wifiInfo.getBSSID() + ":" + wifiInfo.getIpAddress() + ":" + wifiInfo.getNetworkId() + ":" + wifiInfo.getRssi();
-            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId();
+            String wifi = wifiInfo.getSSID() + ":" + wifiInfo.getBSSID() + ":" + wifiInfo
+                    .getIpAddress() + ":" + wifiInfo.getNetworkId() + ":" + wifiInfo.getRssi();
+            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo
+            // .getNetworkId();
             if (wifiInfo.getSSID() == null) {
                 currentWifiName = "null";
             } else {
@@ -296,7 +302,8 @@ public class DataCollectorService extends Service implements MyLocationListener,
 
     public void checkScreenOn() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            DisplayManager dm = (DisplayManager) getApplicationContext().getSystemService(Context.DISPLAY_SERVICE);
+            DisplayManager dm = (DisplayManager) getApplicationContext().getSystemService(Context
+                    .DISPLAY_SERVICE);
             for (Display display : dm.getDisplays()) {
                 if (display.getState() == Display.STATE_OFF) {
                     isCurrentScreenOn = false;
@@ -305,11 +312,15 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 }
             }
         } else {
-            PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
+            PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context
+                    .POWER_SERVICE);
             //noinspection deprecation
             isCurrentScreenOn = pm.isScreenOn();
         }
     }
+
+    float Rotation[] = new float[9];
+    float Inclination[] = new float[9];
 
     private void uploadDataSet() {
         SensorDataSet sensorDataSet = new SensorDataSet(LocalDateTime.now(), "username");
@@ -344,7 +355,33 @@ public class DataCollectorService extends Service implements MyLocationListener,
             sensorDataSet.setAmbientSound(currentAmbientSound);
         }
         if (DataCollectorApplication.WEATHER_ENABLED) {
-            sensorDataSet.setWeather(currentWeatherCondition + ":" + currentTemperature);
+            sensorDataSet.setWeather(currentWeatherId);
+        }
+        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
+            float[] avgAcc = averageDequeue(accData);
+            sensorDataSet.setAcc_x(avgAcc[0]);
+            sensorDataSet.setAcc_y(avgAcc[1]);
+            sensorDataSet.setAcc_z(avgAcc[2]);
+            float[] avgRot = averageDequeue(rotData);
+            sensorDataSet.setGyro_x(avgRot[0]);
+            sensorDataSet.setGyro_y(avgRot[1]);
+            sensorDataSet.setGyro_z(avgRot[2]);
+            float[] avgMag = averageDequeue(magData);
+            sensorDataSet.setMag_x(avgMag[0]);
+            sensorDataSet.setMag_y(avgMag[1]);
+            sensorDataSet.setMag_z(avgMag[2]);
+            if (avgAcc != null && avgMag != null) {
+                boolean success = SensorManager.getRotationMatrix(Rotation, Inclination, avgAcc,
+                        avgMag);
+                if (success) {
+                    float orientation[] = new float[3];
+                    SensorManager.getOrientation(Rotation, orientation);
+                    sensorDataSet.setAzimuth(orientation[0]); // orientation contains: azimut,
+                    // pitch and roll
+                    sensorDataSet.setPitch(orientation[1]);
+                    sensorDataSet.setRoll(orientation[2]);
+                }
+            }
         }
         sensorDataSet.setScreenState(isCurrentScreenOn);
         sensorDataBuffer[sample] = sensorDataSet;
@@ -368,7 +405,8 @@ public class DataCollectorService extends Service implements MyLocationListener,
     }
 
     @Override
-    public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
+    public void environmentSensorDataChanged(float light, float temperature, float pressure,
+                                             float humidity) {
         currentAmbientLight = light;
     }
 
@@ -447,9 +485,16 @@ public class DataCollectorService extends Service implements MyLocationListener,
         googlePlacesCaller.disconnect();
     }
 
-    @Override
-    public void motionDataChanged(float[] accData, float[] rotData) {
 
+    private ArrayDeque<float[]> accData = new ArrayDeque<>(50);
+    private ArrayDeque<float[]> rotData = new ArrayDeque<>(50);
+    private ArrayDeque<float[]> magData = new ArrayDeque<>(50);
+
+    @Override
+    public void motionDataChanged(float[] accData, float[] rotData, float[] magData) {
+        this.accData.add(accData);
+        this.rotData.add(rotData);
+        this.magData.add(magData);
     }
 
     @Override
@@ -472,9 +517,8 @@ public class DataCollectorService extends Service implements MyLocationListener,
     }
 
     @Override
-    public void onReceivedWeather(String condition, float temperature) {
-        currentWeatherCondition = condition;
-        currentTemperature = temperature;
+    public void onReceivedWeather(String weather) {
+        currentWeatherId = db.enterWeather(weather, currentWeatherId + 1);
     }
 
     public void startNotification() {
@@ -485,9 +529,15 @@ public class DataCollectorService extends Service implements MyLocationListener,
                 .setAutoCancel(false)
                 .setOngoing(true)
                 .setContentText("Background service is running.")
-                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent.getService(this, 19921, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "activity", PendingIntent.getService(this, 19922, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "snack", PendingIntent.getService(this, 19923, new Intent(this, ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent.FLAG_ONE_SHOT));
+                .setSmallIcon(R.drawable.fp_s).addAction(0, "10 minutes", PendingIntent
+                        .getService(this, 19921, new Intent(this, ActivitiesIntentService.class)
+                                .putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
+                .addAction(0, "activity", PendingIntent.getService(this, 19922, new Intent(this,
+                        ActivitiesIntentService.class).putExtra(TYPE, ACTIVITY), PendingIntent
+                        .FLAG_ONE_SHOT))
+                .addAction(0, "snack", PendingIntent.getService(this, 19923, new Intent(this,
+                        ActivitiesIntentService.class).putExtra(TYPE, SNACK), PendingIntent
+                        .FLAG_ONE_SHOT));
 
 
         mNotificationManager.notify(

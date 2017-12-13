@@ -41,7 +41,7 @@ import com.google.android.gms.fitness.result.DailyTotalResult;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This sample demonstrates combining the Recording API and History API of the Google Fit platform
+ * This sample demonstrates combining the ActivityRecord API and History API of the Google Fit platform
  * to record steps, and display the daily current step count. It also demonstrates how to
  * authenticate a user with Google Play Services.
  */
@@ -111,7 +111,7 @@ public class StepCounterActivity extends AppCompatActivity {
      * Record step data by requesting a subscription to background step data.
      */
     public void subscribe() {
-        // To create a subscription, invoke the Recording API. As soon as the subscription is
+        // To create a subscription, invoke the ActivityRecord API. As soon as the subscription is
         // active, fitness data will start recording.
         Fitness.RecordingApi.subscribe(mClient, DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .setResultCallback(new ResultCallback<Status>() {

@@ -9,6 +9,6 @@ import com.google.android.gms.location.DetectedActivity
 
 class ActivityTrigger(val activity: DetectedActivity) : Trigger {
     override fun check(sensorData: SensorDataSet): Boolean {
-        return activity.type == sensorData.activity?.type
+        return activity.type == sensorData.activity.type
     }
 }

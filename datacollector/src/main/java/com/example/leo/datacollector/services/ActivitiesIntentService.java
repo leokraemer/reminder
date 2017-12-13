@@ -15,12 +15,12 @@ import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
 
-import static com.example.leo.datacollector.services.DataCollectorService.ACTIVITY;
-import static com.example.leo.datacollector.services.DataCollectorService.DELETED;
-import static com.example.leo.datacollector.services.DataCollectorService.MINUTES;
-import static com.example.leo.datacollector.services.DataCollectorService.SNACK;
-import static com.example.leo.datacollector.services.DataCollectorService.TYPE;
-import static com.example.leo.datacollector.services.DataCollectorService.notificationID;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.ACTIVITY;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.DELETED;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.MINUTES;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.SNACK;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.TYPE;
+import static com.example.leo.datacollector.datacollection.DataCollectorService.notificationID;
 
 public class ActivitiesIntentService extends IntentService {
     private static final String TAG = "ActivitiesIntentService";

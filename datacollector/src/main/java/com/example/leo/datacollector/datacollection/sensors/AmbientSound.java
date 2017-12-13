@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors;
+package com.example.leo.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -49,7 +49,7 @@ public class AmbientSound {
                 int seconds = c.get(Calendar.MILLISECOND);
                 Log.i(TAG,"stop:" + seconds);*/
             }
-        }, 500);
+        }, 1000);
     }
 
     private void start() {
@@ -57,7 +57,7 @@ public class AmbientSound {
             mRecorder = new MediaRecorder();
 
             mRecorder.reset();
-            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.UNPROCESSED);
             mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             mRecorder.setOutputFile("/dev/null");
@@ -88,6 +88,5 @@ public class AmbientSound {
             return mRecorder.getMaxAmplitude();
         else
             return -1;
-
     }
 }

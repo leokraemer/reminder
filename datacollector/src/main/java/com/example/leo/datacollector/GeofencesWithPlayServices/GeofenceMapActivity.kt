@@ -30,7 +30,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
         set(value) {
             if (field != value) {
                 field = value
-                updateGeofenceOnMap(latLng, geofenceName, geofencesize.toFloat())
+                updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
             }
         }
     private var rp: RoutineProvider? = null
@@ -46,7 +46,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
                 field!!.remove()
             field = value
         }
-    private lateinit var latLng: LatLng
+    private var latLng: LatLng? = null
 
     private var geofencesize: Int = 0
         get() = field + 100
@@ -54,7 +54,8 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
             if (value != field) {
                 field = value
                 updateSizeText(geofencesize.toFloat())
-                updateGeofenceOnMap(latLng, geofenceName, geofencesize.toFloat())
+                if (latLng != null)
+                    updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
                 sizeBar.setProgress(field)
             }
         }
@@ -81,16 +82,16 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
         }
         sizeBar.setOnSeekBarChangeListener(sizeChangeListener)
 
-        done.setOnClickListener() {
+        done.setOnClickListener {
             commitGeofence()
         }
-        geofenceoptions.enter.setOnCheckedChangeListener() { _, checked ->
+        geofenceoptions.enter.setOnCheckedChangeListener { _, checked ->
             enter = checked
         }
-        geofenceoptions.exit.setOnCheckedChangeListener() { _, checked ->
+        geofenceoptions.exit.setOnCheckedChangeListener { _, checked ->
             exit = checked
         }
-        geofenceoptions.dwell.setOnCheckedChangeListener() { _, checked ->
+        geofenceoptions.dwell.setOnCheckedChangeListener { _, checked ->
             dwell = checked
         }
         geofenceoptions.nameField.addTextChangedListener(object : TextWatcher {
@@ -109,24 +110,25 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
     }
 
     private fun commitGeofence() {
-        if (enter or exit or dwell) {
-            addGeofence(geofenceName, latLng, geofencesize.toFloat(), enter, exit, dwell)
-            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-            val editor = sharedPreferences.edit()
-            editor.putString(GEOFENCE_NAME, geofenceName)
-            editor.putFloat(GEOFENCE_LAT, latLng.latitude.toFloat())
-            editor.putFloat(GEOFENCE_LONG, latLng.longitude.toFloat())
-            editor.putInt(GEOFENCE_RADIUS, geofencesize)
-            editor.putLong(GEOFENCE_DATE_ADDED, System.currentTimeMillis())
-            editor.putLong(GEOFENCE_VALIDITY, GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-            editor.putBoolean(GEOFENCE_DWELL, dwell)
-            editor.putBoolean(GEOFENCE_ENTER, enter)
-            editor.putBoolean(GEOFENCE_EXIT, exit)
-            editor.apply()
-            updateGeofenceOnMap(latLng, geofenceName, geofencesize.toFloat())
-        } else {
-            Toast.makeText(this, "activate one of the transition types", Toast.LENGTH_SHORT).show()
-        }
+        if (latLng != null)
+            if (enter or exit or dwell) {
+                addGeofence(geofenceName, latLng!!, geofencesize.toFloat(), enter, exit, dwell)
+                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+                val editor = sharedPreferences.edit()
+                editor.putString(GEOFENCE_NAME, geofenceName)
+                editor.putFloat(GEOFENCE_LAT, latLng!!.latitude.toFloat())
+                editor.putFloat(GEOFENCE_LONG, latLng!!.longitude.toFloat())
+                editor.putInt(GEOFENCE_RADIUS, geofencesize)
+                editor.putLong(GEOFENCE_DATE_ADDED, System.currentTimeMillis())
+                editor.putLong(GEOFENCE_VALIDITY, GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                editor.putBoolean(GEOFENCE_DWELL, dwell)
+                editor.putBoolean(GEOFENCE_ENTER, enter)
+                editor.putBoolean(GEOFENCE_EXIT, exit)
+                editor.apply()
+                updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
+            } else {
+                Toast.makeText(this, "activate one of the transition types", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun updateSizeText(size: Float) {
@@ -151,7 +153,6 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
     }
 
     private fun loadGeofenceFromSharedPreferences(sp: SharedPreferences) {
-        geofenceName = sp.getString(GEOFENCE_NAME, null)
         val timestamp = sp.getLong(GEOFENCE_DATE_ADDED, 0)
         val validity = sp.getLong(GEOFENCE_VALIDITY, 0)
         if (System.currentTimeMillis() < timestamp + validity) {
@@ -162,6 +163,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
             geofenceoptions.dwell.setChecked(sp.getBoolean(GEOFENCE_DWELL, false))
             latLng = LatLng(fence_lat.toDouble(), fence_long.toDouble())
             geofencesize = sp.getInt(GEOFENCE_RADIUS, 0)
+            geofenceName = sp.getString(GEOFENCE_NAME, null)
         }
     }
 

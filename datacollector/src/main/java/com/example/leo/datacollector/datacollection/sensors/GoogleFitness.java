@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors;
+package com.example.leo.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -100,7 +100,7 @@ public class GoogleFitness{
      * Record step data by requesting a subscription to background step data.
      */
     private void subscribe() {
-        // To create a subscription, invoke the Recording API. As soon as the subscription is
+        // To create a subscription, invoke the ActivityRecord API. As soon as the subscription is
         // active, fitness data will start recording.
         Fitness.RecordingApi.subscribe(mClient, DataType.TYPE_STEP_COUNT_CUMULATIVE)
                 .setResultCallback(new ResultCallback<Status>() {

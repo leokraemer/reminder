@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors;
+package com.example.leo.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -39,59 +39,23 @@ public class WeatherCaller {
         getCurrentWeather();
     }
 
-    public void getCurrentWeather(){
+    public void getCurrentWeather() {
         new JSONWeatherTask().execute(new String[]{city});
     }
 
-    private class JSONWeatherTask extends AsyncTask<String, Void, Weather> {
+    private class JSONWeatherTask extends AsyncTask<String, Void, String> {
 
         @Override
-        protected Weather doInBackground(String... params) {
-            Weather weather = new Weather();
-            String data = ( (new WeatherHttpClient()).getWeatherData(params[0]));
-
-            try {
-                if(data != null) {
-                    JSONWeatherParser jsonWeatherParser = new JSONWeatherParser();
-                    weather = jsonWeatherParser.getWeather(data);
-
-                    // Let's retrieve the icon
-                    weather.iconData = ((new WeatherHttpClient()).getImage(weather.currentCondition.getIcon()));
-                }else {
-                    weather = null;
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return weather;
-
+        protected String doInBackground(String... params) {
+            return (new WeatherHttpClient()).getWeatherData(params[0]);
         }
 
         @Override
-        protected void onPostExecute(Weather weather) {
-            super.onPostExecute(weather);
-
-            if (weather.iconData != null && weather.iconData.length > 0) {
-                Bitmap img = BitmapFactory.decodeByteArray(weather.iconData, 0, weather.iconData.length);
-                //imgView.setImageBitmap(img);
-            }
-
-            weatherCallerListener.onReceivedWeather(weather.currentCondition.getCondition(),Math.round((weather.temperature.getTemp() - 273.15)));
-
-            Log.i(TAG,weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-            Log.i(TAG,Math.round((weather.temperature.getTemp() - 273.15)) + "C");
-
-/*            cityText.setText(weather.location.getCity() + "," + weather.location.getCountry());
-            condDescr.setText(weather.currentCondition.getCondition() + "(" + weather.currentCondition.getDescr() + ")");
-            temp.setText("" + Math.round((weather.temperature.getTemp() - 273.15)) + "�C");
-            hum.setText("" + weather.currentCondition.getHumidity() + "%");
-            press.setText("" + weather.currentCondition.getPressure() + " hPa");
-            windSpeed.setText("" + weather.wind.getSpeed() + " mps");
-            windDeg.setText("" + weather.wind.getDeg() + "�");*/
-
+        protected void onPostExecute(String weatherStr) {
+            super.onPostExecute(weatherStr);
+            weatherCallerListener.onReceivedWeather(weatherStr);
+            Log.d("Weather caller", "Recieved " + weatherStr);
         }
-
     }
 
     class WeatherHttpClient {
@@ -101,7 +65,9 @@ public class WeatherCaller {
             InputStream is = null;
 
             try {
-                con = (HttpURLConnection) (new URL(BASE_URL + location + "&appid=" + KEY)).openConnection();
+                con = (HttpURLConnection) (new URL(BASE_URL + location +
+                        "&lang=de" + "&appid=" + KEY))
+                        .openConnection();
                 con.setRequestMethod("GET");
                 con.setDoInput(true);
                 con.setDoOutput(true);
@@ -166,16 +132,14 @@ public class WeatherCaller {
                 } catch (Throwable t) {
                 }
             }
-
             return null;
-
         }
-
     }
 
-    class JSONWeatherParser {
+    static class JSONWeatherParser {
 
-        public Weather getWeather(String data) throws JSONException  {
+        //throw when clearly malformed
+        public static Weather getWeather(String data) throws JSONException {
             Weather weather = new Weather();
 
             // We create out JSONObject from the data
@@ -200,50 +164,79 @@ public class WeatherCaller {
 
             // We use only the first value
             JSONObject JSONWeather = jArr.getJSONObject(0);
-            weather.currentCondition.setWeatherId(getInt("id", JSONWeather));
-            weather.currentCondition.setDescr(getString("description", JSONWeather));
-            weather.currentCondition.setCondition(getString("main", JSONWeather));
-            weather.currentCondition.setIcon(getString("icon", JSONWeather));
+            weather.currentCondition.weatherId = getInt("id", JSONWeather);
+            weather.currentCondition.descr = getString("description", JSONWeather);
+            weather.currentCondition.condition = getString("main", JSONWeather);
+            weather.currentCondition.icon = getString("icon", JSONWeather);
 
             JSONObject mainObj = getObject("main", jObj);
-            weather.currentCondition.setHumidity(getInt("humidity", mainObj));
-            weather.currentCondition.setPressure(getInt("pressure", mainObj));
-            weather.temperature.setMaxTemp(getFloat("temp_max", mainObj));
-            weather.temperature.setMinTemp(getFloat("temp_min", mainObj));
-            weather.temperature.setTemp(getFloat("temp", mainObj));
+            weather.currentCondition.humidity = (getInt("humidity", mainObj));
+            weather.currentCondition.pressure = getInt("pressure", mainObj);
+            weather.temperature.maxTemp = getFloat("temp_max", mainObj);
+            weather.temperature.minTemp = getFloat("temp_min", mainObj);
+            weather.temperature.temp = getFloat("temp", mainObj);
 
             // Wind
             JSONObject wObj = getObject("wind", jObj);
-            weather.wind.setSpeed(getFloat("speed", wObj));
-            weather.wind.setDeg(getFloat("deg", wObj));
+            weather.wind.speed = getFloat("speed", wObj);
+            weather.wind.deg = getFloat("deg", wObj);
 
             // Clouds
             JSONObject cObj = getObject("clouds", jObj);
-            weather.clouds.setPerc(getInt("all", cObj));
-
-            // We download the icon to show
+            weather.clouds.perc = getInt("all", cObj);
 
 
             return weather;
         }
 
 
-        private JSONObject getObject(String tagName, JSONObject jObj)  throws JSONException {
-            JSONObject subObj = jObj.getJSONObject(tagName);
-            return subObj;
+        private static JSONObject getObject(String tagName, JSONObject jObj) {
+            try {
+                JSONObject subObj = jObj.getJSONObject(tagName);
+                return subObj;
+            } catch (JSONException e) {
+                Log.e("JSON Exception", "weather deserialisation tag " + tagName);
+                return null;
+            }
         }
 
-        private String getString(String tagName, JSONObject jObj) throws JSONException {
-            return jObj.getString(tagName);
+        private static String getString(String tagName, JSONObject jObj) {
+            try {
+                return jObj.getString(tagName);
+            } catch (JSONException e) {
+                Log.e("JSON Exception", "weather deserialisation tag " + tagName);
+                return null;
+            }
         }
 
-        private float  getFloat(String tagName, JSONObject jObj) throws JSONException {
-            return (float) jObj.getDouble(tagName);
+        private static float getFloat(String tagName, JSONObject jObj) {
+            try {
+                return (float) jObj.getDouble(tagName);
+            } catch (JSONException e) {
+                Log.e("JSON Exception", "weather deserialisation tag " + tagName);
+                return Float.NaN;
+            }
         }
 
-        private int  getInt(String tagName, JSONObject jObj) throws JSONException {
-            return jObj.getInt(tagName);
+        private static int getInt(String tagName, JSONObject jObj) {
+            try {
+                return jObj.getInt(tagName);
+            } catch (JSONException e) {
+                Log.e("JSON Exception", "weather deserialisation tag " + tagName);
+                return -1;
+            }
         }
+    }
 
+    public static Weather fromJSON(String weatherStr) {
+        Weather weather = null;
+        if (weatherStr != null) {
+            try {
+                weather = JSONWeatherParser.getWeather(weatherStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return weather;
     }
 }

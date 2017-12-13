@@ -12,6 +12,7 @@ import android.view.View;
 import com.example.leo.datacollector.DailyRoutines.MapsActivity;
 import com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceMapActivity;
 import com.example.leo.datacollector.activityRecording.RecordingActivity;
+import com.example.leo.datacollector.activityRecording.RecordingsListActivity;
 import com.example.leo.datacollector.jitai.JitaiManagingActivity;
 import com.example.leo.datacollector.utils.PermissionUtils;
 
@@ -74,6 +75,10 @@ public class NavigationActivity extends AppCompatActivity {
 
     public void onButtonJitai(View view) {
         Intent intent = new Intent(context,JitaiManagingActivity.class);
+        startActivity(intent);
+    }
+    public void onButtonRecList(View view) {
+        Intent intent = new Intent(context,RecordingsListActivity.class);
         startActivity(intent);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors;
+package com.example.leo.datacollector.datacollection.sensors;
 
 /**
  * Created by Yunlong on 4/23/2016.

@@ -1,4 +1,4 @@
-package com.example.leo.datacollector.sensors
+package com.example.leo.datacollector.datacollection.sensors
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -19,8 +19,6 @@ import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.DetectedActivity
-
-import java.util.ArrayList
 
 /**
  * Created by Yunlong on 4/21/2016.

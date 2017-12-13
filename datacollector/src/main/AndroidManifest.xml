@@ -52,13 +52,19 @@
         <activity
             android:name="com.example.leo.datacollector.jitai.AddJitaiActivity"
             android:label="Add Jitai"></activity>
+        <activity
+            android:name="com.example.leo.datacollector.activityRecording.RecordingsListActivity"
+            android:label="Add Jitai"></activity>
+        <activity
+            android:name="com.example.leo.datacollector.activityRecording.RecordViewActivity"
+            android:label="Add Jitai"></activity>
 
 
         <service
             android:name="com.example.leo.datacollector.services.ActivitiesIntentService"
             android:exported="false"></service>
         <service
-            android:name="com.example.leo.datacollector.services.DataCollectorService"
+            android:name="com.example.leo.datacollector.datacollection.DataCollectorService"
             android:enabled="true"
             android:exported="true"></service>
 

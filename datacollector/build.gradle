@@ -65,6 +65,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:11.0.4'
     compile 'com.google.android.gms:play-services-places:11.0.4'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     testCompile 'org.json:json:20140107'
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"

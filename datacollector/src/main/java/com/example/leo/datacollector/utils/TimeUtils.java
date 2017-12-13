@@ -13,7 +13,7 @@ public class TimeUtils {
     }
 
     public static String getTimeStr(LocalDateTime date) {
-        return date.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd:HH-mm-ss"));
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd:HH-mm-ss"));
     }
 
     public static LocalDateTime getDateFromString(String timeStr) {

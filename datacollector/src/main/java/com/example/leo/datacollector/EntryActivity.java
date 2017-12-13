@@ -35,7 +35,7 @@ import android.widget.Toast;
 
 import com.example.leo.datacollector.ComboSeekBar.ComboSeekBar;
 import com.example.leo.datacollector.application.DataCollectorApplication;
-import com.example.leo.datacollector.services.DataCollectorService;
+import com.example.leo.datacollector.datacollection.DataCollectorService;
 import com.example.leo.datacollector.settings.FingerPrintSettingsActivity;
 
 import java.util.Arrays;

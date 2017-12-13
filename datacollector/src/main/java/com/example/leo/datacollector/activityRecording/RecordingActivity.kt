@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.example.leo.datacollector.R
 import com.example.leo.datacollector.database.SqliteDatabase
-import com.example.leo.datacollector.services.DataCollectorService
+import com.example.leo.datacollector.datacollection.DataCollectorService
 import com.example.leo.datacollector.utils.START_RECORDING
 import com.example.leo.datacollector.utils.STOP_RECORDING
 import kotlinx.android.synthetic.main.recording_activity.*
@@ -73,7 +73,7 @@ class RecordingActivity : Activity() {
         setContentView(R.layout.recording_activity)
         db = SqliteDatabase.getInstance(applicationContext)
         recordingIdInt = db.getLatestRecordingId() + 1
-        start_recording.setOnClickListener({ v -> startRecording() })
+        start_recording.setOnClickListener({ _ -> startRecording() })
     }
 
     override fun onStart() {

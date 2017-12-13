@@ -24,11 +24,31 @@ data class SensorDataSet @JvmOverloads constructor(
         var screenState: Boolean? = null,
         var ambientLight: Float? = null,
 
-        //avery phone has these
+        //every phone has these
         var location: String? = null,
         var gps: android.location.Location? = null,
         var wifiName: String? = null,
         var bluetoothDevices: List<String>? = null,
+
+        //accelerometer
+        var acc_x : Float = 0F,
+        var acc_y : Float = 0F,
+        var acc_z : Float = 0F,
+
+        //Gyroscope
+        var gyro_x : Float = 0F,
+        var gyro_y : Float = 0F,
+        var gyro_z : Float = 0F,
+
+        //magnetometer
+        var mag_x : Float = 0F,
+        var mag_y : Float = 0F,
+        var mag_z : Float = 0F,
+
+        //Orientation
+        var azimuth : Float = 0F,
+        var pitch : Float = 0F,
+        var roll : Float = 0F,
 
         //seldom present
         var airPressure: Float? = null,
@@ -36,7 +56,7 @@ data class SensorDataSet @JvmOverloads constructor(
         var temperature: Float? = null,
 
         //via network
-        var weather: String? = null
+        var weather: Long? = null
 ) {
     fun getActivityString() = when (activity.type) {
         0 -> "IN_VEHICLE"
