@@ -144,21 +144,32 @@ class RecordViewActivity : AppCompatActivity() {
         record.proximity.forEachIndexed { i, value ->
             entries.add(
                     Entry(getTimeForRecord(i),
-                          preassureDifferentialToHeightDifferential(value.toFloat())))
+                          value.toFloat()))
         }
         val data = createHeightLineDataSet(entries, "Näherungssensor")
         data.color = getResources().getColor(R.color.black)
+        data.mode = LineDataSet.Mode.STEPPED
         val lineData = LineData(data)
         lineData.setDrawValues(false)
+
         proximityChart.data = lineData
         proximityChart.invalidate()
         proximityChart.setTouchEnabled(false)
         adjustXAxisForTime(proximityChart)
         proximityChart.axisLeft.setDrawLabels(true)
+        proximityChart.axisLeft.valueFormatter = object : IAxisValueFormatter {
+            override fun getFormattedValue(value: Float, axis: AxisBase?): String {
+                if (value <= 0) return "nah"
+                return "fern"
+            }
+        }
+        proximityChart.axisLeft.labelCount = 2
         proximityChart.axisLeft.setDrawGridLines(false)
+        proximityChart.axisLeft.axisMinimum = -1f
         proximityChart.axisLeft.axisMaximum = (getSystemService(Context
                                                                         .SENSOR_SERVICE) as SensorManager).getDefaultSensor(
-                Sensor.TYPE_PROXIMITY).maximumRange
+                Sensor.TYPE_PROXIMITY).maximumRange + 1
+
         proximityChart.axisRight.setDrawLabels(false)
         proximityChart.legend.setEnabled(true)
         proximityChart.legend.setEntries(listOf(LegendEntry("Näherungssensor",
