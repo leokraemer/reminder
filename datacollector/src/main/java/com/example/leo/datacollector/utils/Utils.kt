@@ -18,3 +18,22 @@ fun averageDequeue(dequeue: ArrayDeque<FloatArray>): FloatArray {
     return sum
 }
 
+fun averageDequeueHighPass(dequeue: ArrayDeque<FloatArray>): FloatArray {
+    var gravity = floatArrayOf(0f, 0f, 0f)
+    var sum = floatArrayOf(0f, 0f, 0f)
+    val alpha = 0.8f
+    val iterator = dequeue.iterator()
+    while (iterator.hasNext()) {
+        val entry = iterator.next()
+        gravity[0] = alpha * gravity[0] + (1 - alpha) * entry[0]
+        gravity[1] = alpha * gravity[1] + (1 - alpha) * entry[1]
+        gravity[2] = alpha * gravity[2] + (1 - alpha) * entry[2]
+        sum[0] += (entry[0] - gravity[0])
+        sum[1] += (entry[1] - gravity[1])
+        sum[2] += (entry[2] - gravity[2])
+    }
+    sum[0] = sum[0] / dequeue.size
+    sum[1] = sum[1] / dequeue.size
+    sum[2] = sum[2] / dequeue.size
+    return sum
+}

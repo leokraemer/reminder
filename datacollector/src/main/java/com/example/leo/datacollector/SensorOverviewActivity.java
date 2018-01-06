@@ -60,14 +60,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SensorOverviewActivity extends AppCompatActivity implements MyLocationListener,
-        MyMotionListener, FourSquareListener,MyActivityListener,MyEnvironmentSensorListener,
-        OnMapReadyCallback,GoogleMap.OnMarkerClickListener,GooglePlacesListener,AmbientSoundListener,
-        GoogleFitnessListener, WeatherCallerListener{
+        MyMotionListener, FourSquareListener, MyActivityListener, MyEnvironmentSensorListener,
+        OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GooglePlacesListener,
+        AmbientSoundListener,
+        GoogleFitnessListener, WeatherCallerListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "SensorOverviewActivity";
 
-    TextView textViewLocation,textViewRotation,textViewAccelerometer,textViewPlaces,mDetectedActivityTextView,wifiTextView,environmentTextView;
+    TextView textViewLocation, textViewRotation, textViewAccelerometer, textViewPlaces,
+            mDetectedActivityTextView, wifiTextView, environmentTextView;
     //MyMotion myMotion;
     MyLocation myLocation;
     MyActivity myActivity;
@@ -81,15 +83,15 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     Context context;
     Button buttonChart;
-    String wifiName="null";
-    String placeName="null";
+    String wifiName = "null";
+    String placeName = "null";
     int uploadCnt = 0;
     //map
     private GoogleMap mMap;
     private static final LatLng Uni = new LatLng(47.6890, 9.1886);
     private static final LatLng Home = new LatLng(47.681417, 9.189508);
     private static final LatLng Gym = new LatLng(47.694066, 9.189717);
-    private static final LatLng Mensa = new LatLng(47.69052,9.18912);
+    private static final LatLng Mensa = new LatLng(47.69052, 9.18912);
     List<Double> dist2Mensa = new ArrayList<Double>();
     int distCounter = 0;
     boolean goToMensa = false;
@@ -107,12 +109,12 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
         context = this;
 
-        textViewLocation = (TextView)findViewById(R.id.location_text);
+        textViewLocation = (TextView) findViewById(R.id.location_text);
         //textViewRotation = (TextView)findViewById(R.id.rotation_text);
         //textViewAccelerometer = (TextView)findViewById(R.id.accelerometer_text);
-        textViewPlaces = (TextView)findViewById(R.id.places_text);
+        textViewPlaces = (TextView) findViewById(R.id.places_text);
         mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
-        wifiTextView =(TextView) findViewById(R.id.wifi_textview);
+        wifiTextView = (TextView) findViewById(R.id.wifi_textview);
         environmentTextView = (TextView) findViewById(R.id.environment_text);
 
 /*        buttonChart = (Button)findViewById(R.id.button_show_chart);
@@ -166,7 +168,8 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     }
 
     private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission
+                .ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
@@ -176,6 +179,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
             mMap.setMyLocationEnabled(true);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the state bar if it is present.
@@ -202,27 +206,30 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     @Override
     public void locationChanged(Location location) {
-        if(location != null) {
+        if (location != null) {
             currentLocation = location;
-            if(goToMensa){
-                textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy() + ": GoToMensa" );
-            }else {
-                textViewLocation.setText("" + location.getLatitude() + ", " + location.getLongitude() + ", " + location.getAccuracy());
+            if (goToMensa) {
+                textViewLocation.setText("" + location.getLatitude() + ", " + location
+                        .getLongitude() + ", " + location.getAccuracy() + ": GoToMensa");
+            } else {
+                textViewLocation.setText("" + location.getLatitude() + ", " + location
+                        .getLongitude() + ", " + location.getAccuracy());
             }
-            if(mMap!=null) {
+            if (mMap != null) {
                 LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
-                  // Showing the current location in Google Map
-              CameraPosition camPos = new CameraPosition.Builder()
-                .target(current)
-                .zoom(15)
-                .bearing(location.getBearing())
-                .tilt(10)
-                .build();
-              CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
-              mMap.animateCamera(camUpd3);
+                // Showing the current location in Google Map
+                CameraPosition camPos = new CameraPosition.Builder()
+                        .target(current)
+                        .zoom(15)
+                        .bearing(location.getBearing())
+                        .tilt(10)
+                        .build();
+                CameraUpdate camUpd3 = CameraUpdateFactory.newCameraPosition(camPos);
+                mMap.animateCamera(camUpd3);
             }
-            if(location.getAccuracy()<20) {
-                double dist = Math.abs(location.getLatitude() - Mensa.latitude) + Math.abs(location.getLongitude() - Mensa.longitude);
+            if (location.getAccuracy() < 20) {
+                double dist = Math.abs(location.getLatitude() - Mensa.latitude) + Math.abs
+                        (location.getLongitude() - Mensa.longitude);
                 dist2Mensa.add(dist);
                 distCounter++;
                 final int maxCounter = 5;
@@ -259,7 +266,8 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     @Override
     public void motionDataChanged(float[] accData, float[] rotData, float[] magData) {
-        textViewAccelerometer.setText("" + accData[0] + "\n" + accData[1] + "\n" + accData[2] + "\n");
+        textViewAccelerometer.setText("" + accData[0] + "\n" + accData[1] + "\n" + accData[2] +
+                "\n");
         textViewRotation.setText("" + rotData[0] + "\n" + rotData[1] + "\n" + rotData[2] + "\n");
     }
 
@@ -302,11 +310,11 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
 
     @Override
     public void placesFound(String place) {
-        if(place !=null) {
+        if (place != null) {
             textViewPlaces.setText(place);
             String[] places = place.split("\n");
             placeName = places[0];
-        }else {
+        } else {
             textViewPlaces.setText("Unknown");
             placeName = "null";
         }
@@ -324,7 +332,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         myActivity.unregisterReceiver();
     }
 
-    private void startScheduledUpdate(){
+    private void startScheduledUpdate() {
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate
@@ -334,20 +342,23 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if(uploadCnt==1){ //foursquare limit: 5,000 times requests per hour
+                                    if (uploadCnt == 1) { //foursquare limit: 5,000 times
+                                        // requests per hour
                                         getPlaces();
-                                    }else if(uploadCnt==10){
-                                        uploadCnt=0;
+                                    } else if (uploadCnt == 10) {
+                                        uploadCnt = 0;
                                     }
                                     uploadCnt++;
                                     getWiFiName();
                                 }
                             });
 
-                        }catch (Exception e){
-                            System.err.println("error in executing: " + ". It will no longer be run!");
+                        } catch (Exception e) {
+                            System.err.println("error in executing: " + ". It will no longer be " +
+                                    "run!");
                             e.printStackTrace();
-                            // and re throw it so that the Executor also gets this error so that it can do what it would
+                            // and re throw it so that the Executor also gets this error so that
+                            // it can do what it would
                             throw new RuntimeException(e);
                         }
 
@@ -355,31 +366,34 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
                 }, 0, 5, TimeUnit.SECONDS);
     }
 
-    private void getPlaces(){
+    private void getPlaces() {
         try {
             //show both
             googlePlacesCaller.getCurrentPlace();
             foursquareCaller.findPlaces();
 
-        }catch (Exception e){
-            Toast.makeText(context,"Foursquare API Exception",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(context, "Foursquare API Exception", Toast.LENGTH_SHORT).show();
         }
     }
-    private void getWiFiName(){
-        try{
-            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+    private void getWiFiName() {
+        try {
+            WifiManager wifiMgr = (WifiManager) context.getApplicationContext().getSystemService
+                    (Context.WIFI_SERVICE);
             WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-            String wifi = wifiInfo.getSSID()+":"+wifiInfo.getBSSID()+ ":" +wifiInfo.getIpAddress()+":"+wifiInfo.getNetworkId()+":"+wifiInfo.getRssi();
-            if(wifiInfo.getSSID() == null){
+            String wifi = wifiInfo.getSSID() + ":" + wifiInfo.getBSSID() + ":" + wifiInfo
+                    .getIpAddress() + ":" + wifiInfo.getNetworkId() + ":" + wifiInfo.getRssi();
+            if (wifiInfo.getSSID() == null) {
                 wifiTextView.setText("null");
                 wifiName = "null";
-            }else {
+            } else {
                 wifiTextView.setText(wifi);
                 wifiName = wifi;
             }
 
-        }catch (Exception e){
-            Toast.makeText(context,"get wifi name error",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(context, "get wifi name error", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -401,9 +415,13 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     }
 
     @Override
-    public void environmentSensorDataChanged(float light, float temperature, float pressure, float humidity) {
-        //environmentTextView.setText("Light: " + light + " lx"+ "\n" +"Temperature: " + temperature + " C"+ "\n"+"Pressure: " + pressure +" hPa"+  "\n"+"Humidity: " + humidity+" %");
-        //environmentTextView.setText("Light: " + light + " lx"+ "\n"+"Pressure: " + pressure +" hPa");
+    public void environmentSensorDataChanged(float light, float temperature, float pressure,
+                                             float humidity, float proximity) {
+        //environmentTextView.setText("Light: " + light + " lx"+ "\n" +"Temperature: " +
+        // temperature + " C"+ "\n"+"Pressure: " + pressure +" hPa"+  "\n"+"Humidity: " +
+        // humidity+" %");
+        //environmentTextView.setText("Light: " + light + " lx"+ "\n"+"Pressure: " + pressure +"
+        // hPa");
     }
 
     @Override
@@ -411,7 +429,7 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
         myEnvironmentSensor.stopEnvironmentSensor();
     }
 
-    public void uploadDataSet(View view){
+    public void uploadDataSet(View view) {
         //uploadDataSet();
         //test realm
     }
@@ -420,23 +438,23 @@ public class SensorOverviewActivity extends AppCompatActivity implements MyLocat
     @Override
     public void onReceivedPlaces(HashMap<String, Float> places) {
         Iterator it = places.entrySet().iterator();
-        String place  = "";
+        String place = "";
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            if((float)pair.getValue()>0) {
-                place +=  pair.getKey() + " : " + pair.getValue() + "\n";
+            Map.Entry pair = (Map.Entry) it.next();
+            if ((float) pair.getValue() > 0) {
+                place += pair.getKey() + " : " + pair.getValue() + "\n";
             }
             it.remove(); // avoids a ConcurrentModificationException
 
         }
 
-        if(place.isEmpty()) {
-            if(places.entrySet().size()>0){
+        if (place.isEmpty()) {
+            if (places.entrySet().size() > 0) {
                 place = "Unknown Places";
-            }else {
+            } else {
                 place = "null";
             }
-        }else {
+        } else {
             placeName = place;
         }
 

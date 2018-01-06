@@ -12,20 +12,20 @@ import android.hardware.SensorManager;
 public class MyEnvironmentSensor implements SensorEventListener {
 
     SensorManager mSensorManager;
-    Sensor mLight,mAmbientTemperature,mAmbientPressure,mRelativeHumidity;
+    Sensor mLight, mAmbientTemperature, mAmbientPressure, mRelativeHumidity, mProximity;
     Context context;
-    public float light,temperature,pressure,humidity;
+    public float light, temperature, pressure, humidity, proximity;
     MyEnvironmentSensorListener environmentSensorListener;
 
     public MyEnvironmentSensor(Context context) {
         this.context = context;
-        environmentSensorListener = (MyEnvironmentSensorListener)context;
+        environmentSensorListener = (MyEnvironmentSensorListener) context;
         initSensor();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        switch(event.sensor.getType()){
+        switch (event.sensor.getType()) {
             case Sensor.TYPE_LIGHT:
                 light = event.values[0];
                 break;
@@ -38,10 +38,14 @@ public class MyEnvironmentSensor implements SensorEventListener {
             case Sensor.TYPE_RELATIVE_HUMIDITY:
                 humidity = event.values[0];
                 break;
+            case Sensor.TYPE_PROXIMITY:
+                proximity = event.values[0];
+                break;
             default:
                 break;
         }
-        environmentSensorListener.environmentSensorDataChanged(light,temperature,pressure,humidity);
+        environmentSensorListener.environmentSensorDataChanged(light, temperature, pressure,
+                humidity, proximity);
     }
 
     @Override
@@ -49,7 +53,7 @@ public class MyEnvironmentSensor implements SensorEventListener {
 
     }
 
-    public void initSensor(){
+    public void initSensor() {
         // Get an instance of the sensor service, and use that to get an instance of
         // a particular sensor.
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -57,18 +61,20 @@ public class MyEnvironmentSensor implements SensorEventListener {
         mAmbientTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mAmbientPressure = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
         mRelativeHumidity = mSensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
-
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         registerListener();
     }
 
-    public void registerListener(){
+    public void registerListener() {
         mSensorManager.registerListener(this, mLight, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mAmbientPressure, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mAmbientTemperature, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAmbientTemperature, SensorManager
+                .SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mRelativeHumidity, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void stopEnvironmentSensor(){
+    public void stopEnvironmentSensor() {
         mSensorManager.unregisterListener(this);
     }
 }

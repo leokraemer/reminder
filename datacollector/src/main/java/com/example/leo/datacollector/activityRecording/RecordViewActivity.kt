@@ -1,38 +1,54 @@
 package com.example.leo.datacollector.activityRecording
 
-import android.app.Activity
 import android.app.TimePickerDialog
+import android.content.Context
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.TimePicker
 import android.widget.Toast
-import com.example.leo.datacollector.R
+import com.example.leo.datacollector.*
 import com.example.leo.datacollector.database.SqliteDatabase
-import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LegendEntry
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.IDataSet
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.android.synthetic.main.recording_detail.*
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
+// 1kPa = 7.5006157584566 mmHg
+const val PaTommHg = 750.06157584566F
+const val g = 9.81F
+const val densityHg = 13.595F
+
+fun preassureDifferentialToHeightDifferential(preassureDifferential: Float): Float =
+        preassureDifferential * PaTommHg / (g * densityHg)
 
 /**
  * Created by Leo on 28.11.2017.
  */
-class RecordViewActivity : Activity() {
+class RecordViewActivity : AppCompatActivity() {
     var rec_id: Int = -1
     lateinit var map: GoogleMap
 
@@ -51,22 +67,294 @@ class RecordViewActivity : Activity() {
             onBackPressed()
         }
         val db = SqliteDatabase.getInstance(this)
-        val cursor = db.getRecording(rec_id)
-        record = ActivityRecord(cursor)
+        record = db.getRecording(rec_id)
 
         moveText.setText(record.activities.toString())
         initSoundViews()
         initTimeViews()
         initMovementViews()
         initWeatherView()
-        initRawDataView(acc_chart, record.accelerometerData)
-        initRawDataView(ori_chart, record.orientationData)
-        initRawDataView(magnet_chart, record.magnetData)
-        initRawDataView(gyro_chart, record.gyroscopData)
+        acc_chart.setData(ACCELERATION, record)
+        ori_chart.setData(ORIENTATION, record)
+        magnet_chart.setData(MAGNET, record)
+        gyro_chart.setData(GYROSCOPE, record)
+        initHeightGraph()
+        initProximityGraph()
+        initActivityView()
+        initLightView()
+        initWifiView()
+        initBTView()
+        initScreenView()
+        initStepsView()
+        if (db.getRecognizedActivitiesId() == rec_id) {
+            activity_switch.isChecked = true
+        }
+        activity_switch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                db.insertEvent(rec_id)
+                activity_switch.isChecked = true
+            }
+        })
+        nameEditText.setText(record.name)
+        nameEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                db.setRecordingName(s.toString(), rec_id)
+                record.name = s.toString()
+            }
+        })
     }
 
-    private fun initWeatherView() {
+    private fun initStepsView() {
+        val entries = mutableListOf<Entry>()
+        record.steps.forEachIndexed { i, value ->
+            entries.add(
+                    Entry(getTimeForRecord(i),
+                          preassureDifferentialToHeightDifferential(value.toFloat())))
+        }
+        val data = createHeightLineDataSet(entries, "Schritte")
+        data.color = getResources().getColor(R.color.black)
+        val lineData = LineData(data)
+        lineData.setDrawValues(false)
+        stepschart.data = lineData
+        stepschart.invalidate()
+        stepschart.setTouchEnabled(false)
+        adjustXAxisForTime(stepschart)
+        stepschart.axisLeft.setDrawLabels(true)
+        stepschart.axisLeft.setDrawGridLines(false)
+        stepschart.axisLeft.setDrawGridLines(false)
+        stepschart.axisLeft.axisMinimum = 0F
+        stepschart.legend.setEnabled(true)
+        stepschart.legend.setEntries(listOf(LegendEntry("Schritte",
+                                                        Legend.LegendForm.LINE,
+                                                        Float.NaN,
+                                                        Float.NaN,
+                                                        null,
+                                                        0)))
+        stepschart.description.isEnabled = false
+    }
 
+    private fun initProximityGraph() {
+        val entries = mutableListOf<Entry>()
+        record.proximity.forEachIndexed { i, value ->
+            entries.add(
+                    Entry(getTimeForRecord(i),
+                          preassureDifferentialToHeightDifferential(value.toFloat())))
+        }
+        val data = createHeightLineDataSet(entries, "Näherungssensor")
+        data.color = getResources().getColor(R.color.black)
+        val lineData = LineData(data)
+        lineData.setDrawValues(false)
+        proximityChart.data = lineData
+        proximityChart.invalidate()
+        proximityChart.setTouchEnabled(false)
+        adjustXAxisForTime(proximityChart)
+        proximityChart.axisLeft.setDrawLabels(true)
+        proximityChart.axisLeft.setDrawGridLines(false)
+        proximityChart.axisLeft.axisMaximum = (getSystemService(Context
+                                                                        .SENSOR_SERVICE) as SensorManager).getDefaultSensor(
+                Sensor.TYPE_PROXIMITY).maximumRange
+        proximityChart.axisRight.setDrawLabels(false)
+        proximityChart.legend.setEnabled(true)
+        proximityChart.legend.setEntries(listOf(LegendEntry("Näherungssensor",
+                                                            Legend.LegendForm.LINE,
+                                                            Float.NaN,
+                                                            Float.NaN,
+                                                            null,
+                                                            0)))
+        proximityChart.description.isEnabled = false
+    }
+
+    private fun initBTView() {
+        bluetoothText.text = record.bluetooth.toString()
+    }
+
+    private fun initWifiView() {
+        wifiText.text = record.wifis.toString()
+    }
+
+    private fun initScreenView() {
+        val entries = Array<MutableList<BarEntry>>(2, { _ -> mutableListOf() })
+        record.screenState.forEachIndexed { i, value ->
+            entries[record.screenState[value]].add(BarEntry(getTimeForRecord(i), 1F))
+        }
+        val barDataSet = Array(2, { i -> BarDataSet(entries[i], getScreenStateValue(i)) })
+        barDataSet[0].color = resources.getColor(R.color.black)
+        barDataSet[1].color = resources.getColor(R.color.lightorange)
+        val barData = BarData()
+        for (i in 0 until barDataSet.size) {
+            barData.addDataSet(barDataSet[i])
+        }
+        barData.barWidth = 1.0f * TimeUnit.SECONDS.toNanos(5)
+        barData.setDrawValues(false)
+        screenStateChart.setTouchEnabled(false)
+        screenStateChart.data = barData
+        adjustXAxisForTime(screenStateChart)
+        screenStateChart.axisLeft.axisMaximum = 1F
+        screenStateChart.axisLeft.axisMinimum = 0F
+        screenStateChart.axisLeft.setLabelCount(0, true)
+        screenStateChart.axisLeft.setDrawGridLines(false)
+        screenStateChart.axisLeft.setDrawLabels(false)
+        screenStateChart.axisRight.setDrawLabels(false)
+        screenStateChart.legend.setEnabled(true)
+        screenStateChart.legend.setEntries(listOf(LegendEntry("Bildschirmstatus", Legend.LegendForm
+                .LINE,
+                                                              Float.NaN,
+                                                              Float.NaN, null, 0)))
+        screenStateChart.description.isEnabled = false
+    }
+
+    fun getScreenStateValue(i: Int): String? = if (i > 0) "an" else "aus"
+
+    private fun initLightView() {
+        val entries = mutableListOf<Entry>()
+        record.ambientLight.forEachIndexed { i, value ->
+            entries.add(
+                    Entry(getTimeForRecord(i),
+                          preassureDifferentialToHeightDifferential(value.toFloat())))
+        }
+        val data = createHeightLineDataSet(entries, "Umgebungslicht")
+        data.color = getResources().getColor(R.color.black)
+        val lineData = LineData(data)
+        lineData.setDrawValues(false)
+        lightchart.data = lineData
+        lightchart.invalidate()
+        lightchart.setTouchEnabled(false)
+        adjustXAxisForTime(lightchart)
+        lightchart.axisLeft.setDrawLabels(true)
+        lightchart.axisLeft.setDrawGridLines(false)
+        lightchart.axisRight.setDrawLabels(false)
+        lightchart.legend.setEnabled(true)
+        lightchart.legend.setEntries(listOf(LegendEntry("Umgebungslicht", Legend.LegendForm.LINE,
+                                                        Float.NaN,
+                                                        Float.NaN, null, 0)))
+        lightchart.description.isEnabled = false
+    }
+
+    private fun initHeightGraph() {
+        val entries = mutableListOf<Entry>()
+        val initial = record.pressure.first().toFloat()
+        record.pressure.forEachIndexed { i, value ->
+            entries.add(
+                    Entry(getTimeForRecord(i),
+                          preassureDifferentialToHeightDifferential(initial - value.toFloat())))
+        }
+        val data = createHeightLineDataSet(entries, "ungefährer Höhenunterschied in meter")
+        data.color = getResources().getColor(R.color.black)
+        val lineData = LineData(data)
+        lineData.setDrawValues(false)
+        hightchart.data = lineData
+        hightchart.invalidate()
+        hightchart.setTouchEnabled(false)
+        adjustXAxisForTime(hightchart)
+        hightchart.axisLeft.setDrawLabels(true)
+        hightchart.axisLeft.setDrawGridLines(false)
+        hightchart.axisRight.setDrawLabels(false)
+        hightchart.legend.setEnabled(true)
+        hightchart.legend.setEntries(listOf(LegendEntry("dB", Legend.LegendForm.LINE, Float.NaN,
+                                                        Float.NaN, null, 0)))
+        hightchart.description.isEnabled = false
+    }
+
+    private fun adjustXAxisForTime(chart: Chart<out ChartData<out IDataSet<out Entry>>>) {
+        chart.xAxis.setDrawLabels(true)
+        chart.xAxis.valueFormatter = minuteValueFormatter
+        chart.xAxis.granularity = TimeUnit.SECONDS.toNanos(30).toFloat()
+        chart.xAxis.labelCount = 4
+    }
+
+    private val minuteValueFormatter = object : IAxisValueFormatter {
+        override fun getFormattedValue(value: Float, axis: AxisBase?): String =
+                LocalTime.ofNanoOfDay(value.toLong())
+                        .format(DateTimeFormatter.ofPattern("mm:ss"))
+    }
+
+    private fun initActivityView() {
+        val entries = Array<MutableList<BarEntry>>(10, { _ -> mutableListOf() })
+        record.activities.forEachIndexed { i, value ->
+            val activity = mapActivities(value)
+            val confidence = getConfidence(value)
+            entries[activity.roundToInt()].add(BarEntry(getTimeForRecord(i), confidence))
+        }
+        val barDataSet = Array(10, { i -> BarDataSet(entries[i], getActivityLabel(i)) })
+        barDataSet[0].color = resources.getColor(R.color.red)
+        barDataSet[1].color = resources.getColor(R.color.lightblue)
+        barDataSet[2].color = resources.getColor(R.color.lightgreen)
+        barDataSet[3].color = resources.getColor(R.color.lightorange)
+        barDataSet[4].color = resources.getColor(R.color.green)
+        barDataSet[5].color = resources.getColor(R.color.orange)
+        barDataSet[6].color = resources.getColor(R.color.violet)
+        barDataSet[7].color = resources.getColor(R.color.purple)
+        barDataSet[8].color = resources.getColor(R.color.pink)
+        barDataSet[9].color = resources.getColor(R.color.middleblue)
+        val barData = BarData()
+        for (i in 0 until barDataSet.size) {
+            barData.addDataSet(barDataSet[i])
+        }
+        barData.barWidth = 1.0f * TimeUnit.SECONDS.toNanos(5)
+        barData.setDrawValues(false)
+        activity_chart.setTouchEnabled(false)
+        activity_chart.data = barData
+        adjustXAxisForTime(activity_chart)
+        activity_chart.axisLeft.axisMaximum = 100F
+        activity_chart.axisLeft.axisMinimum = 0F
+        activity_chart.axisLeft.setLabelCount(6, true)
+        activity_chart.axisLeft.setDrawGridLines(false)
+        activity_chart.axisLeft.setDrawLabels(true)
+        activity_chart.axisLeft.valueFormatter = object : IAxisValueFormatter {
+            override fun getFormattedValue(value: Float, axis: AxisBase?): String
+                    = value.roundToInt().toString() + "%"
+        }
+        activity_chart.axisRight.setDrawLabels(false)
+        activity_chart.legend.setEnabled(true)
+        activity_chart.legend.setEntries(listOf(LegendEntry("Aktivität", Legend.LegendForm.LINE,
+                                                            Float.NaN,
+                                                            Float.NaN, null, 0)))
+        activity_chart.description.isEnabled = false
+    }
+
+    private fun getConfidence(value: String): Float {
+        val rest = value.substringAfter("confidence=")
+        return rest.substring(0, rest.length - 1).toFloat()
+    }
+
+    private fun getActivityLabel(i: Int): String =
+            when (i) {
+                0 -> "In Fahrzeug"
+                1 -> "Fahrrad"
+                2 -> "Zu Fuss"
+                3 -> "Still"
+                4 -> "Unbekannt"
+                5 -> "Kippen"
+                6 -> "Gehen"
+                7 -> "Rennen"
+                8 -> "Straßenfahrzeug"
+                9 -> "Schienenfahrzeug"
+                else -> "Unbekannt"
+            }
+
+
+    private fun mapActivities(value: String): Float {
+        if (value.contains("IN_VEHICLE")) return 0f
+        if (value.contains("ON_BICYCLE")) return 1f
+        if (value.contains("ON_FOOT")) return 2f
+        if (value.contains("STILL")) return 3f
+        if (value.contains("UNKNOWN")) return 4f
+        if (value.contains("TILTING")) return 5f
+        if (value.contains("WALKING")) return 6f
+        if (value.contains("RUNNING")) return 7f
+        if (value.contains("IN_ROAD_VEHICLE")) return 8f
+        if (value.contains("IN_RAIL_VEHICLE")) return 9f
+        else return 4f //unknown
+    }
+
+
+    private fun initWeatherView() {
         weatherImageView.setImageResource(record.weather!!.weatherIcon)
         weatherText.setText(record.weather!!.currentCondition.descr + "\n" +
                                     kelvinToCelsius(record.weather!!.temperature.temp) + " °C")
@@ -111,8 +399,12 @@ class RecordViewActivity : Activity() {
     }
 
     private fun initTimeViews() {
-        timeFrom.setText(record.beginTime.format(DateTimeFormatter.ofPattern("HH:mm")))
-        timeTo.setText(record.endTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+        val startDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.beginTime), ZoneId
+                .systemDefault())
+        val endDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(record.endTime), ZoneId
+                .systemDefault())
+        timeFrom.setText(startDate.format(DateTimeFormatter.ofPattern("HH:mm")))
+        timeTo.setText(endDate.format(DateTimeFormatter.ofPattern("HH:mm")))
         timeFrom.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 val currentTime = Calendar.getInstance()
@@ -154,13 +446,13 @@ class RecordViewActivity : Activity() {
         record.ambientSound.forEachIndexed { i, value ->
             entries.add(
                     Entry(
-                            record.timestamps.get(i).toNanoOfDay().toFloat(),
+                            getTimeForRecord(i),
                             toDecibel(value))
                        )
         }
         val soundData = LineDataSet(entries, "Mittlere Lautstärke in dB")
         soundData.setDrawCircles(false)
-        soundData.setColor(R.color.background_material_dark)
+        soundData.color = resources.getColor(R.color.background_material_dark)
         soundData.mode = LineDataSet.Mode.CUBIC_BEZIER
 
         val lineData = LineData(soundData)
@@ -168,14 +460,7 @@ class RecordViewActivity : Activity() {
         soundchart.data = lineData
         soundchart.invalidate()
         soundchart.setTouchEnabled(false)
-        soundchart.xAxis.setDrawLabels(true)
-        soundchart.xAxis.valueFormatter = object : IAxisValueFormatter {
-            override fun getFormattedValue(value: Float, axis: AxisBase?): String =
-                    LocalTime.ofNanoOfDay(value.toLong()).format(
-                            DateTimeFormatter.ofPattern("HH:mm:ss"))
-        }
-        soundchart.xAxis.granularity = TimeUnit.SECONDS.toNanos(30).toFloat()
-        soundchart.xAxis.labelCount = 4
+        adjustXAxisForTime(soundchart)
         soundchart.axisLeft.setDrawLabels(true)
         soundchart.axisLeft.axisMaximum = 0F
         soundchart.axisLeft.axisMinimum = -100F
@@ -188,69 +473,19 @@ class RecordViewActivity : Activity() {
         soundchart.description.isEnabled = false
     }
 
-    private fun initRawDataView(chart: LineChart, data: MutableList<FloatArray>) {
-        val entries_x = mutableListOf<Entry>()
-        val entries_y = mutableListOf<Entry>()
-        val entries_z = mutableListOf<Entry>()
-        data.forEachIndexed { i, value ->
-            createAccEntry(entries_x, i, value, 0)
-            createAccEntry(entries_y, i, value, 1)
-            createAccEntry(entries_z, i, value, 2)
-        }
-        val accData_x = createAccLineDataSet(entries_x, "x")
-        val accData_y = createAccLineDataSet(entries_y, "y")
-        val accData_z = createAccLineDataSet(entries_z, "z")
-        accData_x.color = getResources().getColor(R.color.red)
-        accData_y.color = getResources().getColor(R.color.black)
-        accData_z.color = getResources().getColor(R.color.blue)
-        val lineData = LineData(accData_x)
-        lineData.addDataSet(accData_y)
-        lineData.addDataSet(accData_z)
-        lineData.setDrawValues(false)
-        chart.data = lineData
-        chart.invalidate()
-        chart.setTouchEnabled(false)
-        chart.xAxis.setDrawLabels(true)
-        chart.xAxis.valueFormatter = object : IAxisValueFormatter {
-            override fun getFormattedValue(value: Float, axis: AxisBase?): String =
-                    LocalTime.ofNanoOfDay(value.toLong()).format(
-                            DateTimeFormatter.ofPattern("HH:mm:ss"))
-        }
-        chart.xAxis.granularity = TimeUnit.SECONDS.toNanos(30).toFloat()
-        chart.xAxis.labelCount = 4
-        chart.axisLeft.setDrawLabels(true)
-        /*acc_chart.axisLeft.axisMaximum = 0F
-        acc_chart.axisLeft.axisMinimum = -100F
-        acc_chart.axisLeft.granularity = 20F*/
-        chart.axisLeft.setDrawGridLines(false)
-        chart.axisRight.setDrawLabels(false)
-        chart.legend.setEnabled(true)
-        chart.legend.setEntries(listOf(LegendEntry("dB", Legend.LegendForm.LINE, Float.NaN,
-                                                   Float.NaN, null, 0)))
-        chart.description.isEnabled = false
-    }
+    private fun getTimeForRecord(i: Int) = (record.timestamps.get(i) - record.beginTime).toFloat()
 
-    private inline fun createAccEntry(entries_x: MutableList<Entry>,
-                                      i: Int,
-                                      value: FloatArray, axis: Int) {
-        entries_x.add(
-                Entry(
-                        record.timestamps.get(i).toNanoOfDay().toFloat(),
-                        value[axis])
-                     )
-    }
-
-    private inline fun createAccLineDataSet(entries_x: MutableList<Entry>, label: String):
+    private fun createHeightLineDataSet(entries_x: MutableList<Entry>, label: String):
             LineDataSet {
         val accData_x = LineDataSet(entries_x, label)
         accData_x.setDrawCircles(false)
-        accData_x.setColor(R.color.background_material_dark)
+        accData_x.setColor(R.color.black)
         accData_x.mode = LineDataSet.Mode.CUBIC_BEZIER
         return accData_x
     }
 
     // +1 to prevent log(0)
-    private fun toDecibel(value: Double) = 20 * Math.log10((value) / 32767F).toFloat()
+    private fun toDecibel(value: Double): Float = 20 * Math.log10((value) / 32767.0).toFloat()
 
     override fun onStart() {
         super.onStart()

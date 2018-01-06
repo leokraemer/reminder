@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CursorAdapter
 import com.example.leo.datacollector.R
+import com.example.leo.datacollector.database.ID
+import com.example.leo.datacollector.database.RECORDING_NAME
 import kotlinx.android.synthetic.main.jitai_list_element.view.*
 import kotlinx.android.synthetic.main.recordings_listitem.view.*
 
@@ -14,9 +16,6 @@ import kotlinx.android.synthetic.main.recordings_listitem.view.*
  * Created by Leo on 28.11.2017.
  */
 
-const val RECORDING_NUMBER: String = "recording_number"
-const val RECORDING_NAME: String = "recording_name"
-const val RECORDING_INTERVENTION: String = "recording_intervention"
 
 class RecordingListAdapter(context: Context, c: Cursor) : CursorAdapter(context, c, true) {
 
@@ -29,8 +28,10 @@ class RecordingListAdapter(context: Context, c: Cursor) : CursorAdapter(context,
 
     override fun bindView(view: View?, context: Context?, cursor: Cursor?) {
         if (view != null) {
-            view.recordingNumber.text = cursor!!.getInt(cursor.getColumnIndex(RECORDING_NUMBER)).toString() + ":"
-            view.recordingName.text = "dummy" //cursor!!.getString(cursor!!.getColumnIndex(RECORDING_NAME))
+            view.recordingNumber.text = cursor!!.getInt(cursor.getColumnIndex(ID)).toString() +
+                    ":"
+            view.recordingName.text = cursor.getString(cursor.getColumnIndex(RECORDING_NAME))
+                    .toString()
             view.intervention.text = "dummy" //cursor!!.getString(cursor!!.getColumnIndex(RECORDING_INTERVENTION)).toString()
         }
     }

@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.leo.datacollector.activityRecording.RECORDING_NUMBER
+import com.example.leo.datacollector.activityRecording.ActivityRecord
+import com.example.leo.datacollector.activityRecording.RecordViewActivity
 import com.example.leo.datacollector.datacollection.sensors.WeatherCaller
 import com.example.leo.datacollector.models.SensorDataSet
 import com.example.leo.datacollector.models.Weather
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 16
+const val DATABASE_VERSION = 23
 
 class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                   "mydb",
@@ -40,10 +41,12 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        db!!.transaction {
+        with(db!!) {
             execSQL(CREATE_TABLE_SENSORDATA)
             execSQL(CREATE_TABLE_EVENTS)
             execSQL(CREATE_TABLE_WEATHER)
+            execSQL(CREATE_TABLE_RECORDINGS)
+            insertFirstEvent(db)
         }
     }
 
@@ -67,6 +70,7 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
         db!!.execSQL("DROP TABLE IF EXISTS $TABLE")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
         onCreate(db)
     }
 
@@ -90,7 +94,7 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
         val cv = ContentValues()
         with(sensorDataSet) {
             cv.apply {
-                put(TIMESTAMP, TimeUtils.getTimeStr(time))
+                put(TIMESTAMP, time)
                 put(USERNAME, userName)
                 put(RECORDING, recordingId)
                 put(ACTIVITY, activity.toString())
@@ -107,9 +111,13 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
                 put(AIR_PRESSURE, airPressure)
                 put(HUMIDITY_PERCENT, humidityPercent)
                 put(TEMPERATURE, temperature)
+                put(PROXIMITY, proximity)
                 put(ACCELEROMETER_X, acc_x)
                 put(ACCELEROMETER_Y, acc_y)
                 put(ACCELEROMETER_Z, acc_z)
+                put(RAW_ACCELEROMETER_X, raw_acc_x)
+                put(RAW_ACCELEROMETER_Y, raw_acc_y)
+                put(RAW_ACCELEROMETER_Z, raw_acc_z)
                 put(GYRO_X, gyro_x)
                 put(GYRO_Y, gyro_y)
                 put(GYRO_Z, gyro_z)
@@ -147,9 +155,13 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
                     "$AIR_PRESSURE real, " +
                     "$HUMIDITY_PERCENT real, " +
                     "$TEMPERATURE real, " +
+                    "$PROXIMITY real, " +
                     "$ACCELEROMETER_X real, " +
                     "$ACCELEROMETER_Y real, " +
                     "$ACCELEROMETER_Z real, " +
+                    "$RAW_ACCELEROMETER_X real, " +
+                    "$RAW_ACCELEROMETER_Y real, " +
+                    "$RAW_ACCELEROMETER_Z real, " +
                     "$GYRO_X real, " +
                     "$GYRO_Y real, " +
                     "$GYRO_Z real, " +
@@ -175,6 +187,12 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
                     "$WEATHER_ID INTEGER PRIMARY KEY, " +
                     "$WEATHER_JSON TEXT, " +
                     "$WEATHER_TIMESTAMP INTEGER" +
+                    ");"
+
+    val CREATE_TABLE_RECORDINGS =
+            "CREATE TABLE if not exists $TABLE_RECORDINGS ( " +
+                    "$RECORDING_ID INTEGER PRIMARY KEY, " +
+                    "$RECORDING_NAME text " +
                     ");"
 
     /**
@@ -252,20 +270,109 @@ class SqliteDatabase private constructor(val context: Context) : SQLiteOpenHelpe
     }
 
     fun getRecordings(): Cursor {
-        return readableDatabase.rawQuery("SELECT DISTINCT $RECORDING AS $RECORDING_NUMBER, $RECORDING AS _id FROM $TABLE ",
+        return readableDatabase.rawQuery("SELECT DISTINCT $TABLE.$RECORDING AS '_id'," +
+                                                 " $RECORDING_NAME " +
+                                                 " FROM $TABLE_RECORDINGS " +
+                                                 " LEFT JOIN $TABLE " +
+                                                 " ON $TABLE.$RECORDING " +
+                                                 "= $TABLE_RECORDINGS.$RECORDING_ID",
                                          null)
     }
 
-    fun getRecording(rec_id: Int): Cursor {
-        return readableDatabase.rawQuery(
+    fun getRecording(rec_id: Int): ActivityRecord {
+        val c = readableDatabase.rawQuery(
                 "SELECT * FROM $TABLE " +
                         "LEFT JOIN $TABLE_WEATHER " +
                         "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE.$WEATHER " +
                         "WHERE $RECORDING = ? " +
                         "ORDER BY $TIMESTAMP"
                 , arrayOf("" + rec_id))
+
+        val name = getRecordingName(rec_id)
+        val record = ActivityRecord(name, c)
+        c.close()
+        return record
     }
 
+    private fun getRecordingName(rec_id: Int): String {
+        val d = readableDatabase.query(TABLE_RECORDINGS,
+                                       null,
+                                       "$RECORDING_ID = ?",
+                                       arrayOf(rec_id.toString()),
+                                       null,
+                                       null,
+                                       null,
+                                       null)
+        d.moveToFirst()
+        val name = d.getString(d.getColumnIndex(RECORDING_NAME))
+        d.close()
+        return name
+    }
+
+    fun getReferenceRecording(rec_id: Int, limit: Int): ActivityRecord {
+        val c = readableDatabase.rawQuery(
+                "SELECT * FROM ( " +
+                        "SELECT * FROM $TABLE " +
+                        "LEFT JOIN $TABLE_WEATHER " +
+                        "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE.$WEATHER " +
+                        "WHERE $RECORDING = ? " +
+                        "ORDER BY $TIMESTAMP DESC " +
+                        "LIMIT '$limit' ) " +
+                        "ORDER BY $TIMESTAMP"
+                , arrayOf("" + rec_id))
+        val name = getRecordingName(rec_id)
+        val record = ActivityRecord(name, c)
+        c.close()
+        return record
+    }
+
+
+    fun insertEvent(event: Int): Long {
+        val cv = ContentValues()
+        cv.put(EVENT, event)
+        cv.put(USERNAME, RECOGNIZE)
+        cv.put(TIMESTAMP, System.currentTimeMillis())
+        return writableDatabase.insertOrThrow(TABLE_EVENTS, null, cv)
+    }
+
+    fun insertEvent(event: Int, user: String): Long {
+        val cv = ContentValues()
+        cv.put(EVENT, event)
+        cv.put(USERNAME, user)
+        cv.put(TIMESTAMP, System.currentTimeMillis())
+        return writableDatabase.insertOrThrow(TABLE_EVENTS, null, cv)
+    }
+
+    private fun insertFirstEvent(db: SQLiteDatabase): Long {
+        val cv = ContentValues()
+        cv.put(EVENT, -1)
+        cv.put(USERNAME, "dummy")
+        cv.put(TIMESTAMP, 0)
+        return db.insertOrThrow(TABLE_EVENTS, null, cv)
+    }
+
+    fun getRecognizedActivitiesId(): Int {
+        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_EVENTS WHERE " +
+                                                       "$USERNAME = \"$RECOGNIZE\" ORDER BY " +
+                                                       "$TIMESTAMP " +
+                                                       "DESC LIMIT \"1\"", null)
+
+        var returnval = -1
+        if (cursor.count > 0) {
+            cursor.moveToFirst()
+            returnval = cursor.getInt(cursor.getColumnIndex(EVENT))
+        }
+        cursor.close()
+        return returnval
+    }
+
+    fun setRecordingName(s: String, rec_id: Int) {
+        val cv = ContentValues()
+        cv.put(RECORDING_NAME, s)
+        cv.put(RECORDING_ID, rec_id)
+        writableDatabase.replace(TABLE_RECORDINGS,
+                                 null, cv)
+    }
 
 }
 
@@ -277,7 +384,7 @@ const val WEATHER_TIMESTAMP = "weather_timestamp"
 
 // SensorData
 const val TABLE = "sensorData"
-const val ID = "id"
+const val ID = "_id"
 const val SESSION = "session_id"
 const val RECORDING = "recording_id"
 const val TIMESTAMP = "timestamp"
@@ -297,9 +404,13 @@ const val WEATHER = "weather"
 const val AIR_PRESSURE = "airPressure"
 const val HUMIDITY_PERCENT = "humidityInPercent"
 const val TEMPERATURE = "temperature"
+const val PROXIMITY = "proximity"
 const val ACCELEROMETER_X = "acc_x"
 const val ACCELEROMETER_Y = "acc_y"
 const val ACCELEROMETER_Z = "acc_z"
+const val RAW_ACCELEROMETER_X = "raw_acc_x"
+const val RAW_ACCELEROMETER_Y = "raw_acc_y"
+const val RAW_ACCELEROMETER_Z = "raw_acc_z"
 const val GYRO_X = "gyro_x"
 const val GYRO_Y = "gyro_y"
 const val GYRO_Z = "gyro_z"
@@ -311,7 +422,12 @@ const val MAG_Y = "mag_y"
 const val MAG_Z = "mag_z"
 
 
-
 // events
 const val TABLE_EVENTS = "events"
 const val EVENT = "event"
+const val RECOGNIZE = "recognize"
+
+//recordings
+const val TABLE_RECORDINGS = "recordings"
+const val RECORDING_ID = RECORDING
+const val RECORDING_NAME = "recording_name"

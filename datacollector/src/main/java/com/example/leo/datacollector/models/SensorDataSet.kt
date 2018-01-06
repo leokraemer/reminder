@@ -1,12 +1,13 @@
 package com.example.leo.datacollector.models
 
 import com.google.android.gms.location.DetectedActivity
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 
 
 data class SensorDataSet @JvmOverloads constructor(
         //timestamp and user
-        val time: LocalDateTime,
+        val time: Long,
         val userName: String,
         var recordingId: Int = -1,
         //google fit data
@@ -29,6 +30,11 @@ data class SensorDataSet @JvmOverloads constructor(
         var gps: android.location.Location? = null,
         var wifiName: String? = null,
         var bluetoothDevices: List<String>? = null,
+
+        //accelerometer raw
+        var raw_acc_x : Float = 0F,
+        var raw_acc_y : Float = 0F,
+        var raw_acc_z : Float = 0F,
 
         //accelerometer
         var acc_x : Float = 0F,
@@ -54,6 +60,7 @@ data class SensorDataSet @JvmOverloads constructor(
         var airPressure: Float? = null,
         var humidityPercent: Float? = null,
         var temperature: Float? = null,
+        var proximity: Float? = null,
 
         //via network
         var weather: Long? = null

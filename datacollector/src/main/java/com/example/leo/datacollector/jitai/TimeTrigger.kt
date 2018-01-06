@@ -2,8 +2,7 @@ package com.example.leo.datacollector.jitai
 
 import com.example.leo.datacollector.models.SensorDataSet
 import com.example.leo.datacollector.utils.TimeUtils.getDateFromString
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.LocalTime
+import org.threeten.bp.*
 import java.util.*
 
 /**
@@ -26,8 +25,12 @@ class TimeTrigger(val timeRange: ClosedRange<LocalTime>, val days: List<DayOfWee
     }
 
     override fun check(sensorData: SensorDataSet): Boolean {
-        if (timeRange.contains(sensorData.time.toLocalTime())
-                && days.any({ day -> day == sensorData.time.dayOfWeek }))
+        val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(sensorData.time),
+                                           ZoneId.systemDefault())
+        if (timeRange.contains(time.toLocalTime())
+                && days.any({ day ->
+                                day == time.dayOfWeek
+                            }))
             return true
         return false
     }
