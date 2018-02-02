@@ -15,7 +15,7 @@ import android.widget.CompoundButton
 import android.widget.TimePicker
 import android.widget.Toast
 import com.example.leo.datacollector.*
-import com.example.leo.datacollector.database.SqliteDatabase
+import com.example.leo.datacollector.database.JitaiDatabase
 import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.Legend
@@ -66,10 +66,9 @@ class RecordViewActivity : AppCompatActivity() {
             Log.e("RECORD DETAIL VIEW", "Bad recording id")
             onBackPressed()
         }
-        val db = SqliteDatabase.getInstance(this)
+        val db = JitaiDatabase.getInstance(this)
         record = db.getRecording(rec_id)
 
-        moveText.setText(record.activities.toString())
         initSoundViews()
         initTimeViews()
         initMovementViews()
@@ -79,11 +78,14 @@ class RecordViewActivity : AppCompatActivity() {
         magnet_chart.setData(MAGNET, record)
         gyro_chart.setData(GYROSCOPE, record)
         initHeightGraph()
+        if(record.proximity.size > 0)
         initProximityGraph()
+        if(record.activities.size > 0)
         initActivityView()
         initLightView()
         initWifiView()
         initBTView()
+        if(record.screenState.size > 0)
         initScreenView()
         initStepsView()
         if (db.getRecognizedActivitiesId() == rec_id) {
@@ -115,7 +117,7 @@ class RecordViewActivity : AppCompatActivity() {
         record.steps.forEachIndexed { i, value ->
             entries.add(
                     Entry(getTimeForRecord(i),
-                          preassureDifferentialToHeightDifferential(value.toFloat())))
+                          value.toFloat()))
         }
         val data = createHeightLineDataSet(entries, "Schritte")
         data.color = getResources().getColor(R.color.black)
@@ -141,10 +143,12 @@ class RecordViewActivity : AppCompatActivity() {
 
     private fun initProximityGraph() {
         val entries = mutableListOf<Entry>()
-        record.proximity.forEachIndexed { i, value ->
+        val firstTimeStamp = record.proximity.first().first
+        record.proximity.forEach { value ->
+            val time = value.first - firstTimeStamp
             entries.add(
-                    Entry(getTimeForRecord(i),
-                          value.toFloat()))
+                    Entry(time.toFloat(),
+                          value.second.toFloat()))
         }
         val data = createHeightLineDataSet(entries, "Näherungssensor")
         data.color = getResources().getColor(R.color.black)
@@ -192,7 +196,7 @@ class RecordViewActivity : AppCompatActivity() {
     private fun initScreenView() {
         val entries = Array<MutableList<BarEntry>>(2, { _ -> mutableListOf() })
         record.screenState.forEachIndexed { i, value ->
-            entries[record.screenState[value]].add(BarEntry(getTimeForRecord(i), 1F))
+            entries[record.screenState[i]].add(BarEntry(getTimeForRecord(i), 1F))
         }
         val barDataSet = Array(2, { i -> BarDataSet(entries[i], getScreenStateValue(i)) })
         barDataSet[0].color = resources.getColor(R.color.black)
@@ -201,7 +205,7 @@ class RecordViewActivity : AppCompatActivity() {
         for (i in 0 until barDataSet.size) {
             barData.addDataSet(barDataSet[i])
         }
-        barData.barWidth = 1.0f * TimeUnit.SECONDS.toNanos(5)
+        barData.barWidth = 1.0f * TimeUnit.SECONDS.toMillis(5)
         barData.setDrawValues(false)
         screenStateChart.setTouchEnabled(false)
         screenStateChart.data = barData
@@ -224,10 +228,12 @@ class RecordViewActivity : AppCompatActivity() {
 
     private fun initLightView() {
         val entries = mutableListOf<Entry>()
-        record.ambientLight.forEachIndexed { i, value ->
-            entries.add(
-                    Entry(getTimeForRecord(i),
-                          preassureDifferentialToHeightDifferential(value.toFloat())))
+
+        val firstTimeStamp = record.ambientLight.first().first
+        record.ambientLight.forEach { value ->
+            val time = value.first - firstTimeStamp
+            entries.add(Entry(time.toFloat(),
+                              value.second.toFloat()))
         }
         val data = createHeightLineDataSet(entries, "Umgebungslicht")
         data.color = getResources().getColor(R.color.black)
@@ -249,11 +255,13 @@ class RecordViewActivity : AppCompatActivity() {
 
     private fun initHeightGraph() {
         val entries = mutableListOf<Entry>()
-        val initial = record.pressure.first().toFloat()
-        record.pressure.forEachIndexed { i, value ->
-            entries.add(
-                    Entry(getTimeForRecord(i),
-                          preassureDifferentialToHeightDifferential(initial - value.toFloat())))
+        val initial = record.pressure.first().second.toFloat()
+        val firstTimeStamp = record.pressure.first().first
+        record.pressure.forEach { value ->
+            val time = value.first - firstTimeStamp
+            entries.add(Entry(time.toFloat(),
+                          preassureDifferentialToHeightDifferential(
+                                  initial - value.second.toFloat())))
         }
         val data = createHeightLineDataSet(entries, "ungefährer Höhenunterschied in meter")
         data.color = getResources().getColor(R.color.black)
@@ -307,7 +315,7 @@ class RecordViewActivity : AppCompatActivity() {
         for (i in 0 until barDataSet.size) {
             barData.addDataSet(barDataSet[i])
         }
-        barData.barWidth = 1.0f * TimeUnit.SECONDS.toNanos(5)
+        barData.barWidth = 1.0f * TimeUnit.SECONDS.toMillis(5)
         barData.setDrawValues(false)
         activity_chart.setTouchEnabled(false)
         activity_chart.data = barData

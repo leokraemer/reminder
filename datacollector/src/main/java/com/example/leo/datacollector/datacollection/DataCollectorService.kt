@@ -1,18 +1,13 @@
 package com.example.leo.datacollector.datacollection
 
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.SharedPreferences
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import android.hardware.display.DisplayManager
 import android.location.Location
-import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -27,11 +22,9 @@ import android.view.Display
 import com.example.leo.datacollector.R
 import com.example.leo.datacollector.activityDetection.ActivityRecognizer
 import com.example.leo.datacollector.application.DataCollectorApplication
-import com.example.leo.datacollector.database.SqliteDatabase
 import com.example.leo.datacollector.datacollection.sensors.AmbientSound
 import com.example.leo.datacollector.datacollection.sensors.AmbientSoundListener
 import com.example.leo.datacollector.datacollection.sensors.FourSquareListener
-import com.example.leo.datacollector.datacollection.sensors.FoursquareCaller
 import com.example.leo.datacollector.datacollection.sensors.GoogleFitness
 import com.example.leo.datacollector.datacollection.sensors.GoogleFitnessListener
 import com.example.leo.datacollector.datacollection.sensors.GooglePlacesCaller
@@ -39,38 +32,31 @@ import com.example.leo.datacollector.datacollection.sensors.GooglePlacesListener
 import com.example.leo.datacollector.datacollection.sensors.MyActivity
 import com.example.leo.datacollector.datacollection.sensors.MyActivityListener
 import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensor
-import com.example.leo.datacollector.datacollection.sensors.MyEnvironmentSensorListener
 import com.example.leo.datacollector.datacollection.sensors.MyLocation
 import com.example.leo.datacollector.datacollection.sensors.MyLocationListener
-import com.example.leo.datacollector.datacollection.sensors.MyMotion
-import com.example.leo.datacollector.datacollection.sensors.MyMotionListener
+import com.example.leo.datacollector.datacollection.sensors.MotionSensors
 import com.example.leo.datacollector.datacollection.sensors.WeatherCaller
 import com.example.leo.datacollector.datacollection.sensors.WeatherCallerListener
 import com.example.leo.datacollector.models.SensorDataSet
-import com.example.leo.datacollector.services.ActivitiesIntentService
 import com.google.android.gms.location.DetectedActivity
 
-import org.threeten.bp.LocalDateTime
-
-import java.util.ArrayDeque
 import java.util.HashMap
 import java.util.concurrent.TimeUnit
 
-import android.os.Build.VERSION_CODES.M
 import com.example.leo.datacollector.activityRecording.RECORDING_ID
-import com.example.leo.datacollector.utils.IS_RECORDING
-import com.example.leo.datacollector.utils.START_RECORDING
-import com.example.leo.datacollector.utils.STOP_RECORDING
-import com.example.leo.datacollector.utils.averageDequeue
-import com.example.leo.datacollector.utils.averageDequeueHighPass
-import org.threeten.bp.Instant
+import com.example.leo.datacollector.database.*
+import com.example.leo.datacollector.jitai.manage.Jitai
+import com.example.leo.datacollector.jitai.manage.JitaiManagingActivity
+import com.example.leo.datacollector.utils.*
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.toast
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 
 class DataCollectorService : Service(),
                              MyLocationListener,
-                             MyMotionListener,
                              FourSquareListener,
                              MyActivityListener,
-                             MyEnvironmentSensorListener,
                              GooglePlacesListener,
                              AmbientSoundListener,
                              GoogleFitnessListener,
@@ -83,7 +69,7 @@ class DataCollectorService : Service(),
         val notificationID = 1001
         private val updatesPerSecond = 5
 
-        private val useGooglePlaces = false
+        private val useGooglePlaces = true
     }
 
     private val numberOfSamples: Int = TimeUnit.MINUTES.toSeconds(5).toInt() *
@@ -91,14 +77,12 @@ class DataCollectorService : Service(),
 
     private val sample = 0
 
-    //rolling buffer of sensorData
-    private val pastSensorValues = ArrayDeque<SensorDataSet>(numberOfSamples)
     private var weatherUpdateCnt = 0
 
-    internal lateinit var myMotion: MyMotion
+    internal lateinit var myMotion: MotionSensors
     internal lateinit var myLocation: MyLocation
     internal lateinit var myActivity: MyActivity
-    internal lateinit var foursquareCaller: FoursquareCaller
+    //internal lateinit var foursquareCaller: FoursquareCaller
     internal lateinit var googlePlacesCaller: GooglePlacesCaller
     internal lateinit var currentLocation: Location
     internal lateinit var myEnvironmentSensor: MyEnvironmentSensor
@@ -112,30 +96,20 @@ class DataCollectorService : Service(),
     internal var currentAmbientSound: Double = 0.0
     internal var ifLocationChanged: Boolean = false
     internal var isRunning: Boolean = false
-    internal var isPreScreenOn: Boolean = false
     internal var isCurrentScreenOn: Boolean = false
-    internal lateinit var preWifiName: String
     internal lateinit var currentWifiName: String
-    internal lateinit var prePlaceName: String
     internal lateinit var currentPlaceName: String
     internal lateinit var currentLabel: String
-    private var preActivity = DetectedActivity(DetectedActivity.UNKNOWN, 0)
     private var currentActivity = DetectedActivity(DetectedActivity.UNKNOWN, 0)
     private var currentWeatherId: Long = -1
-    internal var preSteps: Long = 0
     internal var currentSteps: Long = 0
     private var userName: String? = null
-    private var db: SqliteDatabase? = null
+    private var db: JitaiDatabase? = null
     private var recordingId = -1
     private var activityRecognizer: ActivityRecognizer? = null
 
-    internal var Rotation = FloatArray(9)
-    internal var Inclination = FloatArray(9)
-
-
-    private val accData = ArrayDeque<FloatArray>(50)
-    private val rotData = ArrayDeque<FloatArray>(50)
-    private val magData = ArrayDeque<FloatArray>(50)
+    private lateinit var pm: PowerManager
+    private lateinit var dm: DisplayManager
 
     private val mMessageReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -149,7 +123,9 @@ class DataCollectorService : Service(),
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        db = SqliteDatabase.getInstance(applicationContext)
+        pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
+        dm = applicationContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        db = JitaiDatabase.getInstance(applicationContext)
         currentWeatherId = db!!.getLatestWeather()!!.id.toLong()
         Log.d(TAG, "service started")
         if (!this.isRunning) {
@@ -157,7 +133,9 @@ class DataCollectorService : Service(),
         }
         if (intent != null && intent.action != null)
             when (intent.action) {
-                START_RECORDING -> {
+                UPDATE_JITAI -> {
+                    activityRecognizer = ActivityRecognizer(baseContext)
+                } START_RECORDING -> {
                     recordingId = intent.getIntExtra(RECORDING_ID, -1)
                     val answer = Intent(START_RECORDING)
                     answer.putExtra(RECORDING_ID, recordingId)
@@ -174,6 +152,19 @@ class DataCollectorService : Service(),
                     answer.putExtra(IS_RECORDING, isRunning)
                     LocalBroadcastManager.getInstance(this).sendBroadcast(answer)
                 }
+                USER_CLASSIFICATION_NOW -> {
+                    val jitaiId = intent.getIntExtra(JITAI_ID, -1)
+                    if (jitaiId > -1) {
+                        db!!.enterJitaiEvent(jitaiId,
+                                             System.currentTimeMillis(),
+                                             Jitai.NOW,
+                                             uploadDataSet(System.currentTimeMillis()))
+                        Log.d(TAG, "entered now event for $jitaiId")
+                        toast("Aktivität aufgezeichnet")
+                    } else
+                        baseContext.startActivity(baseContext.intentFor<JitaiManagingActivity>()
+                                                          .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }
             }
         return Service.START_STICKY
     }
@@ -183,18 +174,16 @@ class DataCollectorService : Service(),
         this.isRunning = true
         if (DataCollectorApplication.LOCATION_ENABLED) {
             myLocation = MyLocation(this)
-            foursquareCaller = FoursquareCaller(this, currentLocation)
+            //foursquareCaller = FoursquareCaller(this, currentLocation)
             googlePlacesCaller = GooglePlacesCaller(this)
-            prePlaceName = "null"
             currentPlaceName = "null"
             ifLocationChanged = true
         }
         if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
-            myMotion = MyMotion(this)
+            myMotion = MotionSensors(this)
         }
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
             myActivity = MyActivity(this)
-            preActivity = DetectedActivity(DetectedActivity.UNKNOWN, 0)
             currentActivity = DetectedActivity(DetectedActivity.UNKNOWN, 0)
         }
         if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
@@ -203,7 +192,6 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
             googleFitness = GoogleFitness(this)
             currentSteps = 0
-            preSteps = 0
         }
         if (DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
             ambientSound = AmbientSound(this)
@@ -212,8 +200,6 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.WEATHER_ENABLED) {
             weatherCaller = WeatherCaller(this)
         }
-
-        preWifiName = "null"
         currentWifiName = "null"
         currentLabel = "null"
 
@@ -239,7 +225,7 @@ class DataCollectorService : Service(),
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver)
 
         if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
-            stopMotionSensor()
+            myMotion.stopMotionSensor()
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
             stopLocationUpdate()
@@ -248,7 +234,7 @@ class DataCollectorService : Service(),
             stopActivityDetection()
         }
         if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
-            stopEnvironmentSensor()
+            myEnvironmentSensor.stopEnvironmentSensor()
         }
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
             stopGoogleFitness()
@@ -263,9 +249,10 @@ class DataCollectorService : Service(),
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
-                val currentTime = System.currentTimeMillis()
+                val currentTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()
+                        .toEpochMilli()
                 //we assume that the operation finishes before it must be called again
-                handler.postDelayed(this, Math.round(1000.0 / updatesPerSecond))
+                handler.postDelayed(this, 5000)
                 if (isRunning) {
                     if (weatherUpdateCnt == 1) {
                         weatherCaller.getCurrentWeather()
@@ -286,7 +273,7 @@ class DataCollectorService : Service(),
             if (useGooglePlaces) {
                 googlePlacesCaller.getCurrentPlace()
             } else {
-                foursquareCaller.findPlaces()
+                //foursquareCaller.findPlaces()
             }
         } catch (e: Exception) {
             Log.d(TAG, "getPlaces Exception")
@@ -307,6 +294,7 @@ class DataCollectorService : Service(),
             val wifiInfo = wifiMgr.connectionInfo
             val wifi = wifiInfo.ssid + ":" + wifiInfo.bssid + ":" + wifiInfo
                     .ipAddress + ":" + wifiInfo.networkId + ":" + wifiInfo.rssi
+            val level = WifiManager.calculateSignalLevel(wifiInfo.rssi, 100)
             //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo
             // .getNetworkId();
             if (wifiInfo.ssid == null) {
@@ -323,22 +311,18 @@ class DataCollectorService : Service(),
 
     fun checkScreenOn() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            val dm = applicationContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
             for (display in dm.displays) {
-                if (display.state == Display.STATE_OFF) {
-                    isCurrentScreenOn = false
-                } else {
+                isCurrentScreenOn = false
+                if (display.state != Display.STATE_OFF) {
                     isCurrentScreenOn = true
                 }
             }
         } else {
-            val pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-
             isCurrentScreenOn = pm.isScreenOn
         }
     }
 
-    private fun uploadDataSet(currentTime: Long) {
+    private fun uploadDataSet(currentTime: Long): Long {
         val sensorDataSet = SensorDataSet(currentTime, "username")
         sensorDataSet.recordingId = recordingId
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
@@ -346,13 +330,6 @@ class DataCollectorService : Service(),
         }
         if (DataCollectorApplication.WIFI_NAME_ENABLED) {
             sensorDataSet.wifiName = currentWifiName
-        }
-        if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
-            sensorDataSet.humidityPercent = myEnvironmentSensor.humidity
-            sensorDataSet.ambientLight = myEnvironmentSensor.light
-            sensorDataSet.airPressure = myEnvironmentSensor.pressure
-            sensorDataSet.temperature = myEnvironmentSensor.temperature
-            sensorDataSet.proximity = myEnvironmentSensor.proximity
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
             Log.d(TAG, currentLatitude.toString() + "")
@@ -366,7 +343,7 @@ class DataCollectorService : Service(),
             sensorDataSet.location = currentPlaceName
         }
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
-            sensorDataSet.stepsSinceLast = currentSteps
+            sensorDataSet.totalStepsToday = currentSteps
         }
         if (DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
             sensorDataSet.ambientSound = currentAmbientSound
@@ -374,44 +351,39 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.WEATHER_ENABLED) {
             sensorDataSet.weather = currentWeatherId
         }
-        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
-            val avgAcc = averageDequeue(accData)
-            sensorDataSet.raw_acc_x = avgAcc[0]
-            sensorDataSet.raw_acc_y = avgAcc[1]
-            sensorDataSet.raw_acc_z = avgAcc[2]
-            val avgAccNoG = averageDequeueHighPass(accData)
-            sensorDataSet.acc_x = avgAccNoG[0]
-            sensorDataSet.acc_y = avgAccNoG[1]
-            sensorDataSet.acc_z = avgAccNoG[2]
-            val avgRot = averageDequeue(rotData)
-            sensorDataSet.gyro_x = avgRot[0]
-            sensorDataSet.gyro_y = avgRot[1]
-            sensorDataSet.gyro_z = avgRot[2]
-            val avgMag = averageDequeue(magData)
-            sensorDataSet.mag_x = avgMag[0]
-            sensorDataSet.mag_y = avgMag[1]
-            sensorDataSet.mag_z = avgMag[2]
-            if (avgAcc != null && avgMag != null) {
-                val success = SensorManager.getRotationMatrix(Rotation, Inclination, avgAcc,
-                                                              avgMag)
-                if (success) {
-                    val orientation = FloatArray(3)
-                    SensorManager.getOrientation(Rotation, orientation)
-                    sensorDataSet.azimuth = orientation[0] // orientation contains: azimut,
-                    // pitch and roll
-                    sensorDataSet.pitch = orientation[1]
-                    sensorDataSet.roll = orientation[2]
-                }
-            }
-        }
         sensorDataSet.screenState = isCurrentScreenOn
-        db!!.insertSensorDataSet(sensorDataSet)
-        pastSensorValues.addLast(sensorDataSet)
-        //we only want data from 5 minutes
-        if (pastSensorValues.size > numberOfSamples) {
-            pastSensorValues.removeFirst()
-        }
-        activityRecognizer!!.recognizeActivity(pastSensorValues)
+        sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
+        uploadMotionData()
+        uploadEnvironmentData()
+        activityRecognizer!!.recognizeActivity(sensorDataSet)
+        return sensorDataSet.id
+    }
+
+    private fun uploadEnvironmentData() {
+        db!!.enterSingleDimensionDataBatch(recordingId,
+                                           TABLE_REALTIME_AIR,
+                                           myEnvironmentSensor.readPressureData())
+        db!!.enterSingleDimensionDataBatch(recordingId,
+                                           TABLE_REALTIME_TEMPERATURE,
+                                           myEnvironmentSensor.readTemperatureData())
+        db!!.enterSingleDimensionDataBatch(recordingId,
+                                           TABLE_REALTIME_LIGHT,
+                                           myEnvironmentSensor.readLightData())
+        db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_HUMIDITY,
+                                           myEnvironmentSensor.readHumidityData())
+        db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_PROXIMITY,
+                                           myEnvironmentSensor.readProximityData())
+    }
+
+    private fun uploadMotionData() {
+        val accData = myMotion.readAccData()
+        /*val rotData =  myMotion.readRotData()
+        val magData =  myMotion.readMagData()
+        val gyroData =  myMotion.readGyroData()*/
+        db!!.enterAccDataBatch(recordingId, accData)
+        /*db!!.enterGyroDataBatch(recordingId, gyroData)
+        db!!.enterMagDataBatch(recordingId, magData)
+        db!!.enterRotDataBatch(recordingId, rotData)*/
     }
 
     override fun activityUpdate(activity: DetectedActivity) {
@@ -423,16 +395,6 @@ class DataCollectorService : Service(),
         myActivity.disconnect()
         myActivity.unregisterReceiver()
     }
-
-    override fun environmentSensorDataChanged(light: Float, temperature: Float, pressure: Float,
-                                              humidity: Float, proximity: Float) {
-        //noop
-    }
-
-    override fun stopEnvironmentSensor() {
-        myEnvironmentSensor.stopEnvironmentSensor()
-    }
-
 
     override fun locationChanged(location: Location?) {
         if (location != null) {
@@ -499,16 +461,6 @@ class DataCollectorService : Service(),
         googlePlacesCaller.disconnect()
     }
 
-    override fun motionDataChanged(accData: FloatArray, rotData: FloatArray, magData: FloatArray) {
-        this.accData.add(accData)
-        this.rotData.add(rotData)
-        this.magData.add(magData)
-    }
-
-    override fun stopMotionSensor() {
-        myMotion.stopMotionSensor()
-    }
-
     fun stopGoogleFitness() {
         googleFitness.disconnect()
     }
@@ -557,33 +509,4 @@ class DataCollectorService : Service(),
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(notificationID)
     }
-
-    private fun checkChange(): Boolean {
-        var change = 0
-        if (currentActivity != preActivity) {
-            preActivity = currentActivity
-            change++
-        }
-        if (currentSteps != preSteps) {
-            preSteps = currentSteps
-            change++
-        }
-        if (currentWifiName != preWifiName) {
-            preWifiName = currentWifiName
-            change++
-        }
-        if (currentPlaceName != prePlaceName) {
-            prePlaceName = currentPlaceName
-            change++
-        }
-        if (!isCurrentScreenOn == isPreScreenOn) {
-            isPreScreenOn = isCurrentScreenOn
-            change++
-        }
-        return if (change > 0) {
-            true
-        } else false
-    }
-
-
 }

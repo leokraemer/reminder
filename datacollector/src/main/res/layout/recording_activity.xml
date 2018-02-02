@@ -64,7 +64,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/asdfasdflöasjd"
+                android:id="@+id/reference"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -84,7 +84,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/asdfasdflöasjd"
+                app:layout_constraintTop_toBottomOf="@+id/reference"
                 app:layout_constraintVertical_bias="1.0" />
 
         </android.support.constraint.ConstraintLayout>
@@ -169,7 +169,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView15" />
 
     <Button
-        android:id="@+id/nexChartButton"
+        android:id="@+id/nextCompare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -184,8 +184,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         android:text="Activität"
-        app:layout_constraintEnd_toStartOf="@+id/nexChartButton"
-        app:layout_constraintTop_toTopOf="@+id/nexChartButton" />
+        app:layout_constraintEnd_toStartOf="@+id/nextCompare"
+        app:layout_constraintTop_toTopOf="@+id/nextCompare" />
 
     <ProgressBar
         android:id="@+id/recordingSpinner"

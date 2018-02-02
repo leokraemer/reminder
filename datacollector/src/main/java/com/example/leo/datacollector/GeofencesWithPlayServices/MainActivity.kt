@@ -19,7 +19,6 @@ package com.example.leo.datacollector.GeofencesWithPlayServices
 import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -42,6 +41,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import java.util.concurrent.TimeUnit
+
+ val fiveMinutes = TimeUnit.MINUTES.toMillis(5).toInt()
 
 /**
  * Demonstrates how to create and remove geofences using the GeofencingApi. Uses an IntentService
@@ -85,12 +86,6 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
             return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-    /**
-     * Returns true if geofences were added, otherwise false.
-     */
-    private val geofencesAdded: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(
-                Constants.GEOFENCES_ADDED_KEY, false)
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -140,15 +135,17 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
 
     @SuppressWarnings("MissingPermission")
     protected fun addGeofence(geofenceName: String, latLng: LatLng, radius: Float) {
-        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, true, true, false, TimeUnit.MINUTES.toMillis(5).toInt())),
-                geofencePendingIntent)
+        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, true, true, false,
+                                                                                 fiveMinutes)),
+                                       geofencePendingIntent)
                 .addOnCompleteListener(this)
     }
 
     @SuppressWarnings("MissingPermission")
     protected fun addGeofence(geofenceName: String, latLng: LatLng, radius: Float, enter: Boolean, exit: Boolean, dwell: Boolean) {
-        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, enter, exit, dwell, TimeUnit.MINUTES.toMillis(5).toInt())),
-                geofencePendingIntent)
+        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, enter, exit, dwell,
+                                                                                 fiveMinutes)),
+                                       geofencePendingIntent)
                 .addOnCompleteListener(this)
     }
 
@@ -226,18 +223,6 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(getString(actionStringId), listener).show()
-    }
-
-    /**
-     * Stores whether geofences were added ore removed in [SharedPreferences];
-     *
-     * @param added Whether geofences were added or removed.
-     */
-    private fun updateGeofencesAdded(added: Boolean) {
-        PreferenceManager.getDefaultSharedPreferences(this)
-                .edit()
-                .putBoolean(Constants.GEOFENCES_ADDED_KEY, added)
-                .apply()
     }
 
     /**

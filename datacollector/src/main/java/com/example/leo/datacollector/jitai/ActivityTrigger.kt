@@ -1,5 +1,6 @@
 package com.example.leo.datacollector.jitai;
 
+import android.content.Context
 import com.example.leo.datacollector.models.SensorDataSet
 import com.google.android.gms.location.DetectedActivity
 
@@ -8,7 +9,7 @@ import com.google.android.gms.location.DetectedActivity
  */
 
 class ActivityTrigger(val activity: DetectedActivity) : Trigger {
-    override fun check(sensorData: SensorDataSet): Boolean {
+    override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         return activity.type == sensorData.activity.type
     }
 }

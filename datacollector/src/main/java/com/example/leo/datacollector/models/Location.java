@@ -1,5 +1,5 @@
 /**
- * This is a tutorial source code 
+ * This is a tutorial source code
  * provided "as is" and without warranties.
  *
  * For any question please visit the web site
@@ -30,23 +30,24 @@ import java.io.Serializable;
  */
 public class Location implements Serializable {
 
-	private float longitude;
-	private float latitude;
+	private double longitude;
+	private double latitude;
 	private long sunset;
 	private long sunrise;
 	private String country;
 	private String city;
-	
-	public float getLongitude() {
+	private double accuracy;
+
+	public double getLongitude() {
 		return longitude;
 	}
-	public void setLongitude(float longitude) {
+	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	public float getLatitude() {
+	public double getLatitude() {
 		return latitude;
 	}
-	public void setLatitude(float latitude) {
+	public void setLatitude(double latitude) {
 		this.latitude = latitude;
 	}
 	public long getSunset() {
@@ -73,8 +74,13 @@ public class Location implements Serializable {
 	public void setCity(String city) {
 		this.city = city;
 	}
-	
-	
-	
-	
+
+
+	public double getAccuracy() {
+		return accuracy;
+	}
+
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
+	}
 }

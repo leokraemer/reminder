@@ -108,5 +108,17 @@ public class Weather {
         return R.drawable.weather_sunny_n;
     }
 
+    public boolean compare(Weather other) {
+        //bad weather as baseline -> other must also be bad
+        if (currentCondition.weatherId < 800) {
+            return other.currentCondition.weatherId < 800;
+        }
+        //good weather -> other must also be good
+        if (currentCondition.weatherId >= 800) {
+            return other.currentCondition.weatherId >= 800;
+        }
+        //else false
+        return false;
+    }
 
 }

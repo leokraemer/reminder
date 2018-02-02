@@ -14,12 +14,14 @@ android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
     defaultConfig {
-        applicationId 'com.example.yunlong.datacollector'
-        minSdkVersion 21
+        applicationId 'de.leo.fingerprint'
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
@@ -43,6 +45,12 @@ android {
     }
     productFlavors {
     }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+
 }
 
 dependencies {
@@ -52,23 +60,58 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation 'com.google.code.gson:gson:2.8.0'
-    compile 'cz.msebera.android:httpclient:4.4.1.2'
-    compile 'com.google.maps.android:android-maps-utils:0.5'
-    compile 'com.androidplot:androidplot-core:0.9.7'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.android.gms:play-services-fitness:11.0.4'
-    compile 'com.google.android.gms:play-services-auth:11.0.4'
-    compile 'com.google.android.gms:play-services-location:11.0.4'
-    compile 'com.google.android.gms:play-services-maps:11.0.4'
-    compile 'com.google.android.gms:play-services-places:11.0.4'
+    implementation 'cz.msebera.android:httpclient:4.4.1.2'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+    implementation 'com.androidplot:androidplot-core:0.9.7'
+    implementation 'com.android.support:appcompat-v7:25.3.1'
+    implementation 'com.android.support:cardview-v7:25.3.1'
+    implementation 'com.android.support:design:25.3.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.google.android.gms:play-services-fitness:11.0.4'
+    implementation 'com.google.android.gms:play-services-auth:11.0.4'
+    implementation 'com.google.android.gms:play-services-location:11.0.4'
+    implementation 'com.google.android.gms:play-services-maps:11.0.4'
+    implementation 'com.google.android.gms:play-services-places:11.0.4'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.github.rmaestre:FastDTW:7923e3b'
+
+    implementation 'com.github.leokraemer:android-gson-javatime-serialisers:2.1.2'
+    implementation group: 'com.googlecode.matrix-toolkits-java', name: 'mtj', version: '1.0.4'
+    implementation group: 'org.mini2Dx', name: 'android-beans', version: '1.0.0'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
+    implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
+
     implementation 'io.apptik.widget:multislider:1.3'
+
+    implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-coroutines:$anko_version"
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
+
+    // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/LibSVM
+    compile(group: 'nz.ac.waikato.cms.weka', name: 'LibSVM', version: '1.0.10'){
+        exclude group: 'nz.ac.waikato.cms.weka'
+        exclude group: 'java.awt'
+    }
+
+    testImplementation("org.threeten:threetenbp:1.3.3") {
+        exclude group: 'com.jakewharton.threetenabp', module: 'threetenabp'
+    }
+
     testCompile 'org.json:json:20140107'
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    androidTestCompile 'com.android.support:support-annotations:24.0.0'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    // Optional -- Hamcrest library
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    // Optional -- UI testing with Espresso
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    // Optional -- UI testing with UI Automator
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+
 }

@@ -16,4 +16,14 @@
 #   public *;
 #}
 
+-dontwarn java.applet.Applet
+-dontwarn java.awt.**
+-dontwarn javax.xml.**
+-dontwarn AppletFrame
+-dontwarn no.uib.cipr.matrix.sparse.LinkedSparseMatrix$Node
+-dontwarn svm_toy
 
+
+-dontnote android.net.http.*
+-dontnote org.apache.commons.codec.**
+-dontnote org.apache.http.**

@@ -13,7 +13,8 @@ import com.example.leo.datacollector.DailyRoutines.MapsActivity;
 import com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceMapActivity;
 import com.example.leo.datacollector.activityRecording.RecordingActivity;
 import com.example.leo.datacollector.activityRecording.RecordingsListActivity;
-import com.example.leo.datacollector.jitai.JitaiManagingActivity;
+import com.example.leo.datacollector.compare.CompareActivity;
+import com.example.leo.datacollector.jitai.manage.JitaiManagingActivity;
 import com.example.leo.datacollector.utils.PermissionUtils;
 
 public class NavigationActivity extends AppCompatActivity {
@@ -51,18 +52,7 @@ public class NavigationActivity extends AppCompatActivity {
         Intent intent = new Intent(context,MapsActivity.class);
         startActivity(intent);
     }
-    public void onButtonSensorOverview(View view){
-        Intent intent = new Intent(context,SensorOverviewActivity.class);
-        startActivity(intent);
-    }
-    public void onButtonSensorFigure(View view){
-        Intent intent = new Intent(context,OrientationSensorExampleActivity.class);
-        startActivity(intent);
-    }
-    public void onButtonStepCounter(View view){
-        Intent intent = new Intent(context,StepCounterActivity.class);
-        startActivity(intent);
-    }
+
     public void onButtonRecorder(View view){
         Intent intent = new Intent(context,RecordingActivity.class);
         startActivity(intent);
@@ -79,6 +69,11 @@ public class NavigationActivity extends AppCompatActivity {
     }
     public void onButtonRecList(View view) {
         Intent intent = new Intent(context,RecordingsListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onButtonCompare(View view) {
+        Intent intent = new Intent(context,CompareActivity.class);
         startActivity(intent);
     }
 }

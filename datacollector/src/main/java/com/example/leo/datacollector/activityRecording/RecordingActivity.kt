@@ -7,7 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.example.leo.datacollector.R
-import com.example.leo.datacollector.database.SqliteDatabase
+import com.example.leo.datacollector.database.JitaiDatabase
 import com.example.leo.datacollector.datacollection.DataCollectorService
 import com.example.leo.datacollector.utils.START_RECORDING
 import com.example.leo.datacollector.utils.STOP_RECORDING
@@ -35,7 +35,7 @@ class RecordingActivity : Activity() {
     var broadcastReciever: BroadcastReceiver? = null
     var isRecording: Boolean = false;
 
-    private lateinit var db: SqliteDatabase
+    private lateinit var db: JitaiDatabase
 
     var recordingIdInt: Int = -1
         get() = field
@@ -95,9 +95,8 @@ class RecordingActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.recording_activity)
-        db = SqliteDatabase.getInstance(applicationContext)
+        db = JitaiDatabase.getInstance(applicationContext)
         recordingIdInt = db.getLatestRecordingId() + 1
-        db.setRecordingName("ohne Name", recordingIdInt)
         if (db.getRecognizedActivitiesId() > 0) {
             reference = db.getReferenceRecording(db.getRecognizedActivitiesId(), 20)
             reference_chart.setData(ACCELERATION, reference!!)
@@ -131,6 +130,7 @@ class RecordingActivity : Activity() {
 
     private fun recordingStartedCallback(intent: Intent) {
         recordingIdInt = intent.getIntExtra(RECORDING_ID, -1)
+        db.setRecordingName("ohne Name", recordingIdInt)
         startTime = System.currentTimeMillis()
         remainingTimeCounter = object : CountDownTimer(TimeUnit.MINUTES.toMillis(
                 TOTAL_RECORDING_TIME), 100) {

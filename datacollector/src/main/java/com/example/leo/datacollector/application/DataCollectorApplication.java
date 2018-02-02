@@ -1,14 +1,7 @@
 package com.example.leo.datacollector.application;
 
 import android.app.Application;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.RelativeLayout;
 
-import com.example.leo.datacollector.R;
-import com.example.leo.datacollector.database.SqliteDatabase;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 /**

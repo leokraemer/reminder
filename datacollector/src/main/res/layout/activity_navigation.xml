@@ -8,6 +8,28 @@
     tools:context="com.example.leo.datacollector.NavigationActivity">
 
     <Button
+        android:id="@+id/jitai"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonJitai"
+        android:text="Jitai Manager" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Für volle funktionalität muss ein homescreenWidget angelegt werden." />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <TextView
+        android:id="@+id/textView30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Debug Activities" />
+
+    <Button
         android:id="@+id/Entry"
         android:text="Entry"
         android:onClick="onButtonEntry"
@@ -16,38 +38,43 @@
 
     <Button
         android:id="@+id/Maps"
-        android:text="Daily Routines"
-        android:onClick="onButtonMaps"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonMaps"
+        android:text="Daily Routines"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/SensorOverview"
-        android:text="SensorOverview"
-        android:onClick="onButtonSensorOverview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonSensorOverview"
+        android:text="SensorOverview"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/SensorFigure"
-        android:text="SensorFigure"
-        android:onClick="onButtonSensorFigure"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonSensorFigure"
+        android:text="SensorFigure"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/StepCounter"
-        android:text="StepCounter"
-        android:onClick="onButtonStepCounter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonStepCounter"
+        android:text="StepCounter"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/LocalData"
-        android:text="LocalData"
-        android:onClick="onButtonLocalData"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonLocalData"
+        android:text="LocalData"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/geofence"
@@ -55,12 +82,7 @@
         android:layout_height="wrap_content"
         android:onClick="onButtonGeofence"
         android:text="Geofence" />
-    <Button
-        android:id="@+id/jitai"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onButtonJitai"
-        android:text="Jitai Manager" />
+
     <Button
         android:id="@+id/recoder"
         android:layout_width="match_parent"
@@ -74,5 +96,12 @@
         android:layout_height="wrap_content"
         android:onClick="onButtonRecList"
         android:text="Activity Viewer" />
+
+    <Button
+        android:id="@+id/compare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonCompare"
+        android:text="Compare Activity" />
 
 </LinearLayout>

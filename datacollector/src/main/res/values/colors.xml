@@ -15,4 +15,13 @@
     <color name="violet">#cab2d6</color>
     <color name="orange">#ff7f00</color>
     <color name="purple">#6a3d9a</color>
+
+
+    <color name="transparent">#00000000</color>
+    <!-- card colors -->
+    <color name="card_background">#88ffffff</color>
+    <color name="card_shadow_1">#88d4d4d4</color>
+    <color name="card_shadow_2">#88dddddd</color>
+    <color name="card_detailing">#8eee</color>
+
 </resources>

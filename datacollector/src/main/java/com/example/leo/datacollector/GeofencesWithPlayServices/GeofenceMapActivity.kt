@@ -1,17 +1,13 @@
 package com.example.leo.datacollector.GeofencesWithPlayServices
 
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.Toast
-import com.example.leo.datacollector.DailyRoutines.RoutineProvider
-import com.example.leo.datacollector.GeofencesWithPlayServices.Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS
 import com.example.leo.datacollector.R
+import com.example.leo.datacollector.database.JitaiDatabase
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -19,21 +15,22 @@ import com.google.android.gms.maps.model.*
 import com.google.maps.android.ui.IconGenerator
 import kotlinx.android.synthetic.main.geofence_activity_main.*
 import kotlinx.android.synthetic.main.geofence_activity_main.view.*
+import org.jetbrains.anko.toast
 
 
 class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
     private lateinit var mMap: GoogleMap
-    private var enter = true;
-    private var exit = false;
-    private var dwell = false;
-    private var geofenceName = "name"
+    lateinit var db: JitaiDatabase
+    var geofenceID: Int = -1
+
+    private var geofenceName = ""
         set(value) {
             if (field != value) {
                 field = value
-                updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
+                if (latLng != null)
+                    updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
             }
         }
-    private var rp: RoutineProvider? = null
     private var fenceMarker: Marker? = null
         set(value) {
             if (field != null)
@@ -60,15 +57,24 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private val GEOFENCEID = "geofenceId"
 
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.geofence_activity_main)
+        db = JitaiDatabase.getInstance(this)
+        val intent = getIntent()
+        //get geofenceId from intent or get new geofenceId
+        geofenceID = intent.getIntExtra(GEOFENCEID, -1)
+        if (geofenceID != -1) {
+            val geofence = db.getMyGeofence(geofenceID)
+            latLng = LatLng(geofence.latitude, geofence.longitude)
+            geofencesize = Math.floor(geofence.radius.toDouble()).toInt()
+        }
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        rp = RoutineProvider(this)
         val sizeChangeListener = object : OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 geofencesize = progress
@@ -84,15 +90,6 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
 
         done.setOnClickListener {
             commitGeofence()
-        }
-        geofenceoptions.enter.setOnCheckedChangeListener { _, checked ->
-            enter = checked
-        }
-        geofenceoptions.exit.setOnCheckedChangeListener { _, checked ->
-            exit = checked
-        }
-        geofenceoptions.dwell.setOnCheckedChangeListener { _, checked ->
-            dwell = checked
         }
         geofenceoptions.nameField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -110,25 +107,17 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
     }
 
     private fun commitGeofence() {
-        if (latLng != null)
-            if (enter or exit or dwell) {
-                addGeofence(geofenceName, latLng!!, geofencesize.toFloat(), enter, exit, dwell)
-                val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-                val editor = sharedPreferences.edit()
-                editor.putString(GEOFENCE_NAME, geofenceName)
-                editor.putFloat(GEOFENCE_LAT, latLng!!.latitude.toFloat())
-                editor.putFloat(GEOFENCE_LONG, latLng!!.longitude.toFloat())
-                editor.putInt(GEOFENCE_RADIUS, geofencesize)
-                editor.putLong(GEOFENCE_DATE_ADDED, System.currentTimeMillis())
-                editor.putLong(GEOFENCE_VALIDITY, GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-                editor.putBoolean(GEOFENCE_DWELL, dwell)
-                editor.putBoolean(GEOFENCE_ENTER, enter)
-                editor.putBoolean(GEOFENCE_EXIT, exit)
-                editor.apply()
-                updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
-            } else {
-                Toast.makeText(this, "activate one of the transition types", Toast.LENGTH_SHORT).show()
-            }
+        if (latLng != null && geofenceName.isNotBlank()) {
+            //addGeofence(geofenceName, latLng!!, geofencesize.toFloat(), enter, exit, dwell)
+            geofenceID = db.enterGeofence(geofenceName, latLng!!, geofencesize
+                    .toFloat(), true, false, false, fiveMinutes)
+            updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
+            finish()
+        } else if(latLng == null){
+            toast("Bitte markieren sie einen Ort durch Langklick auf die Karte")
+        } else {
+            toast("Bitte vergeben sie einen Namen")
+        }
     }
 
     private fun updateSizeText(size: Float) {
@@ -148,22 +137,11 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
         mMap = googleMap
         mMap.setOnMapLongClickListener(this)
         mMap.isMyLocationEnabled = true
-        val sp = PreferenceManager.getDefaultSharedPreferences(this)
-        loadGeofenceFromSharedPreferences(sp)
-    }
-
-    private fun loadGeofenceFromSharedPreferences(sp: SharedPreferences) {
-        val timestamp = sp.getLong(GEOFENCE_DATE_ADDED, 0)
-        val validity = sp.getLong(GEOFENCE_VALIDITY, 0)
-        if (System.currentTimeMillis() < timestamp + validity) {
-            val fence_lat = sp.getFloat(GEOFENCE_LAT, 0f)
-            val fence_long = sp.getFloat(GEOFENCE_LONG, 0f)
-            geofenceoptions.enter.setChecked(sp.getBoolean(GEOFENCE_ENTER, false))
-            geofenceoptions.exit.setChecked(sp.getBoolean(GEOFENCE_EXIT, false))
-            geofenceoptions.dwell.setChecked(sp.getBoolean(GEOFENCE_DWELL, false))
-            latLng = LatLng(fence_lat.toDouble(), fence_long.toDouble())
-            geofencesize = sp.getInt(GEOFENCE_RADIUS, 0)
-            geofenceName = sp.getString(GEOFENCE_NAME, null)
+        if (geofenceID != -1) {
+            val geofence = db.getMyGeofence(geofenceID)
+            latLng = LatLng(geofence.latitude, geofence.longitude)
+            geofencesize = Math.floor(geofence.radius.toDouble()).toInt()
+            updateGeofenceOnMap(latLng!!, geofenceName, geofencesize.toFloat())
         }
     }
 
@@ -174,28 +152,14 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback, GoogleMap.OnMapL
 
     private fun updateGeofenceOnMap(latLng: LatLng, geofenceName: String, radius: Float) {
         fenceMarker = addMarker(geofenceName, latLng)
-        fenceCircle = mMap.addCircle(CircleOptions().center(latLng).radius(radius.toDouble()).strokeColor(Color.BLUE))
+        fenceCircle = mMap.addCircle(CircleOptions().center(latLng).radius(radius.toDouble()).strokeColor(
+                Color.BLUE))
     }
 
     private fun addMarker(text: CharSequence, position: LatLng): Marker {
         val iconFactory = IconGenerator(this)
-        val markerOptions = MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).position(position).anchor(iconFactory.anchorU, iconFactory.anchorV)
+        val markerOptions = MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(
+                text))).position(position).anchor(iconFactory.anchorU, iconFactory.anchorV)
         return mMap.addMarker(markerOptions)
-    }
-
-
-    companion object {
-        private val ALPHA_ADJUSTMENT = 0x77000000
-        val POPULAR_PLACES_CLUSTER_INDEX = "popularPlacesClusterIndex"
-        val GEOFENCE_NAME = "geofenceName"
-        val GEOFENCE_LAT = "geofenceLat"
-        val GEOFENCE_LONG = "geofenceLong"
-        val GEOFENCE_RADIUS = "geofenceRadius"
-        val GEOFENCE_ENTER = "geofenceEnter"
-        val GEOFENCE_EXIT = "geofenceExit"
-        val GEOFENCE_DWELL = "geofenceDwell"
-        private val GEOFENCE_DATE_ADDED = "geofenceTimestamp"
-        private val GEOFENCE_VALIDITY = "geofenceValidity"
-        val STEP_LENGTH = 0.7874f
     }
 }

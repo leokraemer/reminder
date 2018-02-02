@@ -1,5 +1,6 @@
 package com.example.leo.datacollector.jitai
 
+import android.content.Context
 import com.example.leo.datacollector.models.SensorDataSet
 
 /**
@@ -9,5 +10,5 @@ interface Trigger {
     /**
      * Return true if the conditions for this trigger are met.
      */
-    fun check(sensorData : SensorDataSet) : Boolean
+    fun check(context : Context, sensorData : SensorDataSet) : Boolean
 }

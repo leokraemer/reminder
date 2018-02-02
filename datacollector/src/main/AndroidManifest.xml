@@ -28,15 +28,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.leo.datacollector.SensorOverviewActivity"
-            android:label="@string/study_name"></activity>
-        <activity
             android:name="com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="@string/study_name"></activity>
-        <activity
-            android:name="com.example.leo.datacollector.OrientationSensorExampleActivity"
-            android:label="@string/title_activity_orientation_sensor_example"
-            android:screenOrientation="landscape"></activity>
         <activity android:name="com.example.leo.datacollector.settings.FingerPrintSettingsActivity"></activity>
 
         <activity
@@ -46,18 +39,21 @@
             android:name="com.example.leo.datacollector.activityRecording.RecordingActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="com.example.leo.datacollector.jitai.JitaiManagingActivity"
+            android:name="com.example.leo.datacollector.jitai.manage.JitaiManagingActivity"
             android:label="Jitai Manager"></activity>
 
         <activity
-            android:name="com.example.leo.datacollector.jitai.AddJitaiActivity"
+            android:name="com.example.leo.datacollector.jitai.manage.AddJitaiActivity"
             android:label="Add Jitai"></activity>
         <activity
             android:name="com.example.leo.datacollector.activityRecording.RecordingsListActivity"
-            android:label="Add Jitai"></activity>
+            android:label="Alle Aufnahmen"></activity>
         <activity
             android:name="com.example.leo.datacollector.activityRecording.RecordViewActivity"
-            android:label="Add Jitai"></activity>
+            android:label="Aufnahme Anzeigen"></activity>
+        <activity
+            android:name="com.example.leo.datacollector.compare.CompareActivity"
+            android:label="Compare Activity"></activity>
 
 
         <service
@@ -68,6 +64,8 @@
             android:enabled="true"
             android:exported="true"></service>
 
+        <service android:name="com.example.leo.datacollector.notifications.NotificationService" />
+        <service android:name="com.example.leo.datacollector.widget.WidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -79,8 +77,17 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCSGYsy8lIRCLzHT4LLRrDHtQDj5rF_DF8 " />
+            android:value="AIzaSyDtz53veU2bEwv1Y1Orwwty5Vg5146CzN8 " />
         <service android:name="com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
+
+        <receiver android:name=".widget.ClassificationWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/classificationwidget" />
+        </receiver>
 
         <activity
             android:name="com.example.leo.datacollector.DailyRoutines.MapsActivity"
@@ -91,17 +98,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.example.leo.datacollector.StepCounterActivity"
-            android:label="@string/title_activity_stepcounter"></activity>
-        <activity
-            android:name="com.parse.ui.ParseLoginActivity"
-            android:label="@string/log_in"
-            android:launchMode="singleTop">
-            <meta-data
-                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED"
-                android:value="true" />
         </activity>
     </application>
 

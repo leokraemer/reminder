@@ -115,10 +115,12 @@ public class EntryActivity extends AppCompatActivity {
 
         boolean running = isMyServiceRunning(DataCollectorService.class);
         if (!running) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
+                    (this);
             String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
             if (userName.equals("userName") || userName.equals("Name")) {
-                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT)
+                        .show();
                 Log.d(TAG, "please type in your name in settings");
                 return;
             } else {
@@ -147,9 +149,6 @@ public class EntryActivity extends AppCompatActivity {
         if (!CheckPermission()) {
             return;
         }
-
-        Intent intent = new Intent(this, SensorOverviewActivity.class);
-        startActivity(intent);
     }
 
     public void OnClickStartLabel(View view) {
@@ -159,7 +158,8 @@ public class EntryActivity extends AppCompatActivity {
             View radioButton = radioGroupLabelType.findViewById(id);
             int idx = radioGroupLabelType.indexOfChild(radioButton);
             if (idx < 0) {
-                Toast.makeText(this, "Please select one of the options.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please select one of the options.", Toast.LENGTH_SHORT)
+                        .show();
                 return;
             }
             currentLabel = (String) ((RadioButton) radioButton).getText();
@@ -180,7 +180,8 @@ public class EntryActivity extends AppCompatActivity {
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer
+                .MAX_VALUE)) {
             if (serviceClass.getName().equals(service.service.getClassName())) {
                 return true;
             }
@@ -203,9 +204,11 @@ public class EntryActivity extends AppCompatActivity {
                             });
 
                         } catch (Exception e) {
-                            System.err.println("error in executing: " + ". It will no longer be run!");
+                            System.err.println("error in executing: " + ". It will no longer be " +
+                                    "run!");
                             e.printStackTrace();
-                            // and re throw it so that the Executor also gets this error so that it can do what it would
+                            // and re throw it so that the Executor also gets this error so that
+                            // it can do what it would
                             throw new RuntimeException(e);
                         }
 
@@ -239,7 +242,8 @@ public class EntryActivity extends AppCompatActivity {
     }
 
     private boolean CheckGPS() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context
+                .LOCATION_SERVICE);
 
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -280,7 +284,10 @@ public class EntryActivity extends AppCompatActivity {
     }
 
     private boolean CheckPermission() {
-        if (Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+        if (Build.VERSION.SDK_INT >= 23 && (ContextCompat.checkSelfPermission(this, Manifest
+                .permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(this, Manifest.permission
+                        .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -295,30 +302,29 @@ public class EntryActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (state == START_SERVICE) {
-                        boolean running = isMyServiceRunning(DataCollectorService.class);
-                        if (!running) {
-                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
-                            if (userName.equals("userName") || userName.equals("Name")) {
-                                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "please type in your name in settings");
-                                return;
-                            } else {
-                                Intent intent = new Intent(this, DataCollectorService.class);
-                                startService(intent);
-                                updateUI();
-                            }
+                    boolean running = isMyServiceRunning(DataCollectorService.class);
+                    if (!running) {
+                        SharedPreferences sharedPreferences = PreferenceManager
+                                .getDefaultSharedPreferences(this);
+                        String userName = sharedPreferences.getString("fingerprint_user_name",
+                                "userName");
+                        if (userName.equals("userName") || userName.equals("Name")) {
+                            Toast.makeText(this, "please type in your name in settings", Toast
+                                    .LENGTH_SHORT).show();
+                            Log.d(TAG, "please type in your name in settings");
+                            return;
+                        } else {
+                            Intent intent = new Intent(this, DataCollectorService.class);
+                            startService(intent);
+                            updateUI();
                         }
-                    } else if (state == VIEW_SENSOR_DATA) {
-                        Intent intent = new Intent(this, SensorOverviewActivity.class);
-                        startActivity(intent);
                     }
                 } else {
                     return;
@@ -332,10 +338,13 @@ public class EntryActivity extends AppCompatActivity {
                     if (state == START_SERVICE) {
                         boolean running = isMyServiceRunning(DataCollectorService.class);
                         if (!running) {
-                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-                            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+                            SharedPreferences sharedPreferences = PreferenceManager
+                                    .getDefaultSharedPreferences(this);
+                            String userName = sharedPreferences.getString
+                                    ("fingerprint_user_name", "userName");
                             if (userName.equals("userName") || userName.equals("Name")) {
-                                Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "please type in your name in settings",
+                                        Toast.LENGTH_SHORT).show();
                                 Log.d(TAG, "please type in your name in settings");
                                 return;
                             } else {
@@ -372,7 +381,8 @@ public class EntryActivity extends AppCompatActivity {
                         sendMessage2Service(currentLabel);
 
                     } else {
-                        Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Please finish the questions.", Toast
+                                .LENGTH_SHORT).show();
                     }
 
                     dialog.dismiss();
@@ -391,7 +401,8 @@ public class EntryActivity extends AppCompatActivity {
             final Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.dialog_stop_label);
             setUpSeekBarStopLabel(dialog);
-            radioGroupStopLabel = (RadioGroup) dialog.findViewById(R.id.radio_group_typical_routine_dialog_stop_label);
+            radioGroupStopLabel = (RadioGroup) dialog.findViewById(R.id
+                    .radio_group_typical_routine_dialog_stop_label);
 
             Button button = (Button) dialog.findViewById(R.id.button_done_dialog_stop_label);
             button.setOnClickListener(new View.OnClickListener() {
@@ -401,7 +412,8 @@ public class EntryActivity extends AppCompatActivity {
                     View radioButton = radioGroupStopLabel.findViewById(id);
                     int idx = radioGroupStopLabel.indexOfChild(radioButton);
                     if (idx < 0) {
-                        Toast.makeText(context, "Please select one of the options.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Please select one of the options.", Toast
+                                .LENGTH_SHORT).show();
                         return;
                     }
                     String isTypicalRoutine = (String) ((RadioButton) radioButton).getText();
@@ -410,7 +422,8 @@ public class EntryActivity extends AppCompatActivity {
                         currentLabel = null;
                         radioGroupLabelType.clearCheck();
                     } else {
-                        Toast.makeText(context, "Please finish the questions.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Please finish the questions.", Toast
+                                .LENGTH_SHORT).show();
                     }
                     dialog.dismiss();
                 }
@@ -429,13 +442,15 @@ public class EntryActivity extends AppCompatActivity {
     private void setUpSeekBarStartLabel(Dialog view) {
         final float scale = getResources().getDisplayMetrics().density;
         comboStartLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very |good ");
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very " +
+                "|good ");
         comboStartLabel.setAdapter(seekBarStep);
         comboStartLabel.setSelection(3);
         comboStartLabel.setColor(Color.WHITE);
         int textSize = (int) (15 * scale + 0.5f);
         comboStartLabel.setTextSize(textSize);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams
+                .MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         comboStartLabel.setLayoutParams(layoutParams);
         comboStartLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -444,7 +459,8 @@ public class EntryActivity extends AppCompatActivity {
                 mood = i;
             }
         });
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.bar_holder_dialog_start_label);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id
+                .bar_holder_dialog_start_label);
         linearLayout.addView(comboStartLabel);
         mood = -1;
     }
@@ -452,13 +468,15 @@ public class EntryActivity extends AppCompatActivity {
     private void setUpSeekBarStopLabel(Dialog view) {
         final float scale = getResources().getDisplayMetrics().density;
         comboStopLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very |good ");
+        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very " +
+                "|good ");
         comboStopLabel.setAdapter(seekBarStep);
         comboStopLabel.setSelection(3);
         comboStopLabel.setColor(Color.WHITE);
         int textSize = (int) (15 * scale + 0.5f);
         comboStopLabel.setTextSize(textSize);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams
+                .MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         comboStopLabel.setLayoutParams(layoutParams);
         comboStopLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -467,7 +485,8 @@ public class EntryActivity extends AppCompatActivity {
                 mood = i;
             }
         });
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.bar_holder_dialog_stop_label);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id
+                .bar_holder_dialog_stop_label);
         linearLayout.addView(comboStopLabel);
         mood = -1;
     }

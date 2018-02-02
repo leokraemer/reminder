@@ -6,20 +6,20 @@ import android.os.Bundle
 import android.widget.CursorAdapter
 import com.example.leo.datacollector.R
 import com.example.leo.datacollector.database.ID
-import com.example.leo.datacollector.database.SqliteDatabase
+import com.example.leo.datacollector.database.JitaiDatabase
 import kotlinx.android.synthetic.main.recordings_activity.*
 
 /**
  * Created by Leo on 28.11.2017.
  */
 class RecordingsListActivity : Activity() {
-    lateinit var db: SqliteDatabase
+    lateinit var db: JitaiDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.recordings_activity)
-        db = SqliteDatabase.getInstance(this)
+        db = JitaiDatabase.getInstance(this)
         recordingsList.adapter = RecordingListAdapter(this, db.getRecordings())
-        recordingsList.setOnItemClickListener { parent, view, position, id ->
+        recordingsList.setOnItemClickListener { _, _, position, _ ->
             val cursor = (recordingsList.adapter as RecordingListAdapter).getCursor()
             cursor.moveToPosition(position)
             openRecording(cursor.getInt(cursor.getColumnIndex(ID)))
