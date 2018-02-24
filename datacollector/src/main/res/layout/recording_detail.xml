@@ -907,7 +907,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/accswitch"
                         app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
 
-                    <com.example.leo.datacollector.raw3DChart
+                    <de.leo.fingerprint.datacollector.raw3DChart
                         android:id="@+id/acc_chart"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
@@ -962,7 +962,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/turnswitch3"
                         app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
 
-                    <com.example.leo.datacollector.raw3DChart
+                    <de.leo.fingerprint.datacollector.raw3DChart
                         android:id="@+id/gyro_chart"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
@@ -1017,7 +1017,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/oriswitch3"
                         app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
 
-                    <com.example.leo.datacollector.raw3DChart
+                    <de.leo.fingerprint.datacollector.raw3DChart
                         android:id="@+id/ori_chart"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
@@ -1072,7 +1072,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/magswitch3"
                         app:srcCompat="@drawable/ic_mode_edit_black_24dp" />
 
-                    <com.example.leo.datacollector.raw3DChart
+                    <de.leo.fingerprint.datacollector.raw3DChart
                         android:id="@+id/magnet_chart"
                         android:layout_width="0dp"
                         android:layout_height="100dp"

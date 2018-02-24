@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.leo.datacollector">
+    package="de.leo.fingerprint.datacollector">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,51 +21,51 @@
 
 
     <application
-        android:name="com.example.leo.datacollector.application.DataCollectorApplication"
+        android:name="de.leo.fingerprint.datacollector.application.DataCollectorApplication"
         android:allowBackup="true"
         android:icon="@drawable/fp_s"
         android:label="@string/study_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceMapActivity"
+            android:name="de.leo.fingerprint.datacollector.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="@string/study_name"></activity>
-        <activity android:name="com.example.leo.datacollector.settings.FingerPrintSettingsActivity"></activity>
+        <activity android:name="de.leo.fingerprint.datacollector.settings.FingerPrintSettingsActivity"></activity>
 
         <activity
-            android:name="com.example.leo.datacollector.EntryActivity"
+            android:name="de.leo.fingerprint.datacollector.EntryActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="com.example.leo.datacollector.activityRecording.RecordingActivity"
+            android:name="de.leo.fingerprint.datacollector.activityRecording.RecordingActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="com.example.leo.datacollector.jitai.manage.JitaiManagingActivity"
+            android:name="de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity"
             android:label="Jitai Manager"></activity>
 
         <activity
-            android:name="com.example.leo.datacollector.jitai.manage.AddJitaiActivity"
+            android:name="de.leo.fingerprint.datacollector.jitai.manage.AddJitaiActivity"
             android:label="Add Jitai"></activity>
         <activity
-            android:name="com.example.leo.datacollector.activityRecording.RecordingsListActivity"
+            android:name="de.leo.fingerprint.datacollector.activityRecording.RecordingsListActivity"
             android:label="Alle Aufnahmen"></activity>
         <activity
-            android:name="com.example.leo.datacollector.activityRecording.RecordViewActivity"
+            android:name="de.leo.fingerprint.datacollector.activityRecording.RecordViewActivity"
             android:label="Aufnahme Anzeigen"></activity>
         <activity
-            android:name="com.example.leo.datacollector.compare.CompareActivity"
+            android:name="de.leo.fingerprint.datacollector.compare.CompareActivity"
             android:label="Compare Activity"></activity>
 
 
         <service
-            android:name="com.example.leo.datacollector.services.ActivitiesIntentService"
+            android:name="de.leo.fingerprint.datacollector.services.ActivitiesIntentService"
             android:exported="false"></service>
         <service
-            android:name="com.example.leo.datacollector.datacollection.DataCollectorService"
+            android:name="de.leo.fingerprint.datacollector.datacollection.DataCollectorService"
             android:enabled="true"
             android:exported="true"></service>
 
-        <service android:name="com.example.leo.datacollector.notifications.NotificationService" />
-        <service android:name="com.example.leo.datacollector.widget.WidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service android:name="de.leo.fingerprint.datacollector.notifications.NotificationService" />
+        <service android:name="de.leo.fingerprint.datacollector.widget.WidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -78,9 +78,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDtz53veU2bEwv1Y1Orwwty5Vg5146CzN8 " />
-        <service android:name="com.example.leo.datacollector.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
+        <service android:name="de.leo.fingerprint.datacollector.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
 
-        <receiver android:name=".widget.ClassificationWidget">
+        <receiver android:name="de.leo.fingerprint.datacollector.widget.ClassificationWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -90,9 +90,9 @@
         </receiver>
 
         <activity
-            android:name="com.example.leo.datacollector.DailyRoutines.MapsActivity"
+            android:name="de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity"
             android:label="@string/title_activity_maps"></activity>
-        <activity android:name="com.example.leo.datacollector.NavigationActivity">
+        <activity android:name="de.leo.fingerprint.datacollector.NavigationActivity">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 

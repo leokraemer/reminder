@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.leo.datacollector.NavigationActivity">
+    tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.NavigationActivity">
 
     <Button
         android:id="@+id/jitai"

@@ -16,7 +16,8 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:maxWidth="200dp"
-        android:text="Jitai Name" />
+        android:text="Jitai Name"
+        android:textColor="@color/black" />
 
     <Button
         android:id="@+id/widget_now"
@@ -37,5 +38,6 @@
         android:layout_marginStart="8dp"
         android:maxWidth="200dp"
         android:text="Intervention text"
-        android:textAlignment="viewStart" />
+        android:textAlignment="viewStart"
+        android:textColor="@color/black" />
 </RelativeLayout>

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        tools:context="com.example.leo.datacollector.DailyRoutines.MapsActivity" />
+        tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity" />
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/geofenceoptions"
