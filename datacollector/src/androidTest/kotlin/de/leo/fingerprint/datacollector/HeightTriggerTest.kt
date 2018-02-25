@@ -1,6 +1,8 @@
 package de.leo.fingerprint.datacollector
 
-import android.support.test.InstrumentationRegistry.getTargetContext
+import android.content.Context
+import android.support.test.InstrumentationRegistry
+import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.database.JitaiDatabase
@@ -19,17 +21,17 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class HeightTriggerTest {
 
-    @Rule
-    @JvmField
-    var activityRule = ActivityTestRule<EntryActivity>(EntryActivity::class.java)
+    lateinit var context : Context
+
     lateinit var sensorDataSet: SensorDataSet
     lateinit var db: JitaiDatabase
     val fiveMinInMillis = TimeUnit.MINUTES.toMillis(5)
 
     @Before
     fun setup() {
-        getTargetContext().deleteDatabase(JitaiDatabase.NAME)
-        db = JitaiDatabase.getInstance(activityRule.activity)
+        context = InstrumentationRegistry.getTargetContext()
+        context.deleteDatabase(JitaiDatabase.NAME)
+        db = JitaiDatabase.getInstance(context)
         val data = mutableListOf<Pair<Long, Float>>()
         //create and enter 5 minutes of step data
         for (i in 0..fiveMinInMillis step 5000) {
@@ -52,22 +54,22 @@ class HeightTriggerTest {
 
     @Test
     fun HigherThanTriggerTest() {
-        val lightTrigger = PressureHigherThanTrigger(activityRule.activity, 600.0, TimeUnit.SECONDS
+        val lightTrigger = PressureHigherThanTrigger( 600.0, TimeUnit.SECONDS
                 .toMillis(20))
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "pressureTest")
-        Assert.assertFalse(lightTrigger.check(sensorDataSet))
+        Assert.assertFalse(lightTrigger.check(context, sensorDataSet))
         sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(130), "pressureTest")
-        Assert.assertTrue(lightTrigger.check(sensorDataSet))
+        Assert.assertTrue(lightTrigger.check(context, sensorDataSet))
     }
 
 
     @Test
     fun LowerThanTriggerTest() {
-        val lightTrigger = PressureLowerThanTrigger(activityRule.activity, 600.0, TimeUnit.SECONDS
+        val lightTrigger = PressureLowerThanTrigger( 600.0, TimeUnit.SECONDS
                 .toMillis(20))
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "pressureTest")
-        Assert.assertTrue(lightTrigger.check(sensorDataSet))
+        Assert.assertTrue(lightTrigger.check(context, sensorDataSet))
         sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(130), "pressureTest")
-        Assert.assertFalse(lightTrigger.check(sensorDataSet))
+        Assert.assertFalse(lightTrigger.check(context, sensorDataSet))
     }
 }

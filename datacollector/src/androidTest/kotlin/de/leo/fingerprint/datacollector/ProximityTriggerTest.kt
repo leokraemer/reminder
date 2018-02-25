@@ -3,7 +3,8 @@ package de.leo.fingerprint.datacollector
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import android.support.test.InstrumentationRegistry.getTargetContext
+import android.support.test.InstrumentationRegistry
+import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.database.JitaiDatabase
@@ -21,20 +22,19 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class ProximityTriggerTest {
 
-    @Rule
-    @JvmField
-    var activityRule = ActivityTestRule<EntryActivity>(EntryActivity::class.java)
-    var maxDistance : Float = 0f
+    lateinit var context: Context
+    var maxDistance: Float = 0f
     lateinit var sensorDataSet: SensorDataSet
     lateinit var db: JitaiDatabase
     val fiveMinInMillis = TimeUnit.MINUTES.toMillis(5)
 
     @Before
     fun setup() {
-        getTargetContext().deleteDatabase(JitaiDatabase.NAME)
-        val sm = activityRule.activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        context = InstrumentationRegistry.getTargetContext()
+        context.deleteDatabase(JitaiDatabase.NAME)
+        val sm = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         maxDistance = sm.getDefaultSensor(Sensor.TYPE_PROXIMITY).maximumRange
-        db = JitaiDatabase.getInstance(activityRule.activity)
+        db = JitaiDatabase.getInstance(context)
         val data = mutableListOf<Pair<Long, Float>>()
         //create and enter 5 minutes of step data
         for (i in 0..fiveMinInMillis step 5000) {
@@ -56,11 +56,11 @@ class ProximityTriggerTest {
     }
 
     @Test
-    fun proximityTest(){
-        val proximityTrigger = ProximityTrigger(activityRule.activity, true)
+    fun proximityTest() {
+        val proximityTrigger = ProximityTrigger(true)
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "proximityTest")
-        Assert.assertTrue(proximityTrigger.check(sensorDataSet))
+        Assert.assertTrue(proximityTrigger.check(context, sensorDataSet))
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(3), "proximityTest")
-        Assert.assertFalse(proximityTrigger.check(sensorDataSet))
+        Assert.assertFalse(proximityTrigger.check(context, sensorDataSet))
     }
 }

@@ -1,7 +1,9 @@
 package de.leo.fingerprint.datacollector
 
+import android.content.Context
 import android.location.Location
-import android.support.test.InstrumentationRegistry.getTargetContext
+import android.support.test.InstrumentationRegistry
+import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.database.JitaiDatabase
@@ -41,16 +43,15 @@ class WeatherTriggerTest {
 "cod":200}"""
     }
 
-    @Rule
-    @JvmField
-    var activityRule = ActivityTestRule<EntryActivity>(EntryActivity::class.java)
+    lateinit var context : Context
     lateinit var sensorDataSet : SensorDataSet
     lateinit var db : JitaiDatabase
 
     @Before
     fun setup() {
-        getTargetContext().deleteDatabase(JitaiDatabase.NAME);
-        db = JitaiDatabase.getInstance(activityRule.activity)
+        context = InstrumentationRegistry.getTargetContext()
+        context.deleteDatabase(JitaiDatabase.NAME)
+        db = JitaiDatabase.getInstance(context)
         db.enterWeather(goodWeather, 1L)
         db.enterWeather(badWeather, 2L)
         sensorDataSet = SensorDataSet(System.currentTimeMillis(), "testWeather")
@@ -64,20 +65,20 @@ class WeatherTriggerTest {
 
     @Test
     fun simpleWeatherTriggerTest() {
-        val weatherTrigger = WeatherTrigger(activityRule.activity, 1L)
+        val weatherTrigger = WeatherTrigger( context, 1L)
         sensorDataSet.weather = 1L
-        Assert.assertTrue(weatherTrigger.check(sensorDataSet))
+        Assert.assertTrue(weatherTrigger.check(context, sensorDataSet))
         sensorDataSet.weather = 2L
-        Assert.assertFalse(weatherTrigger.check(sensorDataSet))
+        Assert.assertFalse(weatherTrigger.check(context, sensorDataSet))
     }
 
     @Test
     fun updateWeatherTriggerTest() {
-        val weatherTrigger = WeatherTrigger(activityRule.activity, 1L)
+        var weatherTrigger = WeatherTrigger( context,1L)
         sensorDataSet.weather = 1L
-        Assert.assertTrue(weatherTrigger.check(sensorDataSet))
+        Assert.assertTrue(weatherTrigger.check(context, sensorDataSet))
         sensorDataSet.weather = 2L
-        weatherTrigger.update(sensorDataSet)
-        Assert.assertTrue(weatherTrigger.check(sensorDataSet))
+        weatherTrigger = WeatherTrigger( context,2L)
+        Assert.assertTrue(weatherTrigger.check(context, sensorDataSet))
     }
 }

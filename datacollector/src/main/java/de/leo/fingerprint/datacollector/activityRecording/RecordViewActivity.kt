@@ -303,10 +303,8 @@ class RecordViewActivity : AppCompatActivity() {
 
     private fun initActivityView() {
         val entries = Array<MutableList<BarEntry>>(10, { _ -> mutableListOf() })
-        record.activities.forEachIndexed { i, value ->
-            val activity = mapActivities(value)
-            val confidence = getConfidence(value)
-            entries[activity.roundToInt()].add(BarEntry(getTimeForRecord(i), confidence))
+        record.activities.forEachIndexed { i, activity ->
+            entries[activity.type].add(BarEntry(getTimeForRecord(i), activity.confidence.toFloat()))
         }
         val barDataSet = Array(10, { i -> BarDataSet(entries[i], getActivityLabel(i)) })
         barDataSet[0].color = resources.getColor(R.color.red)

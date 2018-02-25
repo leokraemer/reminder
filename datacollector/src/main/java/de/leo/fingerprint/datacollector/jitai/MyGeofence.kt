@@ -5,9 +5,10 @@ import android.location.Location
 /**
  * Created by Leo on 17.11.2017.
  * @param latLng midpoint of the geofence
- * @param radius of the geofence
+ * @param radius of the geofence in meters
  */
 class MyGeofence private constructor() {
+
     constructor(id: Int,
                 name: String,
                 latitude: Double,

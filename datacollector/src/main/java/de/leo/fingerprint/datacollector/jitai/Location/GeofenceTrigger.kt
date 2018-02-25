@@ -66,7 +66,7 @@ class GeofenceTrigger() : Trigger {
     }
 
     override fun toString(): String {
-        return locations.fold("Geofences: ", { r, f -> r + f.name + "-> "
+        return locations.fold("Geofences: ", { r, f -> r + f.name + " -> "
         }).trimEnd('-','>',' ')
     }
 }

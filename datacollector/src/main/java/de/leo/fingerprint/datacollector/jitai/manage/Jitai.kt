@@ -49,6 +49,12 @@ class Jitai(val context: Context) {
         const val JITAI_CLASSIFIER_UNINITIALIZED = 10
         const val JITAI_CLASSIFIER_UPDATED = 11
 
+        //for notification trigger
+        const val NOTIFICATION_TRIGGER = 100000
+        const val NOTIFICATION_TRIGGER_YES = NOTIFICATION_TRIGGER + 1
+        const val NOTIFICATION_TRIGGER_NO = NOTIFICATION_TRIGGER + 2
+        const val NOTIFICATION_TRIGGER_DELETE = NOTIFICATION_TRIGGER + 3
+
 
         const val ARFF_PREFIX = "ex2"
     }
@@ -70,14 +76,12 @@ class Jitai(val context: Context) {
     private var classifier: Classifier? = null
 
     @Transient
-    var evaluation : Evaluation? = null
+    var evaluation: Evaluation? = null
 
     @Transient
     private var events: MutableList<JitaiEvent>? = null
 
     @Transient
-    private var sensorFingerprintCache : Map<Int, Pair<SensorDataSet, Fingerprint>>? = null
-
     private var updatingClassifier = false
 
     fun check(sensorData: SensorDataSet) {
@@ -195,13 +199,8 @@ class Jitai(val context: Context) {
                 return true
             } else {
                 db!!.enterJitaiEvent(id, sensorData.time, JITAI_NEGATIVE_PREDICTION, sensorData.id)
-                /*if (Math.random() < 0.3) {
-                    Log.d("prediction", "no_match - still posting notification, because random")
-                    return true
-                } else {*/
                 Log.d("$goal prediction", "no_match")
                 return false
-                //}
             }
         }
         //send initial event

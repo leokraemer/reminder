@@ -1,6 +1,7 @@
 package de.leo.fingerprint.datacollector.activityRecording
 
 import android.database.Cursor
+import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.database.*
 import de.leo.fingerprint.datacollector.datacollection.sensors.WeatherCaller
 import de.leo.fingerprint.datacollector.models.SensorDataSet
@@ -22,7 +23,7 @@ class ActivityRecord {
     val bluetooth = mutableListOf<String>()
     //ODO evaluate if set is correct data type
     var locations: MutableSet<String> = mutableSetOf()
-    var activities: MutableCollection<String> = mutableListOf()
+    var activities: MutableCollection<DetectedActivity> = mutableListOf()
     var geolocations: MutableCollection<LatLng> = mutableListOf()
     var ambientSound: MutableCollection<Double> = mutableListOf()
 
@@ -47,12 +48,15 @@ class ActivityRecord {
         do {
             timestamps.add(cursor.getLong(cursor.getColumnIndex(TIMESTAMP)))
             screenState.add(cursor.getInt(cursor.getColumnIndex(SCREEN_STATE)))
-            activities.add(cursor.getString(cursor.getColumnIndex(ACTIVITY)))
+            activities.add(
+                JitaiDatabase.deSerializeActivitys(
+                    cursor.getString(cursor.getColumnIndex(ACTIVITY))).maxBy { it.confidence }
+                    ?: DetectedActivity(DetectedActivity.UNKNOWN, 100))
             ambientSound.add(cursor.getDouble(cursor.getColumnIndex(ABIENT_SOUND)))
             geolocations.add(
-                    LatLng(
-                            cursor.getDouble(cursor.getColumnIndex(GPSlat)),
-                            cursor.getDouble(cursor.getColumnIndex(GPSlng)))
+                LatLng(
+                    cursor.getDouble(cursor.getColumnIndex(GPSlat)),
+                    cursor.getDouble(cursor.getColumnIndex(GPSlng)))
                             )
             steps.add((cursor.getDouble(cursor.getColumnIndex(STEPS))))
             locations.add(cursor.getString(cursor.getColumnIndex(LOCATION)))
@@ -66,76 +70,8 @@ class ActivityRecord {
         cursor.close()
     }
 
-    constructor(sensorDataSet: SensorDataSet,
-                ambientLight: ArrayDeque<Pair<Long, Double>>,
-                proximity: ArrayDeque<Pair<Long, Double>>,
-                pressure: ArrayDeque<Pair<Long, Double>>,
-                acc: ArrayDeque<Pair<Long, FloatArray>>,
-                gyroscope: ArrayDeque<Pair<Long, FloatArray>>,
-                orientation: ArrayDeque<Pair<Long, FloatArray>>,
-                mag: ArrayDeque<Pair<Long, FloatArray>>) {
-        this.name = "dynamically created record"
-        recordLength = 1
-        beginTime = sensorDataSet.time
-        endTime = beginTime
-        timestamps.add(beginTime)
-        //TODO weathers
-        weather = null
-        wifis.add(sensorDataSet.wifiName!!)
-        //TODO bluetooth
-        locations.add(sensorDataSet.location!!)
-        activities.add(sensorDataSet.activity.toString())
-        geolocations.add(LatLng(sensorDataSet.gps!!.latitude, sensorDataSet.gps!!.longitude))
-        ambientSound.add(sensorDataSet.ambientSound!!)
-        if (sensorDataSet.screenState)
-            screenState.add(1)
-        else
-            screenState.add(0)
-        steps.add(sensorDataSet.totalStepsToday!!.toDouble())
-        this.ambientLight = ambientLight
-        this.proximity = proximity
-        this.pressure = pressure
-        this.accelerometerData = acc
-        this.gyroscopData = gyroscope
-        this.orientationData = orientation
-        this.magnetData = mag
-    }
-
-    fun update(sensorDataSet: SensorDataSet,
-               ambientLight: ArrayDeque<Pair<Long, Double>>,
-               proximity: ArrayDeque<Pair<Long, Double>>,
-               pressure: ArrayDeque<Pair<Long, Double>>,
-               acc: ArrayDeque<Pair<Long, FloatArray>>,
-               gyroscope: ArrayDeque<Pair<Long, FloatArray>>,
-               orientation: ArrayDeque<Pair<Long, FloatArray>>,
-               mag: ArrayDeque<Pair<Long, FloatArray>>) {
-        recordLength++
-        endTime = sensorDataSet.time
-        timestamps.add(sensorDataSet.time)
-        //TODO weathers
-        weather = null
-        wifis.add(sensorDataSet.wifiName!!)
-        //TODO bluetooth
-        locations.add(sensorDataSet.location!!)
-        activities.add(sensorDataSet.activity.toString())
-        geolocations.add(LatLng(sensorDataSet.gps!!.latitude, sensorDataSet.gps!!.longitude))
-        ambientSound.add(sensorDataSet.ambientSound!!)
-        if (sensorDataSet.screenState)
-            screenState.add(1)
-        else
-            screenState.add(0)
-        steps.add(sensorDataSet.totalStepsToday!!.toDouble())
-        this.ambientLight.addAll(ambientLight)
-        this.proximity.addAll(proximity)
-        this.pressure.addAll(pressure)
-        this.accelerometerData.addAll(acc)
-        this.gyroscopData.addAll(gyroscope)
-        this.orientationData.addAll(orientation)
-        this.magnetData.addAll(mag)
-    }
-
     private fun getMostPrevalentWeather(weather: List<String>): Weather? =
-            getWeatherList(weather).first()
+        getWeatherList(weather).first()
 
 
     //get list of weathers, sorted by most appearances

@@ -56,6 +56,33 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             JitaiDatabase(context)
 
         const val NAME = "mydb"
+
+        fun serializeDetectedActivitys(activities: List<DetectedActivity>): String {
+            return activities.fold("", { r, f -> r + f.toString() })
+        }
+
+        fun deSerializeActivitys(list: String): List<DetectedActivity> {
+            //split into list and split entries into parts
+            val activities = list.split(']', '[').map { it.split(',', '=') } as ArrayList
+            //remove elements that do not represent detected activities
+            activities.removeAll {it.size!= 4}
+            //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
+            return activities.map { DetectedActivity(mapActivities(it[1]), it[3].toInt()) }
+        }
+
+        fun mapActivities(value: String): Int {
+            if (value.contains("IN_VEHICLE")) return 0
+            if (value.contains("ON_BICYCLE")) return 1
+            if (value.contains("ON_FOOT")) return 2
+            if (value.contains("STILL")) return 3
+            if (value.contains("UNKNOWN")) return 4
+            if (value.contains("TILTING")) return 5
+            if (value.contains("WALKING")) return 6
+            if (value.contains("RUNNING")) return 7
+            if (value.contains("IN_ROAD_VEHICLE")) return 8
+            if (value.contains("IN_RAIL_VEHICLE")) return 9
+            else return 4 //unknown
+        }
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -267,32 +294,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return s
     }
 
-    private fun serializeDetectedActivitys(activities: List<DetectedActivity>): String {
-        return activities.fold("", { r, f -> r + f.toString() })
-    }
-
-    private fun deSerializeActivitys(list: String): List<DetectedActivity> {
-        //split into list and split entries into parts
-        val activities = list.split(']', '[').map { it.split(',', '=') } as ArrayList
-        //remove elements that do not represent detected activities
-        activities.removeAll {it.size!= 4}
-        //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
-        return activities.map { DetectedActivity(mapActivities(it[1]), it[3].toInt()) }
-    }
-
-    private fun mapActivities(value: String): Int {
-        if (value.contains("IN_VEHICLE")) return 0
-        if (value.contains("ON_BICYCLE")) return 1
-        if (value.contains("ON_FOOT")) return 2
-        if (value.contains("STILL")) return 3
-        if (value.contains("UNKNOWN")) return 4
-        if (value.contains("TILTING")) return 5
-        if (value.contains("WALKING")) return 6
-        if (value.contains("RUNNING")) return 7
-        if (value.contains("IN_ROAD_VEHICLE")) return 8
-        if (value.contains("IN_RAIL_VEHICLE")) return 9
-        else return 4 //unknown
-    }
 
     fun enterSingleDimensionData(rec_id: Int, table: String, value: SensorEvent) {
         val cv = ContentValues()
@@ -1101,6 +1102,23 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
                 val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
                 list.add(JitaiEvent(id, timestamp, eventName, sensorDatasetId))
+            } while (c.moveToNext())
+        }
+        c.close()
+        return list
+    }
+
+    fun getJitaiTriggerEvents(id: Int): MutableList<JitaiEvent> {
+        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(id
+                                                                                              .toString()),
+                                       null, null, null)
+        val list = mutableListOf<JitaiEvent>()
+        if (c.moveToFirst()) {
+            do {
+                val id = c.getInt(c.getColumnIndex(JITAI_ID))
+                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
+                val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                list.add(JitaiEvent(id, timestamp, eventName, -1L))
             } while (c.moveToNext())
         }
         c.close()

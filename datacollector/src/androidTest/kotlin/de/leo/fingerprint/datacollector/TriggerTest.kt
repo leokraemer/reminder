@@ -1,10 +1,15 @@
 package de.leo.fingerprint.datacollector
 
+import android.content.Context
+import android.support.test.InstrumentationRegistry
+import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.models.SensorDataSet
 import de.leo.fingerprint.datacollector.utils.TimeUtils
 import org.junit.Assert
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.threeten.bp.DayOfWeek
@@ -13,6 +18,13 @@ import org.threeten.bp.ZoneId
 
 @RunWith(AndroidJUnit4::class)
 class TriggerTest {
+
+    lateinit var context: Context
+
+    @Before
+    fun setup() {
+        context = InstrumentationRegistry.getTargetContext()
+    }
 
     val start = TimeUtils.getDateFromString("2017-11-16:12-00-00").toLocalTime()
     val end = TimeUtils.getDateFromString("2017-11-16:18-00-00").toLocalTime()
@@ -25,14 +37,15 @@ class TriggerTest {
     @Test
     fun testTimeTrigger() {
         val dummyTime = TimeUtils.getDateFromString("2017-11-16:12-30-00")
-        val sensorData = SensorDataSet(dummyTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
-                                       "dummy")
+        val sensorData = SensorDataSet(
+            dummyTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            "dummy")
 
         //0 == thursday
 
-        Assert.assertTrue(tt.check(sensorData))
-        Assert.assertTrue(!tt1.check(sensorData))
-        Assert.assertTrue(tt2.check(sensorData))
-        Assert.assertTrue(tt3.check(sensorData))
+        Assert.assertTrue(tt.check(context, sensorData))
+        Assert.assertTrue(!tt1.check(context, sensorData))
+        Assert.assertTrue(tt2.check(context, sensorData))
+        Assert.assertTrue(tt3.check(context, sensorData))
     }
 }

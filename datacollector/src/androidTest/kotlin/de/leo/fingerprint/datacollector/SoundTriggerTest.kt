@@ -1,6 +1,8 @@
 package de.leo.fingerprint.datacollector
 
-import android.support.test.InstrumentationRegistry.getTargetContext
+import android.content.Context
+import android.support.test.InstrumentationRegistry
+import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.database.JitaiDatabase
@@ -17,17 +19,16 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class SoundTriggerTest {
 
-    @Rule
-    @JvmField
-    var activityRule = ActivityTestRule<EntryActivity>(EntryActivity::class.java)
+    lateinit var context : Context
     lateinit var sensorDataSet: SensorDataSet
     lateinit var db: JitaiDatabase
     val fiveMinInMillis = TimeUnit.MINUTES.toMillis(5)
 
     @Before
     fun setup() {
-        getTargetContext().deleteDatabase(JitaiDatabase.NAME)
-        db = JitaiDatabase.getInstance(activityRule.activity)
+        context = InstrumentationRegistry.getTargetContext()
+        getContext().deleteDatabase(JitaiDatabase.NAME)
+        db = JitaiDatabase.getInstance(context)
         val data = mutableListOf<SensorDataSet>()
         //create and enter 5 minutes of step data
         for (i in 0..fiveMinInMillis step 5000) {
@@ -52,29 +53,29 @@ class SoundTriggerTest {
 
     @Test
     fun minSoundTriggerTest() {
-        val minThanTrigger = LouderThanSoundTrigger(activityRule.activity, 100.0, TimeUnit.MINUTES
+        val minThanTrigger = LouderThanSoundTrigger(100.0, TimeUnit.MINUTES
                 .toMillis(1))
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "twoMinute")
         sensorDataSet.ambientSound = 0.0
-        Assert.assertFalse(minThanTrigger.check(sensorDataSet))
+        Assert.assertFalse(minThanTrigger.check(context, sensorDataSet))
         sensorDataSet.ambientSound = 100.0
-        Assert.assertTrue(minThanTrigger.check(sensorDataSet))
+        Assert.assertTrue(minThanTrigger.check(context, sensorDataSet))
         sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(210), "twoMinute")
         sensorDataSet.ambientSound = 50.0
-        Assert.assertTrue(minThanTrigger.check(sensorDataSet))
+        Assert.assertTrue(minThanTrigger.check(context, sensorDataSet))
     }
 
     @Test
     fun maxSoundTriggerTest() {
-        val minThanTrigger = LessLoudThanSoundTrigger(activityRule.activity, 100.0, TimeUnit.MINUTES
+        val minThanTrigger = LessLoudThanSoundTrigger(100.0, TimeUnit.MINUTES
                 .toMillis(1))
         sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "twoMinute")
         sensorDataSet.ambientSound = 0.0
-        Assert.assertTrue(minThanTrigger.check(sensorDataSet))
+        Assert.assertTrue(minThanTrigger.check(context, sensorDataSet))
         sensorDataSet.ambientSound = 100.0
-        Assert.assertFalse(minThanTrigger.check(sensorDataSet))
+        Assert.assertFalse(minThanTrigger.check(context, sensorDataSet))
         sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(90), "twoMinute")
         sensorDataSet.ambientSound = 50.0
-        Assert.assertTrue(minThanTrigger.check(sensorDataSet))
+        Assert.assertTrue(minThanTrigger.check(context, sensorDataSet))
     }
 }
