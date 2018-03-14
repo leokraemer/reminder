@@ -135,12 +135,16 @@ class Jitai(val context: Context) {
                         Log.d("$goal instances done",
                               (System.currentTimeMillis() - time).toString())
                         val eval = Evaluation(fingerprints)
-                        eval.crossValidateModel(classifier, fingerprints,
-                                                10, Random())
-                        Log.i("$goal performance", eval.toSummaryString())
-                        Log.i("$goal performance", "confusion matrix")
-                        eval.confusionMatrix()
-                            .forEach { Log.i("$goal performance", it.contentToString()) }
+                        try {
+                            eval.crossValidateModel(classifier, fingerprints,
+                                                    10, Random())
+                            Log.i("$goal performance", eval.toSummaryString())
+                            Log.i("$goal performance", "confusion matrix")
+                            eval.confusionMatrix()
+                                .forEach { Log.i("$goal performance", it.contentToString()) }
+                        } catch (e: Exception) {
+                            Log.i("$goal", e.toString())
+                        }
                         classifier.buildClassifier(fingerprints)
                         /* Checks if external storage is available for read and write */
                         val state = Environment.getExternalStorageState();
@@ -151,7 +155,7 @@ class Jitai(val context: Context) {
                                                           "_${goal}_" +
                                                           "_${fingerprints.size}_instances" +
                                                           "accuracy_" +
-                                                          "${eval.fMeasure(
+                                                          "${eval?.fMeasure(
                                                               fingerprints
                                                                   .attribute(CLASSIFICATION)
                                                                   .indexOfValue(MATCH))}" +

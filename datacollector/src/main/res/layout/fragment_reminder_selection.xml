@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+    <TextView
+        android:id="@+id/situation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Das Ereignis kann sich aus den folgenden drei Elementen zusammensetzen:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/at_location"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checked_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_my_location_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/activity"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/activity" />
+
+    <TextView
+        android:id="@+id/textView53"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Ort"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/at_location"
+        app:layout_constraintStart_toStartOf="@+id/at_location"
+        app:layout_constraintTop_toBottomOf="@+id/at_location" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/time"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_checked_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_alarm_white_48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/activity"
+        app:layout_constraintTop_toBottomOf="@+id/situation" />
+
+    <TextView
+        android:id="@+id/textView45"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Aktivität"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/activity"
+        app:layout_constraintStart_toStartOf="@+id/activity"
+        app:layout_constraintTop_toBottomOf="@+id/activity" />
+
+    <TextView
+        android:id="@+id/textView44"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Zeitpunkt"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/time"
+        app:layout_constraintStart_toStartOf="@+id/time"
+        app:layout_constraintTop_toBottomOf="@+id/time" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/activity"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checked_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_directions_run_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/time"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/at_location"
+        app:layout_constraintTop_toTopOf="@+id/time" />
+
+    <TextView
+        android:id="@+id/textView55"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Beispiele:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView53" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView55">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/walk"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_walk_white_48dp"
+                    app:layout_constraintStart_toStartOf="@+id/bus"
+                    app:layout_constraintTop_toTopOf="@+id/shopGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView61"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Abends"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/evening"
+                    app:layout_constraintStart_toStartOf="@+id/evening"
+                    app:layout_constraintTop_toBottomOf="@+id/evening" />
+
+                <TextView
+                    android:id="@+id/textView62"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Zu Fuss"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/walk"
+                    app:layout_constraintStart_toStartOf="@+id/walk"
+                    app:layout_constraintTop_toBottomOf="@+id/walk" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/wlan2"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_moon"
+                    app:layout_constraintStart_toStartOf="@+id/evening"
+                    app:layout_constraintTop_toTopOf="@+id/shopGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView60"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Nachts"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/wlan2"
+                    app:layout_constraintStart_toStartOf="@+id/wlan2"
+                    app:layout_constraintTop_toBottomOf="@+id/wlan2" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/wifiGeofenceButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_wifi_white_48dp"
+                    app:layout_constraintStart_toStartOf="@+id/listGeofenceButton"
+                    app:layout_constraintTop_toTopOf="@+id/shopGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView59"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Mit Wlan\nverbinden"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/wifiGeofenceButton"
+                    app:layout_constraintStart_toStartOf="@+id/wifiGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/wifiGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView58"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Abends"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/evening"
+                    app:layout_constraintStart_toStartOf="@+id/evening"
+                    app:layout_constraintTop_toBottomOf="@+id/evening" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/evening"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_sundown"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/bus"
+                    app:layout_constraintTop_toTopOf="@+id/bus" />
+
+                <TextView
+                    android:id="@+id/textView57"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Mittags"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/midday"
+                    app:layout_constraintStart_toStartOf="@+id/midday"
+                    app:layout_constraintTop_toBottomOf="@+id/midday" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/midday"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_sun"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/bike"
+                    app:layout_constraintTop_toTopOf="@+id/bike" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/morning"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_sunrise"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/sitting"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView56"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Morgens"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/morning"
+                    app:layout_constraintStart_toStartOf="@+id/morning"
+                    app:layout_constraintTop_toBottomOf="@+id/morning" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/workGeofenceButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_work_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/bike"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/home"
+                    app:layout_constraintTop_toTopOf="@+id/home" />
+
+                <TextView
+                    android:id="@+id/textView51"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Arbeit\nverlassen"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/workGeofenceButton"
+                    app:layout_constraintStart_toStartOf="@+id/workGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/workGeofenceButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/home"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_home_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/workGeofenceButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/createText" />
+
+                <TextView
+                    android:id="@+id/homeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:lines="2"
+                    android:text="Zuhause\nbetreten"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/home"
+                    app:layout_constraintStart_toStartOf="@+id/home"
+                    app:layout_constraintTop_toBottomOf="@+id/home" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/listGeofenceButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_local_dining_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/bus"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/busstopGeofenceButton"
+                    app:layout_constraintTop_toTopOf="@+id/busstopGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView50"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Restaurant\nverlassen"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/listGeofenceButton"
+                    app:layout_constraintStart_toStartOf="@+id/listGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/listGeofenceButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/sitting"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_airline_seat_recline_normal_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/morning"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/exitButton"
+                    app:layout_constraintTop_toTopOf="@+id/morning" />
+
+                <TextView
+                    android:id="@+id/textView48"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Langes\nSitzen"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/sitting"
+                    app:layout_constraintStart_toStartOf="@+id/sitting"
+                    app:layout_constraintTop_toBottomOf="@+id/sitting" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/shopGeofenceButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_shopping_cart_white_48dp"
+                    app:layout_constraintStart_toStartOf="@+id/busstopGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/busStopText" />
+
+                <TextView
+                    android:id="@+id/textView49"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Geschäft\nbetreten"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/shopGeofenceButton"
+                    app:layout_constraintStart_toStartOf="@+id/shopGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/shopGeofenceButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/bike"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_bike_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/midday"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/workGeofenceButton"
+                    app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView41"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Fahrrad\nfahren"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/bike"
+                    app:layout_constraintStart_toStartOf="@+id/bike"
+                    app:layout_constraintTop_toBottomOf="@+id/bike" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/enterButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_enter_geofence_fat_arrow_white2"
+                    app:layout_constraintEnd_toStartOf="@+id/exitButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/exitButton" />
+
+                <TextView
+                    android:id="@+id/createText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Ort\nbetreten"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/enterButton"
+                    app:layout_constraintStart_toStartOf="@+id/enterButton"
+                    app:layout_constraintTop_toBottomOf="@+id/enterButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/exitButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_exit_geofence_fat_arrow_white"
+                    app:layout_constraintEnd_toStartOf="@+id/sitting"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/enterButton"
+                    app:layout_constraintTop_toTopOf="@+id/sitting" />
+
+                <TextView
+                    android:id="@+id/textView43"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Ort\nverlassen"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/exitButton"
+                    app:layout_constraintStart_toStartOf="@+id/exitButton"
+                    app:layout_constraintTop_toBottomOf="@+id/exitButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/busstopGeofenceButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_bus_stop"
+                    app:layout_constraintEnd_toStartOf="@+id/listGeofenceButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/homeText" />
+
+                <TextView
+                    android:id="@+id/busStopText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Bushalte-\nstelle"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/busstopGeofenceButton"
+                    app:layout_constraintStart_toStartOf="@+id/busstopGeofenceButton"
+                    app:layout_constraintTop_toBottomOf="@+id/busstopGeofenceButton" />
+
+                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                    android:id="@+id/bus"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_bus_white_48dp"
+                    app:layout_constraintEnd_toStartOf="@+id/evening"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/listGeofenceButton"
+                    app:layout_constraintTop_toTopOf="@+id/listGeofenceButton" />
+
+                <TextView
+                    android:id="@+id/textView47"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Bus\nfahren"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/bus"
+                    app:layout_constraintStart_toStartOf="@+id/bus"
+                    app:layout_constraintTop_toBottomOf="@+id/bus" />
+
+
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

@@ -7,30 +7,16 @@ import android.location.Location
  * @param latLng midpoint of the geofence
  * @param radius of the geofence in meters
  */
-class MyGeofence private constructor() {
-
-    constructor(id: Int,
-                name: String,
-                latitude: Double,
-                longitude: Double,
-                radius: Float) : this() {
-        this.id = id
-        this.name = name
-        this.latitude = latitude
-        this.longitude = longitude
-        this.radius = radius
-    }
-
-    lateinit var name: String
-        private set
-    var id: Int = -1
-        private set
-    var latitude: Double = 0.0
-        private set
-    var longitude: Double = 0.0
-        private set
-    var radius: Float = 0.0F
-        private set
+data class MyGeofence(var id: Int = -1,
+                      var name: String,
+                      val latitude: Double = 0.0,
+                      val longitude: Double = 0.0,
+                      val radius: Float = 0.0F,
+                      val enter: Boolean = false,
+                      val exit: Boolean = false,
+                      val dwell: Boolean = false,
+                      val loiteringDelay: Int,
+                      val imageResId: Int) {
 
     @Transient
     private var loc: Location? = null

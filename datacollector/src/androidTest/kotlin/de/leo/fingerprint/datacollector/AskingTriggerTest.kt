@@ -52,10 +52,10 @@ class AskingTriggerTest {
         db.enterJitaiEvent(jitaiID, 1, Jitai.NOTIFICATION_TRIGGER_YES, -1)
         Assert.assertTrue(trigger.check(context, sensorDataSet))
         //<= 30 minutes later
-        sensorDataSet = SensorDataSet( TimeUnit.MINUTES.toMillis(30) , "dummy", 0)
+        sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30))
         Assert.assertTrue(trigger.check(context, sensorDataSet))
         //>30 minutes later
-        sensorDataSet = SensorDataSet( TimeUnit.MINUTES.toMillis(30) + 1, "dummy", 0)
+        sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30) + 1)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
     }
 
@@ -68,7 +68,7 @@ class AskingTriggerTest {
         Assert.assertTrue(trigger.check(context, sensorDataSet))
         db.enterJitaiEvent(jitaiID, 2, Jitai.NOTIFICATION_TRIGGER_NO, -1)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        sensorDataSet = SensorDataSet( TimeUnit.MINUTES.toMillis(30) + 1, "dummy", 0)
+        sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30) + 1)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
     }
 

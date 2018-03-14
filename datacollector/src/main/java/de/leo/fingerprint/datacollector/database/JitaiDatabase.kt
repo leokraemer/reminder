@@ -4,11 +4,17 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.hardware.SensorEvent
 import android.location.Location
 import android.util.Log
+import com.fatboyindustrial.gsonjavatime.Converters
+import com.google.android.gms.location.DetectedActivity
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.maps.model.LatLng
+import com.google.gson.GsonBuilder
 import de.leo.fingerprint.datacollector.GeofencesWithPlayServices.Constants
 import de.leo.fingerprint.datacollector.activityDetection.MATCH
 import de.leo.fingerprint.datacollector.activityDetection.NO_MATCH
@@ -16,23 +22,19 @@ import de.leo.fingerprint.datacollector.activityRecording.ActivityRecord
 import de.leo.fingerprint.datacollector.datacollection.sensors.WeatherCaller
 import de.leo.fingerprint.datacollector.jitai.JitaiEvent
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
+import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.models.SensorDataSet
 import de.leo.fingerprint.datacollector.models.Weather
-import com.fatboyindustrial.gsonjavatime.Converters
-import com.google.android.gms.location.DetectedActivity
-import com.google.android.gms.location.Geofence
-import com.google.android.gms.maps.model.LatLng
-import com.google.gson.GsonBuilder
 import java.util.*
+
 
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 51
+const val DATABASE_VERSION = 53
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -65,7 +67,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             //split into list and split entries into parts
             val activities = list.split(']', '[').map { it.split(',', '=') } as ArrayList
             //remove elements that do not represent detected activities
-            activities.removeAll {it.size!= 4}
+            activities.removeAll { it.size != 4 }
             //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
             return activities.map { DetectedActivity(mapActivities(it[1]), it[3].toInt()) }
         }
@@ -127,27 +129,21 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        if (newVersion > 100) {
-            db!!.execSQL("DROP TABLE IF EXISTS $TABLE")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
-            db.execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
-            db.execSQL("DROP INDEX IF EXISTS acc_timestamp_index")
-            db.execSQL("DROP INDEX IF EXISTS mag_timestamp_index")
-            db.execSQL("DROP INDEX IF EXISTS gyro_timestamp_index")
-            db.execSQL("DROP INDEX IF EXISTS air_timestamp_index")
-            db.execSQL("DROP INDEX IF EXISTS prox_timestamp_index")
-            db.execSQL("DROP INDEX IF EXISTS light_timestamp_index")
-            deleteRealtimeTables(db)
-            onCreate(db)
-        } else {
-            db!!.execSQL("CREATE INDEX mag_timestamp_index ON $TABLE_REAL_TIME_MAG ($TIMESTAMP)")
-            db.execSQL("CREATE INDEX gyro_timestamp_index ON $TABLE_REAL_TIME_GYRO ($TIMESTAMP)")
-            Log.d("db", "created indexes")
-        }
+        db!!.execSQL("DROP TABLE IF EXISTS $TABLE")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
+        db.execSQL("DROP INDEX IF EXISTS acc_timestamp_index")
+        db.execSQL("DROP INDEX IF EXISTS mag_timestamp_index")
+        db.execSQL("DROP INDEX IF EXISTS gyro_timestamp_index")
+        db.execSQL("DROP INDEX IF EXISTS air_timestamp_index")
+        db.execSQL("DROP INDEX IF EXISTS prox_timestamp_index")
+        db.execSQL("DROP INDEX IF EXISTS light_timestamp_index")
+        deleteRealtimeTables(db)
+        onCreate(db)
     }
 
     fun insertSensorDataSet(sensorDataSet: SensorDataSet): Long {
@@ -913,13 +909,42 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return list
     }
 
+    fun enterGeofence(id: Int,
+                      name: String,
+                      latLng: LatLng,
+                      radius: Float,
+                      enter: Boolean,
+                      exit: Boolean,
+                      dwell: Boolean,
+                      loiteringDelay: Int,
+                      icon: Int): Int {
+        val cv = ContentValues()
+        cv.put(ID, id)
+        cv.put(GEOFENCE_NAME, name)
+        cv.put(GEOFENCE_LAT, latLng.latitude)
+        cv.put(GEOFENCE_LONG, latLng.longitude)
+        cv.put(GEOFENCE_RADIUS, radius)
+        cv.put(GEOFENCE_ENTER, enter)
+        cv.put(GEOFENCE_EXIT, exit)
+        cv.put(GEOFENCE_DWELL, dwell)
+        cv.put(GEOFENCE_VALIDITY, Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+        cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
+        cv.put(GEOFENCE_IMAGE, icon)
+        var returnval = -1
+        writableDatabase.transaction {
+            returnval = insertWithOnConflict(TABLE_GEOFENCE, null, cv, CONFLICT_REPLACE).toInt()
+        }
+        return returnval
+    }
+
     fun enterGeofence(name: String,
                       latLng: LatLng,
                       radius: Float,
                       enter: Boolean,
                       exit: Boolean,
                       dwell: Boolean,
-                      loiteringDelay: Int): Int {
+                      loiteringDelay: Int,
+                      icon: Int): Int {
         val cv = ContentValues()
         cv.put(GEOFENCE_NAME, name)
         cv.put(GEOFENCE_LAT, latLng.latitude)
@@ -930,6 +955,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         cv.put(GEOFENCE_DWELL, dwell)
         cv.put(GEOFENCE_VALIDITY, Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
         cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
+        cv.put(GEOFENCE_IMAGE, icon)
         var returnval = -1L
         writableDatabase.transaction {
             returnval = insert(TABLE_GEOFENCE, null, cv)
@@ -946,11 +972,12 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return geofece
     }
 
-    fun getMyGeofence(id: Int): MyGeofence {
+    fun getMyGeofence(id: Int): MyGeofence? {
         val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
                                        null, null, null)
-        c.moveToFirst()
-        val geofece = extractMyGeofenceFromCursor(c)
+        var geofece: MyGeofence? = null
+        if (c.moveToFirst())
+            geofece = extractMyGeofenceFromCursor(c)
         c.close()
         return geofece
     }
@@ -973,7 +1000,13 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val radius = c.getFloat(c.getColumnIndex(GEOFENCE_RADIUS))
         val name = c.getString(c.getColumnIndex(GEOFENCE_NAME))
         val id = c.getInt(c.getColumnIndex(ID))
-        return MyGeofence(id, name, latitude, longitude, radius)
+        val imageResId = c.getInt(c.getColumnIndex(GEOFENCE_IMAGE))
+        val enter = c.getInt(c.getColumnIndex(GEOFENCE_ENTER)) > 0
+        val exit = c.getInt(c.getColumnIndex(GEOFENCE_EXIT)) > 0
+        val dwell = c.getInt(c.getColumnIndex(GEOFENCE_DWELL)) > 0
+        val loiteringDelay = c.getInt(c.getColumnIndex(GEOFENCE_LOITERING_DELAY))
+        return MyGeofence(id, name, latitude, longitude, radius, enter, exit, dwell,
+                          loiteringDelay, imageResId)
     }
 
     private fun getGeofenceForLatlng(name: String,
@@ -1187,6 +1220,7 @@ const val GEOFENCE_DWELL = "geofenceDwell"
 const val GEOFENCE_DATE_ADDED = "geofenceTimestamp"
 const val GEOFENCE_VALIDITY = "geofenceValidity"
 const val GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
+const val GEOFENCE_IMAGE = "geofenceImage"
 
 // Weather
 const val TABLE_WEATHER = "table_weather"
@@ -1386,4 +1420,5 @@ const val CREATE_TABLE_GEOFENCE =
         "$GEOFENCE_DWELL bool, " +
         "$GEOFENCE_DATE_ADDED time, " +
         "$GEOFENCE_LOITERING_DELAY number, " +
-        "$GEOFENCE_VALIDITY LONG )"
+        "$GEOFENCE_VALIDITY LONG," +
+        "$GEOFENCE_IMAGE INTEGER )"

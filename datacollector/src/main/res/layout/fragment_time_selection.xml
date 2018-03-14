@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/nightButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_moon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/eveningButton"
+        app:layout_constraintTop_toTopOf="@+id/eveningButton" />
+
+    <TextView
+        android:id="@+id/nightText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Nachts"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/nightButton"
+        app:layout_constraintStart_toStartOf="@+id/nightButton"
+        app:layout_constraintTop_toBottomOf="@+id/nightButton" />
+
+    <TextView
+        android:id="@+id/eveningText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Abends"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/eveningButton"
+        app:layout_constraintStart_toStartOf="@+id/eveningButton"
+        app:layout_constraintTop_toBottomOf="@+id/eveningButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/eveningButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_sundown"
+        app:layout_constraintEnd_toStartOf="@+id/nightButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/middayButton"
+        app:layout_constraintTop_toTopOf="@+id/middayButton" />
+
+    <TextView
+        android:id="@+id/middayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Mittags"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/middayButton"
+        app:layout_constraintStart_toStartOf="@+id/middayButton"
+        app:layout_constraintTop_toBottomOf="@+id/middayButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/middayButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_sun"
+        app:layout_constraintEnd_toStartOf="@+id/eveningButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/morningButton"
+        app:layout_constraintTop_toTopOf="@+id/morningButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/morningButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_sunrise"
+        app:layout_constraintEnd_toStartOf="@+id/middayButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView70" />
+
+    <TextView
+        android:id="@+id/morningText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Morgens"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/morningButton"
+        app:layout_constraintStart_toStartOf="@+id/morningButton"
+        app:layout_constraintTop_toBottomOf="@+id/morningButton" />
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+
+    <io.apptik.widget.MultiSlider
+        android:id="@+id/time_range_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+
+        android:layout_marginTop="8dp"
+        app:drawThumbsApart="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/middayText"
+        app:rangeColor="@color/green_300"
+        app:stepsThumbsApart="5"
+        app:thumbColor="@color/white"
+        app:thumbNumber="2" />
+
+    <TextView
+        android:id="@+id/textView70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Gültigkeit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+    <TextView
+        android:id="@+id/time_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="00:00 Uhr"
+        app:layout_constraintStart_toStartOf="@+id/time_range_slider"
+        app:layout_constraintTop_toBottomOf="@+id/time_range_slider" />
+
+    <TextView
+        android:id="@+id/time_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="24:00 Uhr"
+        app:layout_constraintEnd_toEndOf="@+id/time_range_slider"
+        app:layout_constraintTop_toBottomOf="@+id/time_range_slider" />
+
+</android.support.constraint.ConstraintLayout>

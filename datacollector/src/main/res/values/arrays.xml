@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="geofence_icons">
+        <item>@drawable/ic_home_white_48dp</item>
+        <item>@drawable/ic_work_white_48dp</item>
+        <item>@android:drawable/ic_dialog_map</item>
+        <item>@drawable/ic_public_white_48dp</item>
+        <item>@drawable/ic_local_dining_white_48dp</item>
+        <item>@drawable/ic_shopping_cart_white_48dp</item>
+        <item>@drawable/ic_bus_stop</item>
+        <item>@drawable/ic_wifi_white_48dp</item>
+    </array>
+</resources>

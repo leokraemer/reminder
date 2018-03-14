@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.NavigationActivity">
+    android:orientation="vertical">
 
     <Button
         android:id="@+id/jitai"
@@ -33,6 +31,13 @@
         android:id="@+id/Entry"
         android:text="Entry"
         android:onClick="onButtonEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/Trigger"
+        android:text="Entry"
+        android:onClick="onButtonTrigger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

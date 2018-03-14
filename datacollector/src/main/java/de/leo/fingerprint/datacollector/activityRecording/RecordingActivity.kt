@@ -60,14 +60,14 @@ class RecordingActivity : Activity() {
             val oldProgress = recordingSpinner.progress
             recordingSpinner.progress = ((System.currentTimeMillis() - startTime) % 5000L).toInt()
             if (oldProgress > recordingSpinner.progress)
-                //updateDataView()
-            handler.postDelayed(this, 10)
+            //updateDataView()
+                handler.postDelayed(this, 10)
         }
     }
 
     private fun updateDataView() {
         val data = db.getReferenceRecording(db.getLatestRecordingId(), reference?.recordLength
-                ?: 20)
+            ?: 20)
         recording_chart.setData(ACCELERATION, data)
     }
 
@@ -84,10 +84,10 @@ class RecordingActivity : Activity() {
                     START_RECORDING -> {
                         recordingStartedCallback(intent)
                     }
-                    STOP_RECORDING -> {
+                    STOP_RECORDING  -> {
                         recordingStoppedCallback()
                     }
-                    IS_RECORDING -> {
+                    IS_RECORDING    -> {
                         isRecordingCallback(intent)
                     }
                 }
@@ -114,7 +114,7 @@ class RecordingActivity : Activity() {
         val intentFilter = IntentFilter(START_RECORDING)
         intentFilter.addAction(STOP_RECORDING)
         intentFilter.addAction(IS_RECORDING)
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReciever, intentFilter)
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReciever!!, intentFilter)
         val checkIsRecording = Intent(this, DataCollectorService::class.java)
         checkIsRecording.setAction(IS_RECORDING)
         startService(checkIsRecording)
@@ -122,7 +122,9 @@ class RecordingActivity : Activity() {
 
     override fun onStop() {
         super.onStop()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReciever)
+        broadcastReciever?.let {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(it)
+        }
         broadcastReciever = null
     }
 
@@ -136,10 +138,10 @@ class RecordingActivity : Activity() {
         db.setRecordingName("ohne Name", recordingIdInt)
         startTime = System.currentTimeMillis()
         remainingTimeCounter = object : CountDownTimer(TimeUnit.MINUTES.toMillis(
-                TOTAL_RECORDING_TIME), 100) {
+            TOTAL_RECORDING_TIME), 100) {
             override fun onTick(millisUntilFinished: Long) {
                 remainingTime = TimeUnit.MINUTES.toSeconds(TOTAL_RECORDING_TIME) - (System.currentTimeMillis() -
-                        startTime) / 1000
+                    startTime) / 1000
                 runOnUiThread(updateTime)
             }
 

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/sitText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Unbewegt"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/sitButton"
+        app:layout_constraintStart_toStartOf="@+id/sitButton"
+        app:layout_constraintTop_toBottomOf="@+id/sitButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/sitButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_airline_seat_recline_normal_white_48dp"
+        app:layout_constraintStart_toStartOf="@+id/walkButton"
+        app:layout_constraintTop_toBottomOf="@+id/walkText" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/busButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_directions_bus_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/carButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/bikeButton"
+        app:layout_constraintTop_toTopOf="@+id/carButton" />
+
+    <TextView
+        android:id="@+id/bikeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Fahrrad\nfahren"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/bikeButton"
+        app:layout_constraintStart_toStartOf="@+id/bikeButton"
+        app:layout_constraintTop_toBottomOf="@+id/bikeButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/bikeButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_directions_bike_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/busButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/walkButton"
+        app:layout_constraintTop_toTopOf="@+id/busButton" />
+
+    <TextView
+        android:id="@+id/busText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Bus\nfahren"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/busButton"
+        app:layout_constraintStart_toStartOf="@+id/busButton"
+        app:layout_constraintTop_toBottomOf="@+id/busButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/carButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_directions_car_white_48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/busButton"
+        app:layout_constraintTop_toBottomOf="@+id/situation" />
+
+    <TextView
+        android:id="@+id/carText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Auto"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/carButton"
+        app:layout_constraintStart_toStartOf="@+id/carButton"
+        app:layout_constraintTop_toBottomOf="@+id/carButton" />
+
+    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+        android:id="@+id/walkButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_directions_walk_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/bikeButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bikeButton" />
+
+    <TextView
+        android:id="@+id/walkText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Zu Fuss"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/walkButton"
+        app:layout_constraintStart_toStartOf="@+id/walkButton"
+        app:layout_constraintTop_toBottomOf="@+id/walkButton" />
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Wählen sie eine Aktivität"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+</android.support.constraint.ConstraintLayout>

@@ -202,7 +202,7 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
      * @param text The Snackbar text.
      */
     private fun showSnackbar(text: String) {
-        val container = findViewById(android.R.id.content)
+        val container = findViewById<View>(android.R.id.content)
         if (container != null) {
             Snackbar.make(container, text, Snackbar.LENGTH_LONG).show()
         }

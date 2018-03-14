@@ -198,7 +198,6 @@ class DataCollectorService : Service(),
                                                                      DataCollectorApplication.BROADCAST_EVENT))
 
         startScheduledUpdate()
-        startNotification()
     }
 
     override fun onCreate() {
@@ -206,6 +205,7 @@ class DataCollectorService : Service(),
         isRunning = false
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         userName = sharedPreferences.getString("fingerprint_user_name", "userName")
+        startNotification()
     }
 
     override fun onDestroy() {
@@ -470,34 +470,17 @@ class DataCollectorService : Service(),
     }
 
     fun startNotification() {
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val mNotifyBuilder = NotificationCompat.Builder(this)
             .setContentTitle("DataCollector")
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentText("Background service is running.")
-            .setSmallIcon(R.drawable.fp_s)/*.addAction(0, "10 minutes", PendingIntent
-                .getService(this, 19921, Intent(this, ActivitiesIntentService::class.java)
-                        .putExtra(TYPE, MINUTES), PendingIntent.FLAG_ONE_SHOT))
-                .addAction(0, "activity", PendingIntent.getService(this, 19922, Intent(this,
-                                                                                       ActivitiesIntentService::class.java).putExtra(
-                        TYPE,
-                        ACTIVITY), PendingIntent
-                                                                           .FLAG_ONE_SHOT))
-                .addAction(0, "snack", PendingIntent.getService(this, 19923, Intent(this,
-                                                                                    ActivitiesIntentService::class.java).putExtra(
-                        TYPE,
-                        SNACK), PendingIntent
-                                                                        .FLAG_ONE_SHOT))
-*/
-
-        mNotificationManager.notify(
-            notificationID,
-            mNotifyBuilder.build())
+            .setSmallIcon(R.drawable.fp_s)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+        startForeground(notificationID, mNotifyBuilder.build())
     }
 
     fun cancelNotification() {
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationManager.cancel(notificationID)
+        stopForeground(true)
     }
 }

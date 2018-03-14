@@ -54,7 +54,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ToggleButton
-            android:id="@+id/exit"
+            android:id="@+id/exitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -67,7 +67,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
         <ToggleButton
-            android:id="@+id/enter"
+            android:id="@+id/enterButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -76,7 +76,7 @@
             android:layout_weight="1"
             android:text="Enter"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@+id/exit"
+            app:layout_constraintEnd_toStartOf="@+id/exitButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
@@ -89,9 +89,9 @@
             android:layout_marginTop="8dp"
             android:text="Enter"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/enter"
+            app:layout_constraintEnd_toEndOf="@+id/enterButton"
             app:layout_constraintHorizontal_bias="0.512"
-            app:layout_constraintStart_toStartOf="@+id/enter"
+            app:layout_constraintStart_toStartOf="@+id/enterButton"
             app:layout_constraintTop_toBottomOf="@+id/sizeBar" />
 
         <TextView
@@ -131,7 +131,7 @@
             android:text="Dwell"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/exit"
+            app:layout_constraintStart_toEndOf="@+id/exitButton"
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
         <TextView

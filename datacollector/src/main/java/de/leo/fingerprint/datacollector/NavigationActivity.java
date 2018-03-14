@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
+
+import java.io.File;
 
 import de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity;
 import de.leo.fingerprint.datacollector.GeofencesWithPlayServices.GeofenceMapActivity;
@@ -15,6 +19,7 @@ import de.leo.fingerprint.datacollector.activityRecording.RecordingActivity;
 import de.leo.fingerprint.datacollector.activityRecording.RecordingsListActivity;
 import de.leo.fingerprint.datacollector.compare.CompareActivity;
 import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity;
+import de.leo.fingerprint.datacollector.naturalTriggerCreation.CreateTriggerActivity;
 import de.leo.fingerprint.datacollector.utils.PermissionUtils;
 
 public class NavigationActivity extends AppCompatActivity {
@@ -74,6 +79,11 @@ public class NavigationActivity extends AppCompatActivity {
 
     public void onButtonCompare(View view) {
         Intent intent = new Intent(context,CompareActivity.class);
+        startActivity(intent);
+    }
+
+    public void onButtonTrigger(View view) {
+        Intent intent = new Intent(context,CreateTriggerActivity.class);
         startActivity(intent);
     }
 }

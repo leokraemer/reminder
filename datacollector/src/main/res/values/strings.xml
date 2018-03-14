@@ -86,5 +86,7 @@
     <string name="transition">Transition</string>
     <string name="recording">aufnahme gestartet</string>
     <string name="record">Aufnehmen</string>
+    <string name="work_geofence_name">Arbeit</string>
+    <string name="home_geofence_name">Zuhause</string>
 
 </resources>
