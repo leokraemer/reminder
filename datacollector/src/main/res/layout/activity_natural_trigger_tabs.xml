@@ -19,199 +19,189 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/header4_scaled" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout"
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/reminder_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/transparent"
-        android:fitsSystemWindows="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        tools:layout_height="wrap_content">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                android:id="@+id/activity1"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/geofenceDirection"
+                app:layout_constraintTop_toBottomOf="@+id/geofenceName"
+                tools:src="@drawable/ic_directions_walk_white_48dp" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                android:id="@+id/activity2"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                app:layout_constraintStart_toEndOf="@+id/activity1"
+                app:layout_constraintTop_toTopOf="@+id/geofenceDirection"
+                tools:src="@drawable/ic_directions_car_white_48dp" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                android:id="@+id/geofenceDirection"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:checked="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                app:layout_constraintStart_toEndOf="@+id/geofenceIcon"
+                app:layout_constraintTop_toBottomOf="@+id/geofenceName"
+                tools:src="@drawable/ic_exit_geofence_fat_arrow_white" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                android:id="@+id/activity3"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                app:layout_constraintStart_toEndOf="@+id/activity2"
+                app:layout_constraintTop_toTopOf="@+id/geofenceDirection"
+                tools:src="@drawable/ic_directions_bus_white_48dp" />
+
+            <TextView
+                android:id="@+id/geofenceName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="GeofenceName" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+                android:id="@+id/geofenceIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/geofenceName"
+                tools:src="@drawable/ic_home_white_48dp" />
+
+            <TextView
+                android:id="@+id/timeView"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="8dp"
+                android:gravity="left|center_vertical"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/activity3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/activity3"
+                tools:text="00:00-\n23:59" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+
+    <TextView
+        android:id="@+id/textView37"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Erinnerung erstellen"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintTop_toTopOf="@+id/imageView2" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline4"
-        app:layout_constraintVertical_bias="0.0">
+        app:srcCompat="@drawable/reminder_white" />
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/reminder_card"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2"
-            tools:layout_height="wrap_content">
-
-            <android.support.constraint.ConstraintLayout
-
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp">
-
-                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-                    android:id="@+id/geofenceIcon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/geofenceName"
-                    tools:src="@drawable/ic_home_white_48dp" />
-
-                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-                    android:id="@+id/activity3"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toEndOf="@+id/activity2"
-                    app:layout_constraintTop_toTopOf="@+id/geofenceDirection"
-                    tools:src="@drawable/ic_directions_bus_white_48dp" />
-
-                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-                    android:id="@+id/activity2"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toEndOf="@+id/activity1"
-                    app:layout_constraintTop_toTopOf="@+id/geofenceDirection"
-                    tools:src="@drawable/ic_directions_car_white_48dp" />
-
-                <TextView
-                    android:id="@+id/geofenceName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="GeofenceName" />
-
-                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-                    android:id="@+id/geofenceDirection"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:checked="true"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toEndOf="@+id/geofenceIcon"
-                    app:layout_constraintTop_toBottomOf="@+id/geofenceName"
-                    tools:src="@drawable/ic_exit_geofence_fat_arrow_white" />
-
-                <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-                    android:id="@+id/activity1"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toEndOf="@+id/geofenceDirection"
-                    app:layout_constraintTop_toBottomOf="@+id/geofenceName"
-                    tools:src="@drawable/ic_directions_walk_white_48dp" />
-
-                <TextView
-                    android:id="@+id/timeView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:gravity="left|center_vertical"
-                    android:textSize="18sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/activity3"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/activity3"
-                    tools:text="00:00-\n23:59" />
-
-            </android.support.constraint.ConstraintLayout>
-
-        </android.support.v7.widget.CardView>
-
-        <TextView
-            android:id="@+id/textView37"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Erinnerung erstellen"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/reminder_white" />
-
-        <de.leo.fingerprint.datacollector.uiElements.LockableViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:fitsSystemWindows="false"
-            app:layout_constraintBottom_toTopOf="@+id/previous_page"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reminder_card">
+    <de.leo.fingerprint.datacollector.uiElements.LockableViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:fitsSystemWindows="false"
+        app:layout_constraintBottom_toTopOf="@+id/previous_page"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reminder_card">
 
 
-        </de.leo.fingerprint.datacollector.uiElements.LockableViewPager>
+    </de.leo.fingerprint.datacollector.uiElements.LockableViewPager>
 
-        <TextView
-            android:id="@+id/previous_page"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginStart="16dp"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:text="Zurück"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <TextView
+        android:id="@+id/previous_page"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Zurück"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/next_page"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginEnd="16dp"
-            android:gravity="center_vertical"
-            android:padding="8dp"
-            android:text="Weiter"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+    <TextView
+        android:id="@+id/next_page"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:text="Weiter"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.rd.PageIndicatorView
-            android:id="@+id/pageIndicatorView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/next_page"
-            app:piv_animationType="worm"
-            app:piv_dynamicCount="true"
-            app:piv_interactiveAnimation="true"
-            app:piv_padding="12dp"
-            app:piv_radius="4dp"
-            app:piv_selectedColor="@color/gray_50"
-            app:piv_strokeWidth="5dp"
-            app:piv_unselectedColor="@color/gray_400"
-            app:piv_viewPager="@id/viewPager" />
+    <com.rd.PageIndicatorView
+        android:id="@+id/pageIndicatorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/next_page"
+        app:piv_animationType="worm"
+        app:piv_dynamicCount="true"
+        app:piv_interactiveAnimation="true"
+        app:piv_padding="12dp"
+        app:piv_radius="4dp"
+        app:piv_selectedColor="@color/gray_50"
+        app:piv_strokeWidth="5dp"
+        app:piv_unselectedColor="@color/gray_400"
+        app:piv_viewPager="@id/viewPager" />
 
-    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline4"

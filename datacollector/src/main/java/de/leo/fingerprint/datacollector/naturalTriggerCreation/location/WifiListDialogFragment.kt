@@ -42,7 +42,7 @@ class WifiListDialogFragment : DialogFragment() {
             // The activity doesn't implement the interface, throw exception
             throw ClassCastException(activity.toString() + " must implement GeofenceDialogListener")
         }
-        mWifiManager = activity.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        mWifiManager = activity.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         activity.registerReceiver(mWifiScanReceiver,
                                   IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))
         mWifiManager.startScan()
