@@ -6,6 +6,7 @@ import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import org.threeten.bp.LocalTime
 
 /**
+ * Model class containing the natural trigger during creation.
  * Created by Leo on 06.03.2018.
  */
 class NaturalTrigger() {

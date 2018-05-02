@@ -12,34 +12,19 @@
         android:onClick="onButtonJitai"
         android:text="Jitai Manager" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Für volle funktionalität muss ein homescreenWidget angelegt werden." />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
-
-    <TextView
-        android:id="@+id/textView30"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Debug Activities" />
-
     <Button
         android:id="@+id/Entry"
-        android:text="Entry"
-        android:onClick="onButtonEntry"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonEntry"
+        android:text="Data Collector Management" />
 
     <Button
-        android:id="@+id/Trigger"
-        android:text="Entry"
-        android:onClick="onButtonTrigger"
+        android:id="@+id/geofence"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:onClick="onButtonGeofence"
+        android:text="Create Geofence" />
 
     <Button
         android:id="@+id/Maps"
@@ -49,6 +34,18 @@
         android:text="Daily Routines"
         android:visibility="gone" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Für volle funktionalität muss ein homescreenWidget angelegt werden." />
+
+    <TextView
+        android:id="@+id/textView30"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Debug Activities"
+        android:visibility="gone" />
+
     <Button
         android:id="@+id/SensorOverview"
         android:layout_width="match_parent"
@@ -56,6 +53,13 @@
         android:onClick="onButtonSensorOverview"
         android:text="SensorOverview"
         android:visibility="gone" />
+
+    <Button
+        android:id="@+id/Trigger"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonTrigger"
+        android:text="New Approach" />
 
     <Button
         android:id="@+id/SensorFigure"
@@ -80,13 +84,6 @@
         android:onClick="onButtonLocalData"
         android:text="LocalData"
         android:visibility="gone" />
-
-    <Button
-        android:id="@+id/geofence"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onButtonGeofence"
-        android:text="Geofence" />
 
     <Button
         android:id="@+id/recoder"

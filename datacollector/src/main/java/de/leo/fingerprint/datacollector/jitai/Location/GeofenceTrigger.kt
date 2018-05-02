@@ -4,6 +4,7 @@ import android.content.Context
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.Trigger
 import de.leo.fingerprint.datacollector.models.SensorDataSet
+import weka.classifiers.trees.RandomForest
 import java.util.concurrent.TimeUnit
 
 /**
@@ -57,16 +58,17 @@ class GeofenceTrigger() : Trigger {
         return false
     }
 
-    fun getCurrentLocation() : MyGeofence = locations[state]
+    fun getCurrentLocation(): MyGeofence = locations[state]
 
-    private inline fun checkTimestamp(sensorDataTime: Long): Boolean {
+    private fun checkTimestamp(sensorDataTime: Long): Boolean {
         if (timestamp + TIMEOUT < sensorDataTime)
             return false
         return true
     }
 
     override fun toString(): String {
-        return locations.fold("Geofences: ", { r, f -> r + f.name + " -> "
-        }).trimEnd('-','>',' ')
+        return locations.fold("Geofences: ", { r, f ->
+            r + f.name + " -> "
+        }).trimEnd('-', '>', ' ')
     }
 }

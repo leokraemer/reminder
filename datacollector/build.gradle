@@ -11,8 +11,8 @@ android {
             storePassword 'werter'
         }
     }
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId 'de.leo.fingerprint'
         minSdkVersion 21
@@ -54,7 +54,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     // kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
@@ -66,16 +67,15 @@ dependencies {
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-design:$anko_version"
 
-
     //appcompat
-    implementation 'com.android.support:support-annotations:26.1.0'
-    implementation 'com.android.support:support-compat:26.1.0'
-    implementation 'com.android.support:support-core-utils:26.1.0'
-    implementation 'com.android.support:support-core-ui:26.1.0'
-    implementation 'com.android.support:support-fragment:26.1.0'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:cardview-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation "com.android.support:support-annotations:$support_version"
+    implementation "com.android.support:support-compat:$support_version"
+    implementation "com.android.support:support-core-utils:$support_version"
+    implementation "com.android.support:support-core-ui:$support_version"
+    implementation "com.android.support:support-fragment:$support_version"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:cardview-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta4'
     implementation 'org.slf4j:slf4j-nop:1.7.25'
 
@@ -97,43 +97,41 @@ dependencies {
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation 'com.romandanylyk:pageindicatorview:1.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
-    implementation 'com.androidplot:androidplot-core:0.9.7'
     implementation 'com.github.rmaestre:FastDTW:7923e3b'
     implementation 'io.apptik.widget:multislider:1.3.1-SNAPSHOT'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation 'org.apache.commons:commons-math3:3.6.1'
 
     // https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/LibSVM
-    compile(group: 'nz.ac.waikato.cms.weka', name: 'LibSVM', version: '1.0.10'){
+    implementation('nz.ac.waikato.cms.weka:LibSVM:1.0.10') {
         exclude group: 'nz.ac.waikato.cms.weka'
         exclude group: 'java.awt'
     }
 
     //für weka
-    implementation group: 'com.googlecode.matrix-toolkits-java', name: 'mtj', version: '1.0.4'
-    implementation group: 'org.mini2Dx', name: 'android-beans', version: '1.0.0'
-    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
-    implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
-
-
-    testImplementation("org.threeten:threetenbp:1.3.3") {
+    implementation project(":weka")
+    implementation 'com.googlecode.matrix-toolkits-java:mtj:1.0.4'
+    implementation 'org.mini2Dx:android-beans:1.0.0'
+    implementation 'javax.xml.bind:jaxb-api:2.2.12'
+    implementation 'nz.ac.waikato.cms.weka.thirdparty:java-cup-11b-runtime:2015.03.26'
+    testImplementation('org.threeten:threetenbp:1.3.3') {
         exclude group: 'com.jakewharton.threetenabp', module: 'threetenabp'
     }
+    testImplementation 'org.json:json:20140107'
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    androidTestImplementation 'com.android.support:support-annotations:24.0.0'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test:rules:0.5'
 
-    testCompile 'org.json:json:20140107'
-    testCompile 'junit:junit:4.12'
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
-    androidTestCompile 'com.android.support:support-annotations:24.0.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
     // Optional -- Hamcrest library
-    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
-    // Optional -- UI testing with Espresso
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    // Optional -- UI testing with UI Automator
-    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 
+    // Optional -- UI testing with Espresso
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+
+    // Optional -- UI testing with UI Automator
+    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }

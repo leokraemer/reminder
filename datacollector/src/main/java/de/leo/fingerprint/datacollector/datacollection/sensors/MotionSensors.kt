@@ -20,10 +20,10 @@ class MotionSensors(context: Context) {
 
 
     internal var mSensorManager: SensorManager
-    internal var mSensorAcc: Sensor
-    internal var mSensorGyro: Sensor
-    internal var mSensorRotation: Sensor
-    internal var mSensorMagnetometer: Sensor
+    internal var mSensorAcc: Sensor?
+    internal var mSensorGyro: Sensor?
+    internal var mSensorRotation: Sensor?
+    internal var mSensorMagnetometer: Sensor?
     private var accData: ArrayDeque<Pair<Long, FloatArray>> = ArrayDeque(INITIAL_NUMBER_OF_VALUES)
     private var rotData: ArrayDeque<Pair<Long, FloatArray>> = ArrayDeque(INITIAL_NUMBER_OF_VALUES)
     private var magData: ArrayDeque<Pair<Long, FloatArray>> = ArrayDeque(INITIAL_NUMBER_OF_VALUES)

@@ -2,23 +2,25 @@ package de.leo.fingerprint.datacollector.jitai.manage
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.database.Cursor
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.widget.CursorAdapter
 import android.widget.ListAdapter
-
+import cz.msebera.android.httpclient.util.Args
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
 import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import de.leo.fingerprint.datacollector.widget.ClassificationWidget
-
 import kotlinx.android.synthetic.main.jitai_list.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
-import android.content.ComponentName
-
+import java.util.*
+import kotlin.reflect.KFunction1
 
 /**
  * Created by Leo on 15.11.2017.
@@ -34,7 +36,9 @@ class JitaiManagingActivity : Activity(), JitaiUpdater {
             db.deleteJitai(id)
             updateDataset()
         }
+        return
     }
+
 
     override fun updateJitai(jitai: Int, active: Boolean) {
         db.updateJitai(jitai, active)
@@ -48,7 +52,7 @@ class JitaiManagingActivity : Activity(), JitaiUpdater {
         startService(intentFor<DataCollectorService>().setAction(UPDATE_JITAI))
         val appWidgetManager = AppWidgetManager.getInstance(application)
         val ids = appWidgetManager.getAppWidgetIds(ComponentName(getApplication(),
-                                                                 ClassificationWidget::class.java!!))
+                                                                 ClassificationWidget::class.java))
         appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.widget_jitai_list);
     }
 
@@ -74,4 +78,7 @@ class JitaiManagingActivity : Activity(), JitaiUpdater {
         super.onResume()
         (jitaiListView.adapter as CursorAdapter).changeCursor(db.allJitai())
     }
+
+
+
 }

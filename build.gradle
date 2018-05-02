@@ -5,9 +5,10 @@ buildscript {
     ext.rxkotlin_version = '2.1.0'
     ext.rxandroid_version = '2.0.1'
     ext.anko_version = '0.10.4'
+    ext.support_version = '27.0.2'
     repositories {
-        jcenter()
         google()
+        jcenter()
         maven { url "https://jitpack.io" }
     }
     dependencies {
@@ -20,8 +21,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
         flatDir {
             dirs 'libs'
         }

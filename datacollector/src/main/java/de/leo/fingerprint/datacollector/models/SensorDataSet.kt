@@ -19,7 +19,7 @@ data class SensorDataSet @JvmOverloads constructor(
     //every phone has these
     var location: String? = null,
     var gps: android.location.Location? = null,
-    var wifiName: String? = null,
+    var wifiInformation: String? = null,
     var bluetoothDevices: List<String>? = null,
     var screenState: Boolean = false,
 

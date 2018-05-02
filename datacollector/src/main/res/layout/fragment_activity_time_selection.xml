@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="*"
+    tools:background="@color/colorPrimary">
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/textView385"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="4"
+
+            android:text="Wie lange führen sie die Aktivität aus, bevor die Situation einritt?" />
+
+    </TableRow>
+
+    <TableRow android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/situation_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_span="4"
+            android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme" />
+
+    </TableRow>
+
+    <TableRow android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/situation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="4"
+            android:text="Aktivitätsdauer" />
+
+    </TableRow>
+
+    <TableRow android:layout_marginTop="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_span="4">
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableTextView
+                android:id="@+id/button5min"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:adjustViewBounds="false"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="5"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableTextView
+                android:id="@+id/button15min"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:adjustViewBounds="false"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="15"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableTextView
+                android:id="@+id/button30min"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:adjustViewBounds="false"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="30"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableTextView
+                android:id="@+id/button60"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:adjustViewBounds="false"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="60"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="4"
+            android:text="Minuten" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp">
+
+        <LinearLayout android:layout_span="4">
+
+            <de.leo.fingerprint.datacollector.uiElements.CheckableTextView
+                android:id="@+id/buttonCustomInterval"
+                style="@style/TextAppearance.AppCompat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:adjustViewBounds="false"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="48dp"
+                android:text="..."
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Button"
+                style="?android:attr/buttonBarNeutralButtonStyle"/>
+
+            />
+        </LinearLayout>
+    </TableRow>
+
+</TableLayout>

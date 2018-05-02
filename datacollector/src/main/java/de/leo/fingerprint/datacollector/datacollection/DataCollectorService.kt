@@ -1,6 +1,5 @@
 package de.leo.fingerprint.datacollector.datacollection
 
-import android.app.NotificationManager
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,6 +7,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.location.Location
+import android.net.wifi.ScanResult
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -29,7 +30,10 @@ import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity
 import de.leo.fingerprint.datacollector.models.SensorDataSet
 import de.leo.fingerprint.datacollector.utils.*
+import org.jetbrains.anko.custom.async
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.longToast
 import org.jetbrains.anko.toast
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -43,7 +47,11 @@ class DataCollectorService : Service(),
                              GooglePlacesListener,
                              AmbientSoundListener,
                              GoogleFitnessListener,
-                             WeatherCallerListener {
+                             WeatherCallerListener, WifiUpdateListener {
+
+    override fun wifiUpdated(scanResults: List<ScanResult>) {
+        currentWifis = scanResults
+    }
 
     companion object {
 
@@ -91,6 +99,8 @@ class DataCollectorService : Service(),
     private var db: JitaiDatabase? = null
     private var recordingId = -1
     private var activityRecognizer: ActivityRecognizer? = null
+    private var wifiScanner: WifiScanner? = null
+    private var currentWifis: List<ScanResult> = listOf()
 
     private lateinit var pm: PowerManager
     private lateinit var dm: DisplayManager
@@ -140,12 +150,14 @@ class DataCollectorService : Service(),
                 USER_CLASSIFICATION_NOW -> {
                     val jitaiId = intent.getIntExtra(JITAI_ID, -1)
                     if (jitaiId > -1) {
-                        db!!.enterJitaiEvent(jitaiId,
-                                             System.currentTimeMillis(),
-                                             Jitai.NOW,
-                                             uploadDataSet(System.currentTimeMillis()))
-                        Log.d(TAG, "entered now event for $jitaiId")
-                        toast("Aktivität aufgezeichnet")
+                        doAsync {
+                            db!!.enterJitaiEvent(jitaiId,
+                                                 System.currentTimeMillis(),
+                                                 Jitai.NOW,
+                                                 uploadDataSet(System.currentTimeMillis()))
+                            Log.d(TAG, "entered now event for $jitaiId")
+                        }
+                        longToast("Aktivität aufgezeichnet")
                     } else
                         baseContext.startActivity(baseContext.intentFor<JitaiManagingActivity>()
                                                       .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
@@ -188,6 +200,7 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.WEATHER_ENABLED) {
             weatherCaller = WeatherCaller(this)
         }
+        wifiScanner = WifiScanner(this, this)
         currentWifiName = "null"
         currentLabel = "null"
 
@@ -229,10 +242,10 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
             stopGoogleFitness()
         }
-        if (ambientSound != null) {
-            ambientSound!!.stop()
-            ambientSound = null
-        }
+        ambientSound?.stop()
+        ambientSound = null
+        wifiScanner?.stop()
+        wifiScanner = null
     }
 
     private fun startScheduledUpdate() {
@@ -278,26 +291,30 @@ class DataCollectorService : Service(),
         googleFitness.readData()
     }
 
+
     private fun getWiFiName() {
+        var wifiInfo: WifiInfo? = null
         try {
             val wifiMgr = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val wifiInfo = wifiMgr.connectionInfo
-            val wifi = wifiInfo.ssid + ":" + wifiInfo.bssid + ":" + wifiInfo
-                .ipAddress + ":" + wifiInfo.networkId + ":" + wifiInfo.rssi
-            val level = WifiManager.calculateSignalLevel(wifiInfo.rssi, 100)
-            //String wifi = wifiInfo.getSSID()+":"+wifiInfo.getIpAddress()+":"+wifiInfo
-            // .getNetworkId();
-            if (wifiInfo.ssid == null) {
-                currentWifiName = "null"
-            } else {
-                currentWifiName = wifi
-            }
+            wifiInfo = wifiMgr.connectionInfo
 
         } catch (e: Exception) {
             Log.d(TAG, "get wifi name error")
+            wifiInfo = null
         }
-
+        currentWifiName = currentWifis.map {
+            //replace the connected wifi with better information
+            if (wifiInfo?.bssid == it.BSSID) {
+                "[${wifiInfo?.bssid};${wifiInfo?.rssi};${wifiInfo?.ssid};${wifiInfo?.ipAddress};${wifiInfo?.networkId}]"
+            } else {
+                "[${it.BSSID};${it.level};${it.SSID};0.0.0.0;-1]"
+            }
+        }.toString()
+        if (currentWifis.isEmpty()) {
+            currentWifiName = "[${wifiInfo?.bssid};${wifiInfo?.rssi};${wifiInfo?.ssid};${wifiInfo?.ipAddress};${wifiInfo?.networkId}]"
+        }
     }
+
 
     fun checkScreenOn() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
@@ -319,7 +336,7 @@ class DataCollectorService : Service(),
             sensorDataSet.activity = currentActivities
         }
         if (DataCollectorApplication.WIFI_NAME_ENABLED) {
-            sensorDataSet.wifiName = currentWifiName
+            sensorDataSet.wifiInformation = currentWifiName
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
             Log.d(TAG, currentLatitude.toString() + "")
@@ -350,19 +367,21 @@ class DataCollectorService : Service(),
     }
 
     private fun uploadEnvironmentData() {
-        db!!.enterSingleDimensionDataBatch(recordingId,
-                                           TABLE_REALTIME_AIR,
-                                           myEnvironmentSensor.readPressureData())
-        db!!.enterSingleDimensionDataBatch(recordingId,
-                                           TABLE_REALTIME_TEMPERATURE,
-                                           myEnvironmentSensor.readTemperatureData())
-        db!!.enterSingleDimensionDataBatch(recordingId,
-                                           TABLE_REALTIME_LIGHT,
-                                           myEnvironmentSensor.readLightData())
-        db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_HUMIDITY,
-                                           myEnvironmentSensor.readHumidityData())
-        db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_PROXIMITY,
-                                           myEnvironmentSensor.readProximityData())
+        doAsync {
+            db!!.enterSingleDimensionDataBatch(recordingId,
+                                               TABLE_REALTIME_AIR,
+                                               myEnvironmentSensor.readPressureData())
+            db!!.enterSingleDimensionDataBatch(recordingId,
+                                               TABLE_REALTIME_TEMPERATURE,
+                                               myEnvironmentSensor.readTemperatureData())
+            db!!.enterSingleDimensionDataBatch(recordingId,
+                                               TABLE_REALTIME_LIGHT,
+                                               myEnvironmentSensor.readLightData())
+            db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_HUMIDITY,
+                                               myEnvironmentSensor.readHumidityData())
+            db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_PROXIMITY,
+                                               myEnvironmentSensor.readProximityData())
+        }
     }
 
     private fun uploadMotionData() {
@@ -370,10 +389,12 @@ class DataCollectorService : Service(),
         val rotData = myMotion.readRotData()
         val magData = myMotion.readMagData()
         val gyroData = myMotion.readGyroData()
-        db!!.enterAccDataBatch(recordingId, accData)
-        db!!.enterGyroDataBatch(recordingId, gyroData)
-        db!!.enterMagDataBatch(recordingId, magData)
-        db!!.enterRotDataBatch(recordingId, rotData)
+        doAsync {
+            db!!.enterAccDataBatch(recordingId, accData)
+            db!!.enterGyroDataBatch(recordingId, gyroData)
+            db!!.enterMagDataBatch(recordingId, magData)
+            db!!.enterRotDataBatch(recordingId, rotData)
+        }
     }
 
     override fun activityUpdate(activity: List<DetectedActivity>) {

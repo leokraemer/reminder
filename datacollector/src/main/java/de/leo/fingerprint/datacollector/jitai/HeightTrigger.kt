@@ -49,7 +49,7 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
     }
 }
 
-/*class heightDifferentialTrigger(val context: Context, val threshold: Float, val interval: Long) :
+/*class heightDifferentialTrigger(val context: Context, val threshold: Float, val windowSize: Long) :
         Trigger {
     val db: JitaiDatabase
 
@@ -58,7 +58,7 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
     }
 
     override fun check(sensorData: SensorDataSet): Boolean {
-        val airPressureProfile = db.getSensorValues(sensorData.time - interval,
+        val airPressureProfile = db.getSensorValues(sensorData.time - windowSize,
                                                     sensorData.time,
                                                     TABLE_REALTIME_AIR)
         if (airPressureProfile.size > 3) {

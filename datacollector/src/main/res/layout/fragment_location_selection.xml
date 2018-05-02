@@ -178,7 +178,7 @@
     <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
         android:id="@+id/shopGeofenceButton"
         android:layout_width="48dp"
-        android:layout_height="52dp"
+        android:layout_height="48dp"
         android:clickable="true"
         android:focusable="true"
 

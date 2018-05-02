@@ -38,7 +38,13 @@ import de.leo.fingerprint.datacollector.application.DataCollectorApplication;
 import de.leo.fingerprint.datacollector.datacollection.DataCollectorService;
 import de.leo.fingerprint.datacollector.settings.FingerPrintSettingsActivity;
 
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -53,13 +59,11 @@ public class EntryActivity extends AppCompatActivity {
     final int START_LABEL = 2;
     final int STOP_LABEL = 3;
     TextView textView;
-    RadioGroup radioGroupLabelType, radioGroupStopLabel;
-    String currentLabel = null;
     int mood = -1;
     int state = -1;
     ComboSeekBar comboStartLabel, comboStopLabel;
     Context context;
-    Button buttonStartService, buttonStopService, buttonStartLabel, buttonStopLabel;
+    Button buttonStartService, buttonStopService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +72,8 @@ public class EntryActivity extends AppCompatActivity {
         context = this;
 
         textView = (TextView) findViewById(R.id.entry_activity_text);
-        radioGroupLabelType = (RadioGroup) findViewById(R.id.radio_group);
         buttonStartService = (Button) findViewById(R.id.button_start_service);
         buttonStopService = (Button) findViewById(R.id.button_stop_service);
-        buttonStartLabel = (Button) findViewById(R.id.button_start_label);
-        buttonStopLabel = (Button) findViewById(R.id.button_stop_label);
 
         startScheduledUpdate();
         updateUI();
@@ -137,7 +138,6 @@ public class EntryActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DataCollectorService.class);
             stopService(intent);
             updateUI();
-            radioGroupLabelType.clearCheck();
         }
     }
 
@@ -154,27 +154,10 @@ public class EntryActivity extends AppCompatActivity {
     public void OnClickStartLabel(View view) {
         boolean running = isMyServiceRunning(DataCollectorService.class);
         if (running) {
-            int id = radioGroupLabelType.getCheckedRadioButtonId();
-            View radioButton = radioGroupLabelType.findViewById(id);
-            int idx = radioGroupLabelType.indexOfChild(radioButton);
-            if (idx < 0) {
-                Toast.makeText(this, "Please select one of the options.", Toast.LENGTH_SHORT)
-                        .show();
-                return;
-            }
-            currentLabel = (String) ((RadioButton) radioButton).getText();
             //Toast.makeText(this, idx + " " + currentLabel, Toast.LENGTH_SHORT).show();
             state = START_LABEL;
-            ShowDialog(state);
         } else {
             Toast.makeText(this, "Please start service first.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void OnClickStopLabel(View view) {
-        if (currentLabel != null) {
-            state = STOP_LABEL;
-            ShowDialog(state);
         }
     }
 
@@ -218,13 +201,6 @@ public class EntryActivity extends AppCompatActivity {
 
     private void updateUI() {
 
-        if (state == START_LABEL) {
-            buttonStartLabel.setEnabled(false);
-            buttonStopLabel.setEnabled(true);
-        } else {
-            buttonStartLabel.setEnabled(true);
-            buttonStopLabel.setEnabled(false);
-        }
 
         boolean running = isMyServiceRunning(DataCollectorService.class);
         textView.setText("Data Collector Service: " + running);
@@ -235,8 +211,6 @@ public class EntryActivity extends AppCompatActivity {
         } else {
             buttonStartService.setEnabled(true);
             buttonStopService.setEnabled(false);
-            buttonStartLabel.setEnabled(false);
-            buttonStopLabel.setEnabled(false);
         }
 
     }
@@ -365,138 +339,4 @@ public class EntryActivity extends AppCompatActivity {
                 return;
         }
     }
-
-    private void ShowDialog(int action) {
-        if (action == START_LABEL) {
-            final Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.dialog_start_label);
-            setUpSeekBarStartLabel(dialog);
-
-            Button button = (Button) dialog.findViewById(R.id.button_done_dialog_start_label);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (currentLabel != null && mood > 0) {
-                        sendMessage2Service(currentLabel);
-
-                    } else {
-                        Toast.makeText(context, "Please finish the questions.", Toast
-                                .LENGTH_SHORT).show();
-                    }
-
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    state = -1;
-                    updateUI();
-                }
-            });
-
-        } else if (action == STOP_LABEL) {
-            final Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.dialog_stop_label);
-            setUpSeekBarStopLabel(dialog);
-            radioGroupStopLabel = (RadioGroup) dialog.findViewById(R.id
-                    .radio_group_typical_routine_dialog_stop_label);
-
-            Button button = (Button) dialog.findViewById(R.id.button_done_dialog_stop_label);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int id = radioGroupStopLabel.getCheckedRadioButtonId();
-                    View radioButton = radioGroupStopLabel.findViewById(id);
-                    int idx = radioGroupStopLabel.indexOfChild(radioButton);
-                    if (idx < 0) {
-                        Toast.makeText(context, "Please select one of the options.", Toast
-                                .LENGTH_SHORT).show();
-                        return;
-                    }
-                    String isTypicalRoutine = (String) ((RadioButton) radioButton).getText();
-                    if (currentLabel != null && mood > 0) {
-                        sendMessage2Service("null");
-                        currentLabel = null;
-                        radioGroupLabelType.clearCheck();
-                    } else {
-                        Toast.makeText(context, "Please finish the questions.", Toast
-                                .LENGTH_SHORT).show();
-                    }
-                    dialog.dismiss();
-                }
-            });
-            dialog.show();
-            dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    state = -1;
-                    updateUI();
-                }
-            });
-        }
-    }
-
-    private void setUpSeekBarStartLabel(Dialog view) {
-        final float scale = getResources().getDisplayMetrics().density;
-        comboStartLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very " +
-                "|good ");
-        comboStartLabel.setAdapter(seekBarStep);
-        comboStartLabel.setSelection(3);
-        comboStartLabel.setColor(Color.WHITE);
-        int textSize = (int) (15 * scale + 0.5f);
-        comboStartLabel.setTextSize(textSize);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        comboStartLabel.setLayoutParams(layoutParams);
-        comboStartLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                comboStartLabel.setColor(Color.BLUE);
-                mood = i;
-            }
-        });
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id
-                .bar_holder_dialog_start_label);
-        linearLayout.addView(comboStartLabel);
-        mood = -1;
-    }
-
-    private void setUpSeekBarStopLabel(Dialog view) {
-        final float scale = getResources().getDisplayMetrics().density;
-        comboStopLabel = new ComboSeekBar(this);
-        List<String> seekBarStep = Arrays.asList("very | bad", " ", " ", " ", " ", " ", "very " +
-                "|good ");
-        comboStopLabel.setAdapter(seekBarStep);
-        comboStopLabel.setSelection(3);
-        comboStopLabel.setColor(Color.WHITE);
-        int textSize = (int) (15 * scale + 0.5f);
-        comboStopLabel.setTextSize(textSize);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams
-                .MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        comboStopLabel.setLayoutParams(layoutParams);
-        comboStopLabel.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                comboStopLabel.setColor(Color.BLUE);
-                mood = i;
-            }
-        });
-        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id
-                .bar_holder_dialog_stop_label);
-        linearLayout.addView(comboStopLabel);
-        mood = -1;
-    }
-
-
-    private void sendMessage2Service(String label) {
-        Intent intent = new Intent(DataCollectorApplication.BROADCAST_EVENT);
-        // add data
-        intent.putExtra("label", label);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-    }
-
 }

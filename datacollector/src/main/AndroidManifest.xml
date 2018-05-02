@@ -13,21 +13,13 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
-    <uses-feature
-        android:name="android.hardware.location"
-        android:required="false" />
-    <uses-feature
-        android:name="android.hardware.location.gps"
-        android:required="false" />
-
-
     <application
         android:name="de.leo.fingerprint.datacollector.application.DataCollectorApplication"
         android:allowBackup="true"
         android:icon="@drawable/fp_s"
         android:label="@string/study_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppBaseTheme">
         <activity
             android:name="de.leo.fingerprint.datacollector.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="@string/study_name"></activity>
@@ -58,7 +50,16 @@
         <activity
             android:name="de.leo.fingerprint.datacollector.compare.CompareActivity"
             android:label="Compare Activity"></activity>
+        <activity
+            android:name="de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity"
+            android:label="@string/title_activity_maps"></activity>
+        <activity android:name="de.leo.fingerprint.datacollector.NavigationActivity">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name="de.leo.fingerprint.datacollector.services.ActivitiesIntentService"
@@ -69,7 +70,9 @@
             android:exported="true"></service>
 
         <service android:name="de.leo.fingerprint.datacollector.notifications.NotificationService" />
-        <service android:name="de.leo.fingerprint.datacollector.widget.WidgetService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
+        <service
+            android:name="de.leo.fingerprint.datacollector.widget.WidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -93,16 +96,7 @@
                 android:resource="@xml/classificationwidget" />
         </receiver>
 
-        <activity
-            android:name="de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name="de.leo.fingerprint.datacollector.NavigationActivity">
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

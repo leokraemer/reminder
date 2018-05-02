@@ -2,8 +2,10 @@ package de.leo.fingerprint.datacollector.jitai.manage
 
 import android.content.Context
 import android.os.Environment
-import android.os.Environment.DIRECTORY_NOTIFICATIONS
 import android.util.Log
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import de.leo.fingerprint.datacollector.EntryActivity
 import de.leo.fingerprint.datacollector.activityDetection.*
 import de.leo.fingerprint.datacollector.database.*
 import de.leo.fingerprint.datacollector.jitai.JitaiEvent
@@ -15,10 +17,12 @@ import de.leo.fingerprint.datacollector.notifications.NotificationService
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.uiThread
+import org.w3c.dom.Attr
 import weka.classifiers.Classifier
 import weka.classifiers.Evaluation
 import weka.classifiers.functions.LibSVM
 import weka.classifiers.meta.AttributeSelectedClassifier
+import weka.classifiers.meta.Bagging
 import weka.classifiers.trees.J48
 import weka.core.converters.ArffSaver
 import java.io.File
@@ -56,9 +60,10 @@ class Jitai(val context: Context) {
         const val NOTIFICATION_TRIGGER_DELETE = NOTIFICATION_TRIGGER + 3
 
 
-        const val ARFF_PREFIX = "ex2"
+        const val ARFF_PREFIX = "ex3_getSensordata_by_timestamp"
     }
 
+    var numberOfDataPoints: Int = 1
     var active = true
     var goal: String = ""
     var message: String = ""
@@ -74,9 +79,15 @@ class Jitai(val context: Context) {
 
     @Transient
     private var classifier: Classifier? = null
+    @Transient
+    private var svm: Classifier? = LibSVM()
+    @Transient
+    private var attribselected: Classifier? = AttributeSelectedClassifier()
 
     @Transient
-    var evaluation: Evaluation? = null
+    var evaluation: MutableList<Evaluation?> = mutableListOf()
+    var evaluation1: MutableList<Evaluation?> = mutableListOf()
+    var evaluation2: MutableList<Evaluation?> = mutableListOf()
 
     @Transient
     private var events: MutableList<JitaiEvent>? = null
@@ -110,13 +121,17 @@ class Jitai(val context: Context) {
     }
 
     private fun getNewClassifier(): Classifier {
-        val classifier = J48()
+        val classifier = Bagging()
         return classifier
     }
 
     private fun updateClassfier(sensorData: SensorDataSet) {
         if (events?.isEmpty() == true) {
-            val fingerprint = createFingerprint(this, context, sensorData, MATCH)
+            val fingerprint = createFingerprint(this,
+                                                context,
+                                                sensorData,
+                                                MATCH,
+                                                FingerPrintAttributes(numberOfDataPoints))
             classifier = getNewClassifier()
             classifier!!.buildClassifier(fingerprint)
         } else if (events != null && events!!.size > 0) {
@@ -130,18 +145,52 @@ class Jitai(val context: Context) {
                     doAsync {
                         val fingerprints = createFingerprint(this@Jitai,
                                                              context,
-                                                             relevantSensorDataSets)
+                                                             relevantSensorDataSets,
+                                                             FingerPrintAttributes(
+                                                                 numberOfDataPoints)
+                                                            )
                         val classifier = getNewClassifier()
                         Log.d("$goal instances done",
                               (System.currentTimeMillis() - time).toString())
                         val eval = Evaluation(fingerprints)
                         try {
                             eval.crossValidateModel(classifier, fingerprints,
-                                                    10, Random())
-                            Log.i("$goal performance", eval.toSummaryString())
-                            Log.i("$goal performance", "confusion matrix")
+                                                    10, Random(1))
+                            Log.i("$goal ${numberOfDataPoints} bagging", eval
+                                .toSummaryString())
+                            Log.i("$goal ${numberOfDataPoints} bagging", "confusion matrix")
                             eval.confusionMatrix()
-                                .forEach { Log.i("$goal performance", it.contentToString()) }
+                                .forEach { Log.i("$goal bagging", it.contentToString()) }
+                        } catch (e: Exception) {
+                            Log.i("$goal", e.toString())
+                        }
+                        svm = LibSVM()
+                        val eval1 = Evaluation(fingerprints)
+                        try {
+                            eval1.crossValidateModel(svm, fingerprints,
+                                                     10, Random(1))
+                            Log.i("$goal ${numberOfDataPoints} svm", eval1
+                                .toSummaryString())
+                            Log.i("$goal ${numberOfDataPoints} svm", "confusion matrix")
+                            eval1.confusionMatrix()
+                                .forEach { Log.i("$goal svm", it.contentToString()) }
+                        } catch (e: Exception) {
+                            Log.i("$goal", e.toString())
+                        }
+                        attribselected = AttributeSelectedClassifier()
+                        val eval2 = Evaluation(fingerprints)
+                        try {
+                            eval2.crossValidateModel(attribselected, fingerprints,
+                                                     10, Random(1))
+                            Log.i("$goal ${numberOfDataPoints} attr}", eval2
+                                .toSummaryString())
+                            Log.i("$goal ${numberOfDataPoints} attr}",
+                                  "confusion matrix")
+                            eval2.confusionMatrix()
+                                .forEach {
+                                    Log.i("$goal ${attribselected.toString()}", it
+                                        .contentToString())
+                                }
                         } catch (e: Exception) {
                             Log.i("$goal", e.toString())
                         }
@@ -154,7 +203,8 @@ class Jitai(val context: Context) {
                                                       "${ARFF_PREFIX}" +
                                                           "_${goal}_" +
                                                           "_${fingerprints.size}_instances" +
-                                                          "accuracy_" +
+                                                          "_${numberOfDataPoints}_windowSize_" +
+                                                          "f1_" +
                                                           "${eval?.fMeasure(
                                                               fingerprints
                                                                   .attribute(CLASSIFICATION)
@@ -175,8 +225,44 @@ class Jitai(val context: Context) {
                         Log.d("$goal rebuilding done",
                               (System.currentTimeMillis() - time).toString())
                         uiThread {
+                            this@Jitai.evaluation.add(eval)
+                            this@Jitai.evaluation1.add(eval1)
+                            this@Jitai.evaluation2.add(eval2)
                             this@Jitai.classifier = classifier
-                            this@Jitai.evaluation = eval
+                            //hack to get through all window sizes
+                            if (numberOfDataPoints < 12) {
+                                this@Jitai.classifier = null
+                                numberOfDataPoints++
+                            } else {
+                                evaluation.mapIndexed({ i, it ->
+                                                          Log.i("bagging $i", it!!
+                                                              .toSummaryString())
+                                                      })
+                                evaluation.mapIndexed({ i, it ->
+                                                          Log.i("bagging $i", it!!
+                                                              .toClassDetailsString())
+                                                      })
+                                evaluation.map { Log.i("bagging f1", "" + it!!.weightedFMeasure()) }
+                                evaluation1.mapIndexed({ i, it ->
+                                                           Log.i("svm $i", it!!
+                                                               .toSummaryString())
+                                                       })
+                                evaluation1.mapIndexed({ i, it ->
+                                                           Log.i("svm $i", it!!
+                                                               .toClassDetailsString())
+                                                       })
+                                evaluation1.map { Log.i("svm f1", "" + it!!.weightedFMeasure()) }
+                                evaluation2.mapIndexed({ i, it ->
+                                                           Log.i("attributeSelected $i", it!!
+                                                               .toSummaryString())
+                                                       })
+                                evaluation2.mapIndexed({ i, it ->
+                                                           Log.i("attributeSelected $i", it!!
+                                                               .toClassDetailsString())
+                                                       })
+                                evaluation2.map { Log.i("attr f1", "" + it!!.weightedFMeasure()) }
+                            }
+
                             updatingClassifier = false
                             db!!.enterJitaiEvent(id,
                                                  sensorData.time,
@@ -195,7 +281,8 @@ class Jitai(val context: Context) {
 
     private fun checkSVM(sensorData: SensorDataSet): Boolean {
         if (classifier != null) {
-            val fingerprint = createFingerprint(this, context, sensorData, NO_MATCH)
+            val fingerprint = createFingerprint(this, context, sensorData, NO_MATCH,
+                                                FingerPrintAttributes(numberOfDataPoints))
             val prediction = classifier!!.classifyInstance(fingerprint[0])
             if (nominal[prediction.toInt()] == MATCH) {
                 db!!.enterJitaiEvent(id, sensorData.time, JITAI_POSITIVE_PREDICTION, sensorData.id)
@@ -237,4 +324,5 @@ class Jitai(val context: Context) {
                                                             JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
         context.startService(intent)
     }
+
 }

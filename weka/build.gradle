@@ -1,0 +1,9 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation group: 'com.googlecode.matrix-toolkits-java', name: 'mtj', version: '1.0.4'
+    implementation group: 'org.mini2Dx', name: 'android-beans', version: '1.0.0'
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.2.12'
+    implementation group: 'nz.ac.waikato.cms.weka.thirdparty', name: 'java-cup-11b-runtime', version: '2015.03.26'
+}

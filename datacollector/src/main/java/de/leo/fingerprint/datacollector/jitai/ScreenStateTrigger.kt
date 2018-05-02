@@ -27,7 +27,7 @@ class ScreenStateTrigger(screenState: String, val interval: Long) :
             val db = JitaiDatabase.getInstance(context)
             val states = db.getScreenState(sensorData.time - interval, sensorData.time)
             if (states.size == 0)
-                return sensorData.screenState!! == isScreenOn
+                return sensorData.screenState == isScreenOn
             if (isScreenOn) {
                 //use any to find only first
                 return !states.any { pair -> pair.second == false }

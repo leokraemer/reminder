@@ -1,1 +1,1 @@
-include ':datacollector'
+include ":weka", ':datacollector'

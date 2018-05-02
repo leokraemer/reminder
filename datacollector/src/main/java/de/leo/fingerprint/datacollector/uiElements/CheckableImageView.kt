@@ -3,6 +3,8 @@ package de.leo.fingerprint.datacollector.uiElements
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.View.OnClickListener
+import android.widget.Button
 import android.widget.Checkable
 import android.widget.ImageView
 
@@ -58,7 +60,6 @@ class CheckableImageView : ImageView, Checkable {
     }
 
     companion object {
-
         private val CHECKED_STATE_SET = intArrayOf(android.R.attr.state_checked)
     }
 }

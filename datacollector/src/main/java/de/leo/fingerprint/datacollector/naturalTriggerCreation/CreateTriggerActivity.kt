@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
+import android.widget.Toast
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.naturalTriggerCreation.location.LocationFinish
@@ -255,8 +256,8 @@ class CreateTriggerActivity : GeofenceDialogListener, WifiDialogListener, Natura
                     0    -> goalSelection
                     1    -> situationSelection
                     2    -> reminderSelection
-                    3    -> activitySelection
-                    4    -> locationSelection
+                    3    -> locationSelection
+                    4    -> activitySelection
                     5    -> timeSelection
                     else -> timeSelection // error
                 }
@@ -265,9 +266,9 @@ class CreateTriggerActivity : GeofenceDialogListener, WifiDialogListener, Natura
                     0    -> goalSelection
                     1    -> situationSelection
                     2    -> reminderSelection
-                    3    -> activitySelection
-                    4    -> locationSelection
-                    5    -> locationFinish
+                    3    -> locationSelection
+                    4    -> locationFinish
+                    5    -> activitySelection
                     6    -> timeSelection
                     else -> timeSelection // error
                 }
