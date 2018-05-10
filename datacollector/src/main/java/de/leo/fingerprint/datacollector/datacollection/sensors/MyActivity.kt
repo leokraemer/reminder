@@ -11,7 +11,7 @@ import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.services.ActivitiesIntentService
+import de.leo.fingerprint.datacollector.datacollection.services.ActivitiesIntentService
 import de.leo.fingerprint.datacollector.utils.Constants
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient

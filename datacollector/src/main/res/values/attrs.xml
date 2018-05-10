@@ -25,4 +25,9 @@
         <attr name="myColor" format="color" />
         <attr name="textSize" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="RadarOverlayView">
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
+
 </resources>

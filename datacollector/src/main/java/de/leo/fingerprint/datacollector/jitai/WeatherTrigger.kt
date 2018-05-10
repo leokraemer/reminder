@@ -1,8 +1,8 @@
 package de.leo.fingerprint.datacollector.jitai
 
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.models.SensorDataSet
-import de.leo.fingerprint.datacollector.models.Weather
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import android.content.Context
 
 /**

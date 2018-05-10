@@ -13,6 +13,7 @@ import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import com.fatboyindustrial.gsonjavatime.Converters
 import kotlinx.android.synthetic.main.jitai_list_element.view.*
 import com.google.gson.GsonBuilder
+import de.leo.fingerprint.datacollector.datacollection.database.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onLongClick
 
@@ -38,13 +39,13 @@ class JitaiListAdapter(context: Context, c: Cursor, val jitaiUpdater: JitaiUpdat
             view.geofence.text = gson.fromJson(cursor.getString(cursor.getColumnIndex
             (JITAI_GEOFENCE)), GeofenceTrigger::class.java).toString()
             view.time.text = gson.fromJson(
-                    cursor.getString(cursor.getColumnIndex(JITAI_TIME_TRIGGER)),
-                    TimeTrigger::class.java).toString()
+                cursor.getString(cursor.getColumnIndex(JITAI_TIME_TRIGGER)),
+                TimeTrigger::class.java).toString()
             view.weather.text = cursor.getInt(cursor.getColumnIndex(JITAI_WEATHER)).toString()
             view.message.text = cursor.getString(cursor.getColumnIndex(JITAI_MESSAGE))
             val jitaiId = cursor.getInt(cursor.getColumnIndex(ID))
             view.active_toggle_button.isChecked = cursor.getInt(cursor.getColumnIndex(
-                    JITAI_ACTIVE)) > 0
+                JITAI_ACTIVE)) > 0
             //hook to update the jitai when the toggle button is pressed
             view.active_toggle_button.onClick {
                 jitaiUpdater.updateJitai(jitaiId, view.active_toggle_button.isChecked)

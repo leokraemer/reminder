@@ -1,6 +1,6 @@
 package de.leo.fingerprint.datacollector
 
-import de.leo.fingerprint.datacollector.compare.CompareActivity
+import de.leo.fingerprint.datacollector.ui.compare.CompareActivity
 import junit.framework.Assert
 import org.junit.Test
 

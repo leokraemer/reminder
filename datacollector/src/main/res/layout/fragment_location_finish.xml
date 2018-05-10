@@ -6,11 +6,37 @@
     android:layout_height="match_parent"
     tools:background="@color/colorPrimary">
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/exitButton2"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/sand_timer_96px"
+        app:layout_constraintStart_toEndOf="@+id/exitButton"
+        app:layout_constraintTop_toTopOf="@+id/enterButton" />
+
+    <TextView
+        android:id="@+id/exitText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Zeit\nverbringen"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/exitButton2"
+        app:layout_constraintStart_toStartOf="@+id/exitButton2"
+        app:layout_constraintTop_toBottomOf="@+id/exitButton2" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/enterButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/round_checkable_background"
         android:checked="true"
         android:clickable="true"
@@ -32,6 +58,19 @@
         app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterButton" />
 
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/exitButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_exit_geofence_fat_arrow_white"
+        app:layout_constraintStart_toEndOf="@+id/enterButton"
+        app:layout_constraintTop_toTopOf="@+id/enterButton" />
+
     <TextView
         android:id="@+id/textView385"
         android:layout_width="wrap_content"
@@ -47,7 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Wählen sie:"
+        android:text="Wählen sie eine Aktion an diesem Ort:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation_text" />
 
@@ -62,19 +101,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
-
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
-        android:id="@+id/exitButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_exit_geofence_fat_arrow_white"
-        app:layout_constraintStart_toEndOf="@+id/enterButton"
-        app:layout_constraintTop_toTopOf="@+id/enterButton" />
 
     <TextView
         android:id="@+id/exitText"

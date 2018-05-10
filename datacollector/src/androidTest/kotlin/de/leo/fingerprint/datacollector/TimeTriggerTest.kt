@@ -3,7 +3,7 @@ package de.leo.fingerprint.datacollector
 import android.content.Context
 import android.support.test.InstrumentationRegistry
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.utils.TimeUtils.getDateFromString
 import org.junit.Assert
 import org.junit.Before
@@ -26,8 +26,9 @@ class TimeTriggerTest {
     @Test
     fun check() {
         val dummyTime = getDateFromString("2017-11-16:12-30-00")
-        val sensorData = SensorDataSet(dummyTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                                       "dummy")
+        val sensorData = SensorDataSet(
+            dummyTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            "dummy")
         val start = getDateFromString("2017-11-16:12-00-00").toLocalTime()
         val end = getDateFromString("2017-11-16:18-00-00").toLocalTime()
         //0 == thursday

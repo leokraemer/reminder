@@ -7,10 +7,10 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.database.TABLE_REALTIME_PROXIMITY
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REALTIME_PROXIMITY
 import de.leo.fingerprint.datacollector.jitai.ProximityTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -40,7 +40,8 @@ class ProximityTriggerTest {
         for (i in 0..fiveMinInMillis step 5000) {
             data.add(Pair<Long, Float>(i, getProximity(i)))
         }
-        db.enterSingleDimensionDataBatch(0, TABLE_REALTIME_PROXIMITY, data)
+        db.enterSingleDimensionDataBatch(0,
+                                         TABLE_REALTIME_PROXIMITY, data)
     }
 
     private fun getProximity(i: Long): Float {
@@ -58,9 +59,13 @@ class ProximityTriggerTest {
     @Test
     fun proximityTest() {
         val proximityTrigger = ProximityTrigger(true)
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "proximityTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(2),
+            "proximityTest")
         Assert.assertTrue(proximityTrigger.check(context, sensorDataSet))
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(3), "proximityTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(3),
+            "proximityTest")
         Assert.assertFalse(proximityTrigger.check(context, sensorDataSet))
     }
 }

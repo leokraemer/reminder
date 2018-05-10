@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+    <TextView
+        android:id="@+id/situation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Das Ereignis kann sich aus den folgenden drei Elementen zusammensetzen:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+    <include
+        android:id="@+id/navigation_fragment"
+        layout="@layout/fragment_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation"></include>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:stretchColumns="*">
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+            <TableRow>
+
+            </TableRow>
+
+
+        </TableLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

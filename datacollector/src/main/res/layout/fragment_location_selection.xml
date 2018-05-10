@@ -29,7 +29,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/worldGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -55,7 +55,7 @@
         app:layout_constraintStart_toStartOf="@+id/worldGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/worldGeofenceButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/wifiGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -94,7 +94,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation_text" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/workGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -120,7 +120,7 @@
         app:layout_constraintStart_toStartOf="@+id/workGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/workGeofenceButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/homeGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -147,7 +147,7 @@
         app:layout_constraintStart_toStartOf="@+id/homeGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/homeGeofenceButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/listGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -175,7 +175,7 @@
         app:layout_constraintStart_toStartOf="@+id/listGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/listGeofenceButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/shopGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -202,7 +202,7 @@
         app:layout_constraintStart_toStartOf="@+id/shopGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/shopGeofenceButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/enterButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -228,7 +228,7 @@
         app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterButton" />
 
-    <de.leo.fingerprint.datacollector.uiElements.CheckableImageView
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/busstopGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"

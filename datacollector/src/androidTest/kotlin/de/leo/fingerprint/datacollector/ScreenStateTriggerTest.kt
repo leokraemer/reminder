@@ -6,11 +6,11 @@ import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.InstrumentationRegistry.getTargetContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.jitai.ScreenStateTrigger
 import de.leo.fingerprint.datacollector.jitai.ScreenStateTrigger.Companion.SCREEN_OFF
 import de.leo.fingerprint.datacollector.jitai.ScreenStateTrigger.Companion.SCREEN_ON
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -36,7 +36,8 @@ class ScreenStateTriggerTest {
         val data = mutableListOf<SensorDataSet>()
         //create and enter 5 minutes of step data
         for (i in 0..fiveMinInMillis step fiveSeconds) {
-            sensorDataSet = SensorDataSet(i, "teststeps")
+            sensorDataSet = SensorDataSet(i,
+                                                                                                 "teststeps")
             sensorDataSet.screenState = getScreenState(i)
             data.add(sensorDataSet)
         }
@@ -59,7 +60,9 @@ class ScreenStateTriggerTest {
         val screenStateTrigger = ScreenStateTrigger(SCREEN_ON, TimeUnit.MINUTES.toMillis(1))
         sensorDataSet.screenState = false
         Assert.assertFalse(screenStateTrigger.check(context, sensorDataSet))
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(1), "oneMinute")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(1),
+            "oneMinute")
         sensorDataSet.screenState = true
         Assert.assertTrue(screenStateTrigger.check(context, sensorDataSet))
     }
@@ -68,7 +71,9 @@ class ScreenStateTriggerTest {
     fun screenStateOFFTriggerTest() {
         val screenStateTrigger = ScreenStateTrigger(SCREEN_OFF,
                                                     TimeUnit.MINUTES.toMillis(1) - 1)
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "twoMinute")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(2),
+            "twoMinute")
         sensorDataSet.screenState = false
         Assert.assertTrue(screenStateTrigger.check(context, sensorDataSet))
         sensorDataSet.screenState = true
@@ -79,7 +84,9 @@ class ScreenStateTriggerTest {
     fun screenStateNoStateInIntervalTriggerTest() {
         val screenStateTrigger = ScreenStateTrigger(SCREEN_ON, 1)
         //no more data
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(3), "twoMinute")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(3),
+            "twoMinute")
         sensorDataSet.screenState = true
         Assert.assertTrue(screenStateTrigger.check(context, sensorDataSet))
         sensorDataSet.screenState = false
@@ -90,7 +97,9 @@ class ScreenStateTriggerTest {
     fun screenStateZeroIntervalTriggerTest() {
         val screenStateTrigger = ScreenStateTrigger( SCREEN_ON, 0)
         //no more data
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(3), "twoMinute")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(3),
+            "twoMinute")
         sensorDataSet.screenState = true
         Assert.assertTrue(screenStateTrigger.check(context, sensorDataSet))
         sensorDataSet.screenState = false
@@ -101,7 +110,9 @@ class ScreenStateTriggerTest {
     fun screenStateZeroIntervalOFFTriggerTest() {
         val screenStateTrigger = ScreenStateTrigger( SCREEN_OFF, 0)
         //no more data
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(3), "twoMinute")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(3),
+            "twoMinute")
         sensorDataSet.screenState = false
         Assert.assertTrue(screenStateTrigger.check(context, sensorDataSet))
         sensorDataSet.screenState = true

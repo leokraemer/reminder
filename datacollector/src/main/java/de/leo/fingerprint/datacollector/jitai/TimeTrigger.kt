@@ -1,7 +1,7 @@
 package de.leo.fingerprint.datacollector.jitai
 
 import android.content.Context
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle

@@ -11,6 +11,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.leo.fingerprint.datacollector.ui.DailyRoutines.GlobalPOIsRoutinePattern;
+import de.leo.fingerprint.datacollector.ui.DailyRoutines.POI;
+
 /**
  * Created by Leo on 30.08.2017.
  */

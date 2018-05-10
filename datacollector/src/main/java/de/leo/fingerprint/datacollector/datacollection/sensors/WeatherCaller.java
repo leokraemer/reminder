@@ -4,8 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import de.leo.fingerprint.datacollector.models.Location;
-import de.leo.fingerprint.datacollector.models.Weather;
+import de.leo.fingerprint.datacollector.datacollection.models.Location;
+import de.leo.fingerprint.datacollector.datacollection.models.Weather;
 
 import org.json.JSONArray;
 import org.json.JSONException;

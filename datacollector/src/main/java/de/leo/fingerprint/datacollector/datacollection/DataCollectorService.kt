@@ -21,20 +21,19 @@ import android.util.Log
 import android.view.Display
 import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.activityDetection.ActivityRecognizer
-import de.leo.fingerprint.datacollector.activityRecording.RECORDING_ID
-import de.leo.fingerprint.datacollector.application.DataCollectorApplication
+import de.leo.fingerprint.datacollector.jitai.activityDetection.ActivityRecognizer
+import de.leo.fingerprint.datacollector.ui.activityRecording.RECORDING_ID
+import de.leo.fingerprint.datacollector.ui.application.DataCollectorApplication
 import de.leo.fingerprint.datacollector.database.*
+import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.datacollection.sensors.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.utils.*
-import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
-import org.jetbrains.anko.toast
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import java.util.*
@@ -128,7 +127,8 @@ class DataCollectorService : Service(),
         if (intent != null && intent.action != null)
             when (intent.action) {
                 UPDATE_JITAI            -> {
-                    activityRecognizer = ActivityRecognizer(baseContext)
+                    activityRecognizer = ActivityRecognizer(
+                        baseContext)
                 }
                 START_RECORDING         -> {
                     recordingId = intent.getIntExtra(RECORDING_ID, -1)
@@ -167,7 +167,8 @@ class DataCollectorService : Service(),
     }
 
     private fun startDataCollection() {
-        activityRecognizer = ActivityRecognizer(baseContext)
+        activityRecognizer = ActivityRecognizer(
+            baseContext)
         this.isRunning = true
         if (DataCollectorApplication.LOCATION_ENABLED) {
             //myLocation = MyLocation(this)
@@ -330,7 +331,9 @@ class DataCollectorService : Service(),
     }
 
     private fun uploadDataSet(currentTime: Long): Long {
-        val sensorDataSet = SensorDataSet(currentTime, "username")
+        val sensorDataSet = SensorDataSet(
+            currentTime,
+            "username")
         sensorDataSet.recordingId = recordingId
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
             sensorDataSet.activity = currentActivities
@@ -377,9 +380,11 @@ class DataCollectorService : Service(),
             db!!.enterSingleDimensionDataBatch(recordingId,
                                                TABLE_REALTIME_LIGHT,
                                                myEnvironmentSensor.readLightData())
-            db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_HUMIDITY,
+            db!!.enterSingleDimensionDataBatch(recordingId,
+                                               TABLE_REALTIME_HUMIDITY,
                                                myEnvironmentSensor.readHumidityData())
-            db!!.enterSingleDimensionDataBatch(recordingId, TABLE_REALTIME_PROXIMITY,
+            db!!.enterSingleDimensionDataBatch(recordingId,
+                                               TABLE_REALTIME_PROXIMITY,
                                                myEnvironmentSensor.readProximityData())
         }
     }

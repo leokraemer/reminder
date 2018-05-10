@@ -3,7 +3,7 @@ package de.leo.fingerprint.datacollector.jitai.Location
 import android.content.Context
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.Trigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import weka.classifiers.trees.RandomForest
 import java.util.concurrent.TimeUnit
 

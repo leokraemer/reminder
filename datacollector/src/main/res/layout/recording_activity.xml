@@ -32,7 +32,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <de.leo.fingerprint.datacollector.raw3DChart
+            <de.leo.fingerprint.datacollector.ui.uiElements.raw3DChart
                 android:id="@+id/recording_chart"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
@@ -74,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <de.leo.fingerprint.datacollector.raw3DChart
+            <de.leo.fingerprint.datacollector.ui.uiElements.raw3DChart
                 android:id="@+id/reference_chart"
                 android:layout_width="0dp"
                 android:layout_height="120dp"

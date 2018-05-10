@@ -5,7 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.utils.TimeUtils
 import org.junit.Assert
 import org.junit.Before

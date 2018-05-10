@@ -15,14 +15,14 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import de.leo.fingerprint.datacollector.GeofencesWithPlayServices.GeofenceMapActivity
+import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
-import de.leo.fingerprint.datacollector.models.Weather
+import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import kotlinx.android.synthetic.main.jitai_add_flow_activity.*
 import org.jetbrains.anko.toast
 import org.threeten.bp.DayOfWeek

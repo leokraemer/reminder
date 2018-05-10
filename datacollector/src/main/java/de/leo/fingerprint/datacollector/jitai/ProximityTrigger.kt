@@ -3,8 +3,8 @@ package de.leo.fingerprint.datacollector.jitai
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 
 /**
  * Created by Leo on 11.01.2018.

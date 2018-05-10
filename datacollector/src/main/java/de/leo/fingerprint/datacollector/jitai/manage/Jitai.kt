@@ -8,12 +8,14 @@ import com.google.android.gms.maps.model.LatLngBounds
 import de.leo.fingerprint.datacollector.EntryActivity
 import de.leo.fingerprint.datacollector.activityDetection.*
 import de.leo.fingerprint.datacollector.database.*
+import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.JitaiEvent
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
-import de.leo.fingerprint.datacollector.notifications.NotificationService
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.jitai.activityDetection.*
+import de.leo.fingerprint.datacollector.ui.notifications.NotificationService
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.uiThread
@@ -127,11 +129,13 @@ class Jitai(val context: Context) {
 
     private fun updateClassfier(sensorData: SensorDataSet) {
         if (events?.isEmpty() == true) {
-            val fingerprint = createFingerprint(this,
-                                                context,
-                                                sensorData,
-                                                MATCH,
-                                                FingerPrintAttributes(numberOfDataPoints))
+            val fingerprint = createFingerprint(
+                this,
+                context,
+                sensorData,
+                MATCH,
+                FingerPrintAttributes(
+                    numberOfDataPoints))
             classifier = getNewClassifier()
             classifier!!.buildClassifier(fingerprint)
         } else if (events != null && events!!.size > 0) {
@@ -143,12 +147,13 @@ class Jitai(val context: Context) {
                 if (!updatingClassifier) {
                     updatingClassifier = true
                     doAsync {
-                        val fingerprints = createFingerprint(this@Jitai,
-                                                             context,
-                                                             relevantSensorDataSets,
-                                                             FingerPrintAttributes(
-                                                                 numberOfDataPoints)
-                                                            )
+                        val fingerprints = createFingerprint(
+                            this@Jitai,
+                            context,
+                            relevantSensorDataSets,
+                            FingerPrintAttributes(
+                                numberOfDataPoints)
+                                                                                                                     )
                         val classifier = getNewClassifier()
                         Log.d("$goal instances done",
                               (System.currentTimeMillis() - time).toString())
@@ -281,8 +286,13 @@ class Jitai(val context: Context) {
 
     private fun checkSVM(sensorData: SensorDataSet): Boolean {
         if (classifier != null) {
-            val fingerprint = createFingerprint(this, context, sensorData, NO_MATCH,
-                                                FingerPrintAttributes(numberOfDataPoints))
+            val fingerprint = createFingerprint(
+                this,
+                context,
+                sensorData,
+                NO_MATCH,
+                FingerPrintAttributes(
+                    numberOfDataPoints))
             val prediction = classifier!!.classifyInstance(fingerprint[0])
             if (nominal[prediction.toInt()] == MATCH) {
                 db!!.enterJitaiEvent(id, sensorData.time, JITAI_POSITIVE_PREDICTION, sensorData.id)
@@ -305,9 +315,9 @@ class Jitai(val context: Context) {
                                                            NOTIFICATION_NOT_VALID_ANY_MORE,
                                                            sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
-                                                            JITAI_EVENT to
+                                                                                                              JITAI_EVENT to
                                                                 NOTIFICATION_NOT_VALID_ANY_MORE,
-                                                            JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
+                                                                                                              JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
         context.startService(intent)
     }
 
@@ -318,10 +328,10 @@ class Jitai(val context: Context) {
                                                            CONDITION_MET,
                                                            sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
-                                                            JITAI_EVENT to CONDITION_MET,
-                                                            JITAI_GOAL to goal,
-                                                            JITAI_MESSAGE to message,
-                                                            JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
+                                                                                                              JITAI_EVENT to CONDITION_MET,
+                                                                                                              JITAI_GOAL to goal,
+                                                                                                              JITAI_MESSAGE to message,
+                                                                                                              JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
         context.startService(intent)
     }
 

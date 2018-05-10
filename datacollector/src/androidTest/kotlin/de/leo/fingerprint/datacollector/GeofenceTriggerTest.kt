@@ -6,7 +6,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.Before
 import org.junit.Test
@@ -43,7 +43,8 @@ class GeofenceTriggerTest {
 
     @Test
     fun simpleGeofenceTriggerTest() {
-        val sensorData = SensorDataSet(System.currentTimeMillis(), "dummy")
+        val sensorData = SensorDataSet(System.currentTimeMillis(),
+                                                                                              "dummy")
         sensorData.gps = location1
         val trigger = GeofenceTrigger(listOf(geofence1))
         Assert.assertTrue(trigger.check(context, sensorData))
@@ -53,7 +54,8 @@ class GeofenceTriggerTest {
     @Test
     fun twoGeofenceTriggerTest() {
         val trigger = GeofenceTrigger(listOf(geofence1, geofence2))
-        val sensorData = SensorDataSet(System.currentTimeMillis(), "dummy")
+        val sensorData = SensorDataSet(System.currentTimeMillis(),
+                                                                                              "dummy")
         sensorData.gps = location1
         Assert.assertFalse(trigger.check(context, sensorData))
         sensorData.gps = location2
@@ -64,7 +66,8 @@ class GeofenceTriggerTest {
     @Test
     fun breakChainGeofenceTriggerTest() {
         val trigger = GeofenceTrigger(listOf(geofence1, geofence2, geofence3))
-        val sensorData = SensorDataSet(System.currentTimeMillis(), "dummy")
+        val sensorData = SensorDataSet(System.currentTimeMillis(),
+                                                                                              "dummy")
         sensorData.gps = location1
         Assert.assertFalse(trigger.check(context, sensorData))
         sensorData.gps = location2
@@ -90,13 +93,15 @@ class GeofenceTriggerTest {
     @Test
     fun timeoutGeofenceTriggerTest() {
         val trigger = GeofenceTrigger(listOf(geofence1, geofence2))
-        val sensorData = SensorDataSet(System.currentTimeMillis(), "dummy")
+        val sensorData = SensorDataSet(System.currentTimeMillis(),
+                                                                                              "dummy")
         sensorData.gps = location1
         Assert.assertFalse(trigger.check(context, sensorData))
         sensorData.gps = location2
         Assert.assertTrue(trigger.check(context, sensorData))
-        val sensorData2 = SensorDataSet(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1),
-                                        "dummy")
+        val sensorData2 = SensorDataSet(
+            System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1),
+            "dummy")
         sensorData2.gps = location2
         //must fail and return to state 0
         Assert.assertFalse(trigger.check(context, sensorData2))

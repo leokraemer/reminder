@@ -5,11 +5,11 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.database.TABLE_REALTIME_LIGHT
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REALTIME_LIGHT
 import de.leo.fingerprint.datacollector.jitai.BrighterThanTrigger
 import de.leo.fingerprint.datacollector.jitai.DimmerThanTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -36,7 +36,8 @@ class LightTriggerTest {
         for (i in 0..fiveMinInMillis step 5000) {
             data.add(Pair<Long, Float>(i, getBrightness(i)))
         }
-        db.enterSingleDimensionDataBatch(0, TABLE_REALTIME_LIGHT, data)
+        db.enterSingleDimensionDataBatch(0,
+                                         TABLE_REALTIME_LIGHT, data)
     }
 
     private fun getBrightness(i: Long): Float {
@@ -55,9 +56,13 @@ class LightTriggerTest {
     fun LightTriggerTest() {
         val lightTrigger = BrighterThanTrigger(600.0, TimeUnit.SECONDS
                 .toMillis(20))
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "lightTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(2),
+            "lightTest")
         Assert.assertFalse(lightTrigger.check(context, sensorDataSet))
-        sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(130), "lightTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.SECONDS.toMillis(130),
+            "lightTest")
         Assert.assertTrue(lightTrigger.check(context, sensorDataSet))
     }
 
@@ -66,9 +71,13 @@ class LightTriggerTest {
     fun DimmerLightTriggerTest() {
         val lightTrigger = DimmerThanTrigger(600.0, TimeUnit.SECONDS
                 .toMillis(20))
-        sensorDataSet = SensorDataSet(TimeUnit.MINUTES.toMillis(2), "lightTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.MINUTES.toMillis(2),
+            "lightTest")
         Assert.assertTrue(lightTrigger.check(context, sensorDataSet))
-        sensorDataSet = SensorDataSet(TimeUnit.SECONDS.toMillis(130), "lightTest")
+        sensorDataSet = SensorDataSet(
+            TimeUnit.SECONDS.toMillis(130),
+            "lightTest")
         Assert.assertFalse(lightTrigger.check(context, sensorDataSet))
     }
 }

@@ -5,7 +5,7 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import de.leo.fingerprint.datacollector.models.FoursquareModel;
+import de.leo.fingerprint.datacollector.datacollection.models.FoursquareModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

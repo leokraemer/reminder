@@ -5,13 +5,26 @@
     android:layout_height="match_parent"
     android:gravity="top"
     android:orientation="vertical">
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity" />
+        android:layout_weight="1">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity" />
+
+        <de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.RadarOverlayView
+            android:id="@+id/radar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:radius="0dp" />
+
+    </FrameLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/geofenceoptions"
@@ -47,7 +60,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:max="900"
+            android:min="50"
+            android:max="1000"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -139,7 +153,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="100m"
+            android:text="50m"
             app:layout_constraintEnd_toEndOf="@+id/sizeBar"
             app:layout_constraintTop_toTopOf="@+id/textView12" />
 

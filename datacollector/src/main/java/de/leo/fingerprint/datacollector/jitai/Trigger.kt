@@ -1,7 +1,7 @@
 package de.leo.fingerprint.datacollector.jitai
 
 import android.content.Context
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 
 /**
  * Created by Leo on 13.11.2017.

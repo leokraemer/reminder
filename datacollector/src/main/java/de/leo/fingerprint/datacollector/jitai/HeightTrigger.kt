@@ -1,9 +1,9 @@
 package de.leo.fingerprint.datacollector.jitai
 
 import android.content.Context
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.database.TABLE_REALTIME_AIR
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REALTIME_AIR
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 
 
 // 1kPa = 7.5006157584566 mmHg
@@ -29,7 +29,7 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
         if (db == null)
             db = JitaiDatabase.getInstance(context)
         return (db!!.getSensorValues(sensorData.time - interval, sensorData.time,
-        TABLE_REALTIME_AIR)
+                                     TABLE_REALTIME_AIR)
                 .any { v -> v.second > threshold })
     }
 }

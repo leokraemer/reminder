@@ -6,9 +6,9 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.InstrumentationRegistry.getContext
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
-import de.leo.fingerprint.datacollector.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
-import de.leo.fingerprint.datacollector.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -54,7 +54,8 @@ class WeatherTriggerTest {
         db = JitaiDatabase.getInstance(context)
         db.enterWeather(goodWeather, 1L)
         db.enterWeather(badWeather, 2L)
-        sensorDataSet = SensorDataSet(System.currentTimeMillis(), "testWeather")
+        sensorDataSet = SensorDataSet(System.currentTimeMillis(),
+                                                                                             "testWeather")
         sensorDataSet.gps = Location("")
     }
 
