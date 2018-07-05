@@ -69,7 +69,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/busstopGeofenceButton"
-        app:layout_constraintTop_toBottomOf="@+id/createText" />
+        app:layout_constraintTop_toBottomOf="@+id/enterText" />
 
     <TextView
         android:id="@+id/wifiText"
@@ -216,7 +216,7 @@
         app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
 
     <TextView
-        android:id="@+id/createText"
+        android:id="@+id/enterText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

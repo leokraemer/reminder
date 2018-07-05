@@ -1,9 +1,9 @@
 package de.leo.fingerprint.datacollector.ui.uiElements
 
 import android.content.Context
-import android.view.MotionEvent
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
+import android.view.MotionEvent
 
 
 /**

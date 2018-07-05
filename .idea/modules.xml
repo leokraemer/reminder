@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/datacollector.iml" filepath="$PROJECT_DIR$/datacollector.iml" />
       <module fileurl="file://$PROJECT_DIR$/datacollector/datacollector-datacollector.iml" filepath="$PROJECT_DIR$/datacollector/datacollector-datacollector.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../MultiSlider/lib/multislider.iml" filepath="$PROJECT_DIR$/../MultiSlider/lib/multislider.iml" />
       <module fileurl="file://$PROJECT_DIR$/weka/weka.iml" filepath="$PROJECT_DIR$/weka/weka.iml" />
     </modules>
   </component>

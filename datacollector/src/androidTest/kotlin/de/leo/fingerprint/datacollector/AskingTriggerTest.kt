@@ -5,7 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.jitai.AskingTrigger
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.Jitai
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import junit.framework.Assert
 import org.junit.After

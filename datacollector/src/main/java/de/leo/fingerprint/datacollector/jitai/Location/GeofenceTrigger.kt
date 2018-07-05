@@ -1,22 +1,24 @@
 package de.leo.fingerprint.datacollector.jitai.Location
 
 import android.content.Context
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.Trigger
-import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import weka.classifiers.trees.RandomForest
 import java.util.concurrent.TimeUnit
 
 /**
  * Created by Leo on 16.11.2017.
  */
 class GeofenceTrigger() : Trigger {
+    override fun reset() {
+        state = 0
+    }
 
     private lateinit var locations: List<MyGeofence>
     private var state: Int = 0
     private var lastTime: Long = 0
     private val timestamp = System.currentTimeMillis()
-    private val TIMEOUT = TimeUnit.MINUTES.toMillis(30)
+    private val TIMEOUT = TimeUnit.MINUTES.toMillis(300)
 
     constructor(locations: List<MyGeofence>) : this() {
         this.locations = locations

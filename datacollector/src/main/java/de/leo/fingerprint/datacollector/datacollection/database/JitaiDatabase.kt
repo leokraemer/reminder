@@ -15,26 +15,35 @@ import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
-import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
-import de.leo.fingerprint.datacollector.jitai.activityDetection.MATCH
-import de.leo.fingerprint.datacollector.jitai.activityDetection.NO_MATCH
-import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
+import com.google.gson.reflect.TypeToken
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.Weather
+import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
+import de.leo.fingerprint.datacollector.datacollection.models.serializeWifi
 import de.leo.fingerprint.datacollector.datacollection.sensors.WeatherCaller
 import de.leo.fingerprint.datacollector.jitai.JitaiEvent
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
+import de.leo.fingerprint.datacollector.jitai.activityDetection.MATCH
+import de.leo.fingerprint.datacollector.jitai.activityDetection.NO_MATCH
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
-import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.datacollection.models.Weather
+import de.leo.fingerprint.datacollector.jitai.manage.MachineLearningJitai
+import de.leo.fingerprint.datacollector.jitai.manage.NaturalTriggerJitai
+import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
+import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.JITAI_ACTIVITY
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import org.threeten.bp.LocalTime
 import java.util.*
+import kotlin.collections.HashSet
 
 
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1003
+const val DATABASE_VERSION = 1009
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -52,10 +61,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         fun getInstance(context: Context): JitaiDatabase =
             INSTANCE
                 ?: synchronized(this) {
-                INSTANCE
-                    ?: buildDatabase(
-                        context).also { INSTANCE = it }
-            }
+                    INSTANCE
+                        ?: buildDatabase(
+                            context).also { INSTANCE = it }
+                }
 
         private fun buildDatabase(context: Context) =
             JitaiDatabase(context)
@@ -72,8 +81,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             //remove elements that do not represent detected activities
             activities.removeAll { it.size != 4 }
             //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
-            return activities.map { DetectedActivity(mapActivities(
-                it[1]), it[3].toInt()) }
+            return activities.map {
+                DetectedActivity(mapActivities(
+                    it[1]), it[3].toInt())
+            }
         }
 
         fun mapActivities(value: String): Int {
@@ -92,6 +103,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
+        Log.d(TAG, "onCreate to ${db?.version}")
         db!!.transaction {
             execSQL(CREATE_TABLE_SENSORDATA)
             execSQL(CREATE_TABLE_EVENTS)
@@ -104,6 +116,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL(CREATE_TABLE_JITAI)
             execSQL(CREATE_TABLE_GEOFENCE)
             execSQL(CREATE_TABLE_JITAI_EVENTS)
+            execSQL(CREATE_TABLE_NATURAL_TRIGGER)
             createSingleDimensionRealtimeTables(db)
             execSQL("CREATE INDEX acc_timestamp_index ON $TABLE_REAL_TIME_ACC ($TIMESTAMP)")
             execSQL("CREATE INDEX mag_timestamp_index ON $TABLE_REAL_TIME_MAG ($TIMESTAMP)")
@@ -133,6 +146,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
         db!!.transaction {
             execSQL("DROP TABLE IF EXISTS $TABLE")
             execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
@@ -141,6 +155,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
+            execSQL("DROP TABLE IF EXISTS $TABLE_NATURAL_TRIGGER")
             execSQL("DROP INDEX IF EXISTS acc_timestamp_index")
             execSQL("DROP INDEX IF EXISTS mag_timestamp_index")
             execSQL("DROP INDEX IF EXISTS gyro_timestamp_index")
@@ -149,6 +164,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("DROP INDEX IF EXISTS light_timestamp_index")
             deleteRealtimeTables(db)
         }
+        Log.d(TAG, "onUpgrade deleting finished")
         onCreate(db)
     }
 
@@ -1014,8 +1030,22 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return returnval
     }
 
+    fun enterGeofence(geofence: MyGeofence): Int {
+        return enterGeofence(geofence.name,
+                             geofence.latitude,
+                             geofence.longitude,
+                             geofence
+                                 .radius,
+                             geofence.enter,
+                             geofence.exit,
+                             geofence.dwell,
+                             geofence.loiteringDelay,
+                             geofence.imageResId)
+    }
+
     fun enterGeofence(name: String,
-                      latLng: LatLng,
+                      latitude: Double,
+                      longitude: Double,
                       radius: Float,
                       enter: Boolean,
                       exit: Boolean,
@@ -1024,8 +1054,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       icon: Int): Int {
         val cv = ContentValues()
         cv.put(GEOFENCE_NAME, name)
-        cv.put(GEOFENCE_LAT, latLng.latitude)
-        cv.put(GEOFENCE_LONG, latLng.longitude)
+        cv.put(GEOFENCE_LAT, latitude)
+        cv.put(GEOFENCE_LONG, longitude)
         cv.put(GEOFENCE_RADIUS, radius)
         cv.put(GEOFENCE_ENTER, enter)
         cv.put(GEOFENCE_EXIT, exit)
@@ -1038,6 +1068,18 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             returnval = insert(TABLE_GEOFENCE, null, cv)
         }
         return returnval.toInt()
+    }
+
+    fun enterGeofence(name: String,
+                      latLng: LatLng,
+                      radius: Float,
+                      enter: Boolean,
+                      exit: Boolean,
+                      dwell: Boolean,
+                      loiteringDelay: Int,
+                      icon: Int): Int {
+        return enterGeofence(name, latLng.latitude, latLng.longitude, radius, enter, exit, dwell,
+                             loiteringDelay, icon)
     }
 
     fun getGeofence(id: Int): Geofence {
@@ -1153,7 +1195,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return jitai
     }
 
-    fun getActiveJitai(): MutableList<Jitai> {
+    fun getActiveMachineLearningJitai(): MutableList<Jitai> {
         val c = readableDatabase.query(TABLE_JITAI,
                                        null,
                                        "$JITAI_ACTIVE = ? and $JITAI_DELETED < 1",
@@ -1171,8 +1213,35 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return jitais
     }
 
+    fun getActiveNaturalTriggerJitai(): MutableList<Jitai> {
+        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                       null,
+                                       "$NATURAL_TRIGGER_ACTIVE = 1 and $NATURAL_TRIGGER_DELETED" +
+                                           " < 1",
+                                       null,
+                                       null,
+                                       null,
+                                       null)
+        val jitais = mutableListOf<Jitai>()
+        if (c.moveToFirst()) {
+            do {
+                jitais.add(getNaturalTriggerJitaiFromCursor(c))
+            } while (c.moveToNext())
+        }
+        c.close()
+        return jitais
+    }
+
+    private fun getNaturalTriggerJitaiFromCursor(c: Cursor): NaturalTriggerJitai {
+        val naturalTrigger = getNaturalTrigger(c)
+        val jitai = NaturalTriggerJitai(context, naturalTrigger)
+        jitai.id = c.getInt(c.getColumnIndex(ID))
+        jitai.active = c.getInt(c.getColumnIndex(NATURAL_TRIGGER_ACTIVE)) > 0
+        return jitai
+    }
+
     private fun getJitaiFromCursor(c: Cursor): Jitai {
-        val jitai = Jitai(context)
+        val jitai = MachineLearningJitai(context)
         jitai.goal = c.getString(c.getColumnIndex(JITAI_GOAL))
         jitai.message = c.getString(c.getColumnIndex(JITAI_MESSAGE))
         jitai.timeTrigger = gson.fromJson(c.getString(c.getColumnIndex(JITAI_TIME_TRIGGER)),
@@ -1217,6 +1286,99 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         }
         c.close()
         return list
+    }
+
+    fun enterNaturalTrigger(naturalTrigger: NaturalTriggerModel): Int {
+        val cv = ContentValues()
+        cv.put(NATURAL_TRIGGER_GOAL, naturalTrigger.goal)
+        cv.put(NATURAL_TRIGGER_MESSAGE, naturalTrigger.message)
+        cv.put(NATURAL_TRIGGER_SITUATION, naturalTrigger.situation)
+        cv.put(NATURAL_TRIGGER_BEGIN_TIME, naturalTrigger.beginTime.toSecondOfDay())
+        cv.put(NATURAL_TRIGGER_END_TIME, naturalTrigger.endTime.toSecondOfDay())
+        cv.put(NATURAL_TRIGGER_ACTIVITY, gson.toJson(naturalTrigger.activity))
+        naturalTrigger.wifi?.let {
+            cv.put(NATURAL_TRIGGER_WIFI,
+                   serializeWifi(it))
+        }
+        naturalTrigger.geofence?.let {
+            if (it.id == -1) {
+                val geofenceID = enterGeofence(it)
+                cv.put(NATURAL_TRIGGER_GEOFENCE, geofenceID)
+            } else
+                cv.put(NATURAL_TRIGGER_GEOFENCE, it.id)
+        }
+        var returnval = -1L
+        writableDatabase.transaction {
+            returnval = insert(TABLE_NATURAL_TRIGGER, null, cv)
+        }
+        return returnval.toInt()
+    }
+
+    fun getNaturalTrigger(id: Int): NaturalTriggerModel {
+        val cursor = readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                            null,
+                                            "$ID = ?",
+                                            arrayOf(id.toString()),
+                                            null,
+                                            null,
+                                            null)
+        if (cursor.moveToFirst()) {
+            return getNaturalTrigger(cursor)
+        }
+        return NaturalTriggerModel()
+    }
+
+    fun deleteNaturalTrigger(id: Int) {
+        val cv = ContentValues()
+        cv.put(NATURAL_TRIGGER_DELETED, true)
+        writableDatabase.transaction {
+            update(TABLE_NATURAL_TRIGGER,
+                   cv,
+                   "$ID = ?",
+                   arrayOf(id.toString()))
+        }
+    }
+
+    fun updateNaturalTrigger(id: Int, active: Boolean) {
+        val cv = ContentValues()
+        cv.put(NATURAL_TRIGGER_ACTIVE, active)
+        writableDatabase.transaction {
+            update(TABLE_NATURAL_TRIGGER,
+                   cv,
+                   "$ID = ?",
+                   arrayOf(id.toString()))
+        }
+    }
+
+    //cursor is already at position
+    fun getNaturalTrigger(cursor: Cursor): NaturalTriggerModel {
+        val naturalTrigger = NaturalTriggerModel()
+        naturalTrigger.geofence = getMyGeofence(cursor.getInt(cursor.getColumnIndex
+        (NATURAL_TRIGGER_GEOFENCE)))
+        naturalTrigger.beginTime = LocalTime.ofSecondOfDay(
+            cursor.getLong(cursor.getColumnIndex(NATURAL_TRIGGER_BEGIN_TIME)))
+        naturalTrigger.endTime = LocalTime.ofSecondOfDay(
+            cursor.getLong(cursor.getColumnIndex(NATURAL_TRIGGER_END_TIME)))
+        naturalTrigger.goal = cursor.getString(cursor.getColumnIndex(NATURAL_TRIGGER_GOAL))
+        naturalTrigger.message = cursor.getString(cursor.getColumnIndex
+        (NATURAL_TRIGGER_MESSAGE))
+        naturalTrigger.situation = cursor.getString(cursor.getColumnIndex
+        (NATURAL_TRIGGER_SITUATION))
+        naturalTrigger.wifi =
+            cursor.getString(cursor.getColumnIndex(NATURAL_TRIGGER_WIFI))?.let {
+                deSerializeWifi(it).firstOrNull()
+            }
+
+        naturalTrigger.activity = gson.fromJson<HashSet<JITAI_ACTIVITY>>(
+            cursor.getString(cursor.getColumnIndex(
+                NATURAL_TRIGGER_ACTIVITY)), object : TypeToken<HashSet<JITAI_ACTIVITY>>() {}
+                .getType())
+        return naturalTrigger
+    }
+
+    fun allNaturalTrigger(): Cursor {
+        return readableDatabase.query(TABLE_NATURAL_TRIGGER, null, "$NATURAL_TRIGGER_DELETED < " +
+            "1", null, null, null, null)
     }
 
     fun getJitaiTriggerEvents(id: Int): MutableList<JitaiEvent> {
@@ -1502,3 +1664,30 @@ const val CREATE_TABLE_GEOFENCE =
         "$GEOFENCE_LOITERING_DELAY number, " +
         "$GEOFENCE_VALIDITY LONG," +
         "$GEOFENCE_IMAGE INTEGER )"
+
+const val TABLE_NATURAL_TRIGGER = "table_natural_trigger"
+const val NATURAL_TRIGGER_GOAL = "natural_trigger_goal"
+const val NATURAL_TRIGGER_MESSAGE = "natural_trigger_message"
+const val NATURAL_TRIGGER_SITUATION = "natural_trigger_situation"
+const val NATURAL_TRIGGER_GEOFENCE = "natural_trigger_geofence"
+const val NATURAL_TRIGGER_WIFI = "natural_trigger_wifi"
+const val NATURAL_TRIGGER_BEGIN_TIME = "natural_trigger_begin_time"
+const val NATURAL_TRIGGER_END_TIME = "natural_trigger_end_time"
+const val NATURAL_TRIGGER_DELETED = "natural_trigger_deleted"
+const val NATURAL_TRIGGER_ACTIVE = "natural_trigger_active"
+const val NATURAL_TRIGGER_ACTIVITY = "natural_trigger_activity"
+
+
+const val CREATE_TABLE_NATURAL_TRIGGER =
+    "CREATE TABLE if not exists $TABLE_NATURAL_TRIGGER ( " +
+        "$ID INTEGER PRIMARY KEY, " +
+        "$NATURAL_TRIGGER_GOAL TEXT, " +
+        "$NATURAL_TRIGGER_MESSAGE TEXT, " +
+        "$NATURAL_TRIGGER_SITUATION TEXT, " +
+        "$NATURAL_TRIGGER_GEOFENCE INTEGER, " +
+        "$NATURAL_TRIGGER_WIFI INTEGER, " +
+        "$NATURAL_TRIGGER_BEGIN_TIME TIME, " +
+        "$NATURAL_TRIGGER_END_TIME TIME, " +
+        "$NATURAL_TRIGGER_DELETED BOOLEAN DEFAULT 0, " + //false
+        "$NATURAL_TRIGGER_ACTIVE BOOLEAN DEFAULT 1, " +  //true
+        "$NATURAL_TRIGGER_ACTIVITY TEXT )"

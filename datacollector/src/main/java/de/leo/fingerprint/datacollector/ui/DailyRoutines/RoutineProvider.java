@@ -5,13 +5,13 @@ import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import de.leo.fingerprint.datacollector.R;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+
+import de.leo.fingerprint.datacollector.R;
 
 /**
  * Created by Leo on 24.08.2017.

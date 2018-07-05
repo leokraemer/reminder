@@ -1,15 +1,19 @@
 package de.leo.fingerprint.datacollector.jitai
 
+import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.datacollection.models.Weather
-import android.content.Context
 
 /**
  * Created by Leo on 11.01.2018.
  */
 class WeatherTrigger : Trigger {
     val weather: Weather
+
+    override fun reset() {
+        //noop
+    }
 
     constructor(weather: Weather) {
         this.weather = weather
@@ -25,8 +29,8 @@ class WeatherTrigger : Trigger {
             return true
         return compare(weather.currentCondition.weatherId,
                        JitaiDatabase.getInstance(context)
-                               .getWeather(sensorData.weather!!)!!
-                               .currentCondition.weatherId)
+                           .getWeather(sensorData.weather!!)!!
+                           .currentCondition.weatherId)
     }
 
     fun compare(thisWeatherId: Int, otherWeatherId: Int): Boolean {

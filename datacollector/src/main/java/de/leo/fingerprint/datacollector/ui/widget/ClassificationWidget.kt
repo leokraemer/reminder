@@ -8,10 +8,10 @@ import android.content.Intent
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
 import de.leo.fingerprint.datacollector.datacollection.database.JITAI_EVENT
 import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.utils.USER_CLASSIFICATION_NOW
 import org.jetbrains.anko.intentFor
@@ -67,7 +67,7 @@ class WidgetViews(private val context: Context) : RemoteViewsService.RemoteViews
     }
 
     override fun onDataSetChanged() {
-        jitai = db.getActiveJitai()
+        jitai = db.getActiveMachineLearningJitai()
     }
 
     override fun onDestroy() {}

@@ -18,6 +18,10 @@ class LouderThanSoundTrigger(val threshold: Double, val interval: Long) :
         return db.getSoundData(sensorData.time - interval, sensorData.time)
                 .any { v -> v.second >= threshold }
     }
+
+    override fun reset() {
+        //noop
+    }
 }
 
 
@@ -30,5 +34,9 @@ class LessLoudThanSoundTrigger(val threshold: Double, val interval: Long) :
             return !(db.getSoundData(sensorData.time - interval, sensorData.time)
                     .any { v -> v.second > threshold })
         return false
+    }
+
+    override fun reset() {
+        //noop
     }
 }

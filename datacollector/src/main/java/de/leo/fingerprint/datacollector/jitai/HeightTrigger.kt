@@ -32,6 +32,10 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
                                      TABLE_REALTIME_AIR)
                 .any { v -> v.second > threshold })
     }
+
+    override fun reset() {
+        //noop
+    }
 }
 
 
@@ -46,6 +50,10 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
         return !db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                      TABLE_REALTIME_AIR)
                 .any { v -> v.second > threshold }
+    }
+
+    override fun reset() {
+        //noop
     }
 }
 

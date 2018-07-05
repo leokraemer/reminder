@@ -4,8 +4,6 @@ import android.content.*
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Handler
-import android.speech.RecognizerResultsIntent
-import android.support.v7.app.AppCompatActivity
 
 /**
  * Created by Leo on 24.03.2018.

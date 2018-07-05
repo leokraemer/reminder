@@ -21,15 +21,14 @@ import android.util.Log
 import android.view.Display
 import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.database.*
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.sensors.*
 import de.leo.fingerprint.datacollector.jitai.activityDetection.ActivityRecognizer
+import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.ui.activityRecording.RECORDING_ID
 import de.leo.fingerprint.datacollector.ui.application.DataCollectorApplication
-import de.leo.fingerprint.datacollector.database.*
-import de.leo.fingerprint.datacollector.datacollection.database.*
-import de.leo.fingerprint.datacollector.datacollection.sensors.*
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
-import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity
-import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import de.leo.fingerprint.datacollector.utils.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
@@ -159,7 +158,7 @@ class DataCollectorService : Service(),
                         }
                         longToast("Aktivität aufgezeichnet")
                     } else
-                        baseContext.startActivity(baseContext.intentFor<JitaiManagingActivity>()
+                        baseContext.startActivity(baseContext.intentFor<TriggerManagingActivity>()
                                                       .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }

@@ -3,6 +3,15 @@
     <color name="colorPrimary">@color/green_800</color>
     <color name="colorPrimaryDark">@color/green_900</color>
     <color name="colorAccent">@color/lightgreen</color>
+    <!-- <color name="colorPrimary">#8bc34a</color>
+     <color name="colorAccent">#bef67a</color>
+     <color name="colorPrimaryDark">#5a9216</color>-->
+    <color name="secondaryColor">#2e7d32</color>
+    <color name="secondaryLightColor">#60ad5e</color>
+    <color name="secondaryDarkColor">#005005</color>
+    <color name="primaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#ffffff</color>
+
     <color name="black">#000000</color>
     <color name="blue">#0000b3</color>
     <color name="lightblue">#a6cee3</color>

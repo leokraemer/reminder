@@ -5,8 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-
-import java.util.ArrayDeque
+import java.util.*
 
 /**
  * Created by Yunlong on 4/23/2016.

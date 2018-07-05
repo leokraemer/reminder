@@ -3,73 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/colorPrimary">
-
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/exitButton2"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/sand_timer_96px"
-        app:layout_constraintStart_toEndOf="@+id/exitButton"
-        app:layout_constraintTop_toTopOf="@+id/enterButton" />
-
-    <TextView
-        android:id="@+id/exitText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:lines="2"
-        android:text="Zeit\nverbringen"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/exitButton2"
-        app:layout_constraintStart_toStartOf="@+id/exitButton2"
-        app:layout_constraintTop_toBottomOf="@+id/exitButton2" />
-
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/enterButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_checkable_background"
-        android:checked="true"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_enter_geofence_fat_arrow_white2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/situation" />
-
-    <TextView
-        android:id="@+id/enterText"
-        android:layout_width="wrap_content"
-        android:layout_height="34dp"
-        android:gravity="center_horizontal"
-        android:lines="2"
-        android:text="Ort\nbetreten"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/enterButton"
-        app:layout_constraintStart_toStartOf="@+id/enterButton"
-        app:layout_constraintTop_toBottomOf="@+id/enterButton" />
-
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/exitButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_exit_geofence_fat_arrow_white"
-        app:layout_constraintStart_toEndOf="@+id/enterButton"
-        app:layout_constraintTop_toTopOf="@+id/enterButton" />
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/textView385"
@@ -102,6 +36,127 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
 
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/enterButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_checkable_background"
+        android:checked="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:scrollbarAlwaysDrawHorizontalTrack="false"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:src="@drawable/ic_enter_geofence_fat_arrow_white2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/exitButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_exit_geofence_fat_arrow_white"
+        app:layout_constraintStart_toEndOf="@+id/enterButton"
+        app:layout_constraintTop_toTopOf="@+id/enterButton" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/spendTime"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/sand_timer_96px"
+        app:layout_constraintStart_toEndOf="@+id/exitButton"
+        app:layout_constraintTop_toTopOf="@+id/exitButton" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveteenminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:text="15"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textIsSelectable="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/spendTime"
+        app:layout_constraintTop_toTopOf="@+id/fiveminutes" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/moreminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/baseline_more_horiz_white_48dp"
+        app:layout_constraintStart_toEndOf="@+id/thirtyminutes"
+        app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/thirtyminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:text="30"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toTopOf="@+id/fiveteenminutes" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:text="5"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textIsSelectable="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toBottomOf="@+id/textView40" />
+
+    <TextView
+        android:id="@+id/enterText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Ort\nbetreten"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/enterButton"
+        app:layout_constraintStart_toStartOf="@+id/enterButton"
+        app:layout_constraintTop_toBottomOf="@+id/enterButton" />
+
     <TextView
         android:id="@+id/exitText"
         android:layout_width="wrap_content"
@@ -113,5 +168,17 @@
         app:layout_constraintEnd_toEndOf="@+id/exitButton"
         app:layout_constraintStart_toStartOf="@+id/exitButton"
         app:layout_constraintTop_toBottomOf="@+id/exitButton" />
+
+    <TextView
+        android:id="@+id/textView40"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Zeit\nverbringen"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/spendTime"
+        app:layout_constraintStart_toStartOf="@+id/spendTime"
+        app:layout_constraintTop_toBottomOf="@+id/spendTime" />
 
 </android.support.constraint.ConstraintLayout>

@@ -2,13 +2,17 @@ package de.leo.fingerprint.datacollector.jitai
 
 import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 
 /**
  * Created by Leo on 25.02.2018.
  */
 class AskingTrigger(val jitaiId: Int, val validity: Long) : Trigger {
+    override fun reset() {
+        //noop
+    }
+
     val preconditions: List<Trigger> = mutableListOf()
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {

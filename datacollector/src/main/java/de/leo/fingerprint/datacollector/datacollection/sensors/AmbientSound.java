@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;

@@ -62,6 +62,13 @@
         android:text="New Approach" />
 
     <Button
+        android:id="@+id/TriggerList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onButtonTriggerList"
+        android:text="TriggerList" />
+
+    <Button
         android:id="@+id/SensorFigure"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -10,7 +10,6 @@
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
@@ -26,16 +25,16 @@
         <activity android:name="de.leo.fingerprint.datacollector.ui.settings.FingerPrintSettingsActivity"></activity>
 
         <activity
-            android:name="de.leo.fingerprint.datacollector.EntryActivity"
+            android:name="de.leo.fingerprint.datacollector.ui.EntryActivity"
             android:label="@string/study_name"></activity>
         <activity
             android:name="de.leo.fingerprint.datacollector.ui.activityRecording.RecordingActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity"
+            android:name="de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
             android:label="Jitai Manager"></activity>
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.naturalTriggerCreation.CreateTriggerActivity"
+            android:name="de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
             android:label="Erinnerung erstellen"></activity>
 
         <activity

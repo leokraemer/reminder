@@ -37,6 +37,10 @@ class ScreenStateTrigger(screenState: String, val interval: Long) :
             return sensorData.screenState == isScreenOn
     }
 
+    override fun reset() {
+        //noop
+    }
+
     companion object {
         const val SCREEN_ON = "on"
         const val SCREEN_OFF = "off"

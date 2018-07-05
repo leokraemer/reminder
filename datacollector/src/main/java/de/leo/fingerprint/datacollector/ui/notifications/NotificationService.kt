@@ -9,9 +9,9 @@ import android.graphics.Color.parseColor
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.database.*
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
+import kotlinx.android.synthetic.main.fragment_reminder_selection.view.*
 import org.jetbrains.anko.intentFor
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -33,13 +33,9 @@ class NotificationService : IntentService("NotificationIntentService") {
         private val notificationStore: HashMap<Int, Long> = hashMapOf()
     }
 
-    @Transient
-    private var jitaiDatabase: JitaiDatabase? = null
+    private val jitaiDatabase: JitaiDatabase by lazy { JitaiDatabase.getInstance(applicationContext) }
 
     override fun onHandleIntent(intent: Intent?) {
-        if (jitaiDatabase == null) {
-            jitaiDatabase = JitaiDatabase.getInstance(applicationContext)
-        }
         val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
         val goal = intent?.getStringExtra(JITAI_GOAL) ?: ""
         val message = intent?.getStringExtra(JITAI_MESSAGE) ?: ""
@@ -88,7 +84,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                     Jitai.NOTIFICATION_SUCCESS, sensorDataId)
                 }
 
-                //trigger notifications
+            //trigger notifications
                 Jitai.NOTIFICATION_TRIGGER            -> {
                     Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
                         "situation")
@@ -201,7 +197,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
                 .setSmallIcon(R.drawable.fp_s)
-                .addAction(R.drawable.check, "Korrekt", PendingIntent
+                .addAction(R.drawable.baseline_play_arrow_24_white, "Korrekt", PendingIntent
                     .getService(this,
                                 notificationIdModifyer + id,
                                 winIntent(id, sensorDataId)
@@ -215,6 +211,11 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                           notificationIdModifyer + id,
                                                           deleteIntent(id, sensorDataId)
                                                           , PendingIntent.FLAG_ONE_SHOT))
+                .setFullScreenIntent(PendingIntent
+                                         .getActivity(this,
+                                                     notificationIdModifyer + id,
+                                                     fullScreenIntent(id, sensorDataId)
+                                                     , PendingIntent.FLAG_ONE_SHOT), true)
             notificationStore.put(id, System.currentTimeMillis() + TIMEOUT)
             mNotificationManager.notify(notificationIdModifyer + id, mNotifyBuilder.build())
         } else {
@@ -232,6 +233,11 @@ class NotificationService : IntentService("NotificationIntentService") {
         applicationContext.intentFor<NotificationService>(
             JITAI_EVENT to Jitai.NOTIFICATION_FAIL, JITAI_ID to id,
             JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fail")
+
+    private fun fullScreenIntent(id: Int, sensorDataId: Long): Intent =
+        applicationContext.intentFor<FullscreenJitai>(
+            JITAI_EVENT to Jitai.NOTIFICATION_FULL_SCREEN, JITAI_ID to id,
+            JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fullscreen")
 
     private fun tooFrequentIntent(id: Int, sensorDataId: Long): Intent =
         applicationContext.intentFor<NotificationService>(

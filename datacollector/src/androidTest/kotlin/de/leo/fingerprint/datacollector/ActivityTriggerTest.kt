@@ -32,11 +32,12 @@ class ActivityTriggerTest {
 
     @Test
     fun testActivityTrigger() {
-        val trigger = ActivityTrigger(DetectedActivity(IN_VEHICLE, 100))
+        val trigger = ActivityTrigger(DetectedActivity(IN_VEHICLE, 100), 5000)
         val sensorData = SensorDataSet(System.currentTimeMillis(),
                                                                                               "test")
         sensorData.activity = listOf(inVehicle)
-        Assert.assertTrue(trigger.check(context, sensorData))
+        Assert.assertFalse(trigger.check(context, sensorData))
+
         sensorData.activity = listOf(onFoot)
         Assert.assertFalse(trigger.check(context, sensorData))
     }

@@ -131,7 +131,7 @@
             <TableRow>
 
                 <TextView
-                    android:id="@+id/createText"
+                    android:id="@+id/enterText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -396,7 +396,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/workGeofenceButton"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/createText" />
+                app:layout_constraintTop_toBottomOf="@+id/enterText" />
 
             <ImageView
                 android:id="@+id/workGeofenceButton"

@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.MotionEvent
-import de.leo.fingerprint.datacollector.ui.uiElements.ORIENTATION
-import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
-import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REAL_TIME_ACC
 import com.timeseries.TimeSeries
 import com.timeseries.TimeSeriesPoint
 import com.util.DistanceFunctionFactory
+import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REAL_TIME_ACC
+import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
+import de.leo.fingerprint.datacollector.ui.uiElements.ORIENTATION
+import kotlinx.android.synthetic.main.compare_record_activity.*
 
 /**
  * Created by Leo on 08.01.2018.

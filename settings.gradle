@@ -1,1 +1,3 @@
 include ":weka", ':datacollector'
+include ':multislider'
+project(':multislider').projectDir = new File(settingsDir, '../Multislider/lib')

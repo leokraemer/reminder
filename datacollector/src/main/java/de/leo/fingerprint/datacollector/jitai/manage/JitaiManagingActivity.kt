@@ -5,22 +5,17 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
 import android.database.Cursor
-import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.widget.CursorAdapter
 import android.widget.ListAdapter
-import cz.msebera.android.httpclient.util.Args
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
-import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.ui.widget.ClassificationWidget
+import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.jitai_list.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
-import java.util.*
-import kotlin.reflect.KFunction1
 
 /**
  * Created by Leo on 15.11.2017.

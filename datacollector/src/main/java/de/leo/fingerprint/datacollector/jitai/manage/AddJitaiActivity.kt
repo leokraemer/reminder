@@ -1,8 +1,7 @@
 package de.leo.fingerprint.datacollector.jitai.manage
 
+
 import android.app.Activity
-
-
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -15,14 +14,14 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
-import de.leo.fingerprint.datacollector.datacollection.models.Weather
+import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity
 import kotlinx.android.synthetic.main.jitai_add_flow_activity.*
 import org.jetbrains.anko.toast
 import org.threeten.bp.DayOfWeek
@@ -34,7 +33,7 @@ import java.util.*
  */
 class AddJitaiActivity : Activity() {
 
-    private var jitai = Jitai(this)
+    private var jitai = MachineLearningJitai(this)
     private var from_h: Int = 0
     private var from_m: Int = 0
     private var to_h: Int = 23
@@ -218,7 +217,7 @@ class AddJitaiActivity : Activity() {
                         BAD_WEATHER -> weather.currentCondition.weatherId = 799
                     }
                     jitai.weatherTrigger = WeatherTrigger(weather)
-                    jitai = db.enterJitai(jitai)
+                    jitai = db.enterJitai(jitai) as MachineLearningJitai
                     finish()
                 }
             }

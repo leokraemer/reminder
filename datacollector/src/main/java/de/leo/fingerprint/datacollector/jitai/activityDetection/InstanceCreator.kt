@@ -2,13 +2,13 @@ package de.leo.fingerprint.datacollector.jitai.activityDetection
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import android.util.Log
-import de.leo.fingerprint.datacollector.jitai.algorithms.FFT
-import de.leo.fingerprint.datacollector.database.*
 import de.leo.fingerprint.datacollector.datacollection.database.*
-import de.leo.fingerprint.datacollector.jitai.ProximityTrigger
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
+import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
+import de.leo.fingerprint.datacollector.jitai.ProximityTrigger
+import de.leo.fingerprint.datacollector.jitai.algorithms.FFT
+import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -349,34 +349,6 @@ fun createFingerprint(jitai: Jitai,
     //resampledfingerprint.addAll(dumbResample(fingerprint))
     return fingerprint
 }
-
-/**
- * @return List<bssid, rssi, ssid, ip, networkId>
- */
-internal fun deSerializeWifi(wifiNames: String): List<WifiInfo> {
-    val wifis = wifiNames.replace("[", "", false).replace("]", "", false).split(",")
-    wifis.toMutableList().remove("null")
-    return wifis.map {
-        try {
-            val values = it.split(";")
-            WifiInfo(values[0],
-                                                                              values[1].toInt(),
-                                                                              values[2],
-                                                                              values[3],
-                                                                              values[4].toInt())
-        } catch (e: Exception) {
-            Log.e("wifi deserilaisation", e.toString())
-            WifiInfo("null",
-                                                                              -100,
-                                                                              "null",
-                                                                              "null",
-                                                                              -1)
-        }
-    }
-}
-
-internal data class WifiInfo(val BSSID: String, val rssi: Int, val SSID: String, val IP:
-String, val networkId: Int)
 
 
 @Throws(Exception::class)

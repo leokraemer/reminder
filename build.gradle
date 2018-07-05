@@ -4,7 +4,7 @@ buildscript {
     ext.kotlin_version = '1.2.21'
     ext.rxkotlin_version = '2.1.0'
     ext.rxandroid_version = '2.0.1'
-    ext.anko_version = '0.10.4'
+    ext.anko_version = '0.10.5'
     ext.support_version = '27.0.2'
     repositories {
         google()
@@ -35,4 +35,32 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+
+ext {
+    minSdkVersion = 16
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.2'
+    supportDeps = '27.0.2'
+
+    supportAnnotations = 'com.android.support:support-annotations:' + supportDeps
+    supportCompat = 'com.android.support:support-compat:' + supportDeps
+    supportCoreUi = 'com.android.support:support-core-ui:' + supportDeps
+    supportRecyclerView = 'com.android.support:recyclerview-v7:' + supportDeps
+    supportCardView = 'com.android.support:cardview-v7:' + supportDeps
+    supportAppCompat = 'com.android.support:appcompat-v7:' + supportDeps
+    supportDesign = 'com.android.support:design:' + supportDeps
+
+    supportTestRunner = 'com.android.support.test:runner:0.5'
+    supportTestRules = 'com.android.support.test:rules:0.5'
+    supportTestEspresso = 'com.android.support.test.espresso:espresso-core:2.2.2'
+    supportTestEspressoContrib = 'com.android.support.test.espresso:espresso-contrib:2.2.2'
+    supportTestUiautomator = 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+
+    assertjCore1 = 'org.assertj:assertj-core:1.7.1'
+    assertjCore2 = 'org.assertj:assertj-core:2.5.0'
+    assertjCore3 = 'org.assertj:assertj-core:3.5.2'
+    mockitoAndroid = 'org.mockito:mockito-android:2.7.22'
+    junit = 'junit:junit:4.12'
 }

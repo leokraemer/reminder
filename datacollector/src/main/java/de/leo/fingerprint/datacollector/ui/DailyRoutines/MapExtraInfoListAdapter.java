@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import de.leo.fingerprint.datacollector.R;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
+
+import de.leo.fingerprint.datacollector.R;
 
 /**
  * Created by Leo on 25.08.2017.

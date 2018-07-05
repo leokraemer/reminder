@@ -27,4 +27,8 @@
 
     <style name="Widget.MultiSlider" parent="android:Widget"></style>
 
+    <style name="AppTheme.Picker" parent="AppBaseTheme" >
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

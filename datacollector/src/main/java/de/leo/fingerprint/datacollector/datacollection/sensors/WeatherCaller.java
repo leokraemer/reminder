@@ -4,9 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import de.leo.fingerprint.datacollector.datacollection.models.Location;
-import de.leo.fingerprint.datacollector.datacollection.models.Weather;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +14,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import de.leo.fingerprint.datacollector.datacollection.models.Location;
+import de.leo.fingerprint.datacollector.datacollection.models.Weather;
 
 /**
  * Created by Yunlong on 8/8/2017.

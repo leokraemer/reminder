@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.ui.uiElements
 
 import android.content.Context
 import android.util.AttributeSet
-import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.Entry
@@ -10,6 +9,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit

@@ -6,7 +6,6 @@ import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.TextStyle
 import org.threeten.bp.temporal.ChronoUnit
-import org.threeten.bp.temporal.TemporalAmount
 import java.util.*
 
 /**
@@ -21,6 +20,19 @@ import java.util.*
  * @see Calendar.DAY_OF_WEEK
  */
 class TimeTrigger() : Trigger {
+
+    override fun reset() {
+    }
+
+    companion object {
+        val ALL_DAYS = listOf(DayOfWeek.MONDAY,
+                              DayOfWeek.TUESDAY,
+                              DayOfWeek.WEDNESDAY,
+                              DayOfWeek.THURSDAY,
+                              DayOfWeek.FRIDAY,
+                              DayOfWeek.SATURDAY,
+                              DayOfWeek.SUNDAY)
+    }
 
     private lateinit var startTime: LocalTime
         private set
@@ -47,9 +59,9 @@ class TimeTrigger() : Trigger {
         val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(sensorData.time),
                                            ZoneId.systemDefault())
         if (timeRange?.contains(time.toLocalTime()) ?: false
-                && days.any({ day ->
-                                day == time.dayOfWeek
-                            }))
+            && days.any({ day ->
+                            day == time.dayOfWeek
+                        }))
             return true
         return false
     }
@@ -57,14 +69,14 @@ class TimeTrigger() : Trigger {
     override fun toString(): String {
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         return startTime.format(formatter) + " - " +
-                endInclusiveTime.format(formatter) + ", " +
-                days.map { it.getDisplayName(TextStyle.SHORT, Locale.GERMANY) }.toString()
+            endInclusiveTime.format(formatter) + ", " +
+            days.map { it.getDisplayName(TextStyle.SHORT, Locale.GERMANY) }.toString()
     }
 
-    fun getPassedTimePercent(time : LocalTime): Double{
+    fun getPassedTimePercent(time: LocalTime): Double {
         if (timeRange == null)
             timeRange = startTime.rangeTo(endInclusiveTime)
-        if(timeRange!!.contains(time)){
+        if (timeRange!!.contains(time)) {
             val totalTime = startTime.until(endInclusiveTime, ChronoUnit.MILLIS)
             val passedTime = startTime.until(time, ChronoUnit.MILLIS)
             return passedTime.toDouble() / totalTime.toDouble()

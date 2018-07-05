@@ -9,16 +9,15 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
-
-import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.datacollection.services.ActivitiesIntentService
-import de.leo.fingerprint.datacollector.utils.Constants
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.DetectedActivity
+import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.services.ActivitiesIntentService
+import de.leo.fingerprint.datacollector.utils.Constants
 
 /**
  * Created by Yunlong on 4/21/2016.

@@ -20,6 +20,10 @@ class DimmerThanTrigger(val threshold: Double, val interval: Long) :
                                       TABLE_REALTIME_LIGHT)
                 .any { v -> v.second > threshold })
     }
+
+    override fun reset() {
+        //noop
+    }
 }
 
 
@@ -34,5 +38,9 @@ class BrighterThanTrigger(val threshold: Double, val interval: Long) :
         return db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                     TABLE_REALTIME_LIGHT)
                 .any { v -> v.second > threshold }
+    }
+
+    override fun reset() {
+        //noop
     }
 }

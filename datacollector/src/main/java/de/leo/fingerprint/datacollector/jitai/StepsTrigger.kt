@@ -18,6 +18,9 @@ class MinStepsTrigger(var minSteps: Double, val interval: Long) : Trigger {
         return stepsInInterval >= minSteps
     }
 
+    override fun reset() {
+        //noop
+    }
 }
 
 class MaxStepsTrigger(var maxSteps: Double, val interval: Long) : Trigger {
@@ -28,5 +31,9 @@ class MaxStepsTrigger(var maxSteps: Double, val interval: Long) : Trigger {
             return sensorData.totalStepsToday!! <= maxSteps
         val stepsInInterval: Double = sensorData.totalStepsToday!! - steps.first().second
         return stepsInInterval <= maxSteps
+    }
+
+    override fun reset() {
+        //noop
     }
 }

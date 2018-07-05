@@ -11,4 +11,9 @@ interface Trigger {
      * Return true if the conditions for this trigger are met.
      */
     fun check(context : Context, sensorData : SensorDataSet) : Boolean
+
+    /**
+     * Reset the state of any stateful trigger to the initial state.
+     */
+    fun reset()
 }

@@ -5,8 +5,6 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import de.leo.fingerprint.datacollector.datacollection.models.FoursquareModel;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -19,6 +17,7 @@ import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.ByteArrayBuffer;
+import de.leo.fingerprint.datacollector.datacollection.models.FoursquareModel;
 
 /**
  * Created by Yunlong on 3/3/2016.

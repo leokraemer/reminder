@@ -6,14 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CursorAdapter
+import com.fatboyindustrial.gsonjavatime.Converters
+import com.google.gson.GsonBuilder
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.database.*
+import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import com.fatboyindustrial.gsonjavatime.Converters
 import kotlinx.android.synthetic.main.jitai_list_element.view.*
-import com.google.gson.GsonBuilder
-import de.leo.fingerprint.datacollector.datacollection.database.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk25.coroutines.onLongClick
 

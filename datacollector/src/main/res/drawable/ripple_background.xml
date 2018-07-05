@@ -7,6 +7,9 @@
             <!-- Color not displayed,just to tell ripple about the bounds -->
             <solid android:color="@android:color/black" />
         </shape>
+        <size
+            android:width="20dp"
+            android:height="20dp"/>
     </item>
     <!-- And your drawable -->
 </ripple>

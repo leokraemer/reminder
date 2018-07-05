@@ -25,14 +25,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import de.leo.fingerprint.datacollector.R;
-import de.leo.fingerprint.datacollector.ui.uiElements.ComboSeekBar.ComboSeekBar;
-import de.leo.fingerprint.datacollector.datacollection.DataCollectorService;
-import de.leo.fingerprint.datacollector.ui.settings.FingerPrintSettingsActivity;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import de.leo.fingerprint.datacollector.R;
+import de.leo.fingerprint.datacollector.datacollection.DataCollectorService;
+import de.leo.fingerprint.datacollector.ui.settings.FingerPrintSettingsActivity;
+import de.leo.fingerprint.datacollector.ui.uiElements.ComboSeekBar.ComboSeekBar;
 
 public class EntryActivity extends AppCompatActivity {
     String TAG = "EntryActivity";

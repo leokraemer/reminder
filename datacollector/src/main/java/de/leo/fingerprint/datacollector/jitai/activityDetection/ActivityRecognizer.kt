@@ -2,9 +2,8 @@ package de.leo.fingerprint.datacollector.jitai.activityDetection
 
 import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import weka.core.Attribute
+import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 
 
 /**
@@ -17,7 +16,8 @@ class ActivityRecognizer(val context: Context) {
 
     init {
         db = JitaiDatabase.getInstance(context)
-        jitaiList.addAll(db.getActiveJitai())
+        jitaiList.addAll(db.getActiveMachineLearningJitai())
+        jitaiList.addAll(db.getActiveNaturalTriggerJitai())
     }
 
 
