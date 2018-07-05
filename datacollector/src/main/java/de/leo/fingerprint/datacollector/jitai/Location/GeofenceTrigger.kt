@@ -18,7 +18,7 @@ class GeofenceTrigger() : Trigger {
     private var state: Int = 0
     private var lastTime: Long = 0
     private val timestamp = System.currentTimeMillis()
-    private val TIMEOUT = TimeUnit.MINUTES.toMillis(300)
+    private val TIMEOUT = TimeUnit.MINUTES.toMillis(30)
 
     constructor(locations: List<MyGeofence>) : this() {
         this.locations = locations

@@ -102,7 +102,7 @@ public class EntryActivity extends AppCompatActivity {
         if (!running) {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences
                     (this);
-            String userName = sharedPreferences.getString("fingerprint_user_name", "userName");
+            String userName = "leo"; //sharedPreferences.getString("fingerprint_user_name", "userName");
             if (userName.equals("userName") || userName.equals("Name")) {
                 Toast.makeText(this, "please type in your name in settings", Toast.LENGTH_SHORT)
                         .show();
