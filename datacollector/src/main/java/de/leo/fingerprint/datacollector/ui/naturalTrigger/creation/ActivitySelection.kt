@@ -36,53 +36,53 @@ class ActivitySelection : NaturalTriggerFragment() {
 
     private fun walk() {
         if (walkButton.isChecked) {
-            model?.addActivity(JITAI_ACTIVITY.WALK)
-            model?.removeActivity(JITAI_ACTIVITY.SIT)
+            model?.addActivity(NaturalTriggerModel.WALK)
+            model?.removeActivity(NaturalTriggerModel.SIT)
         } else
-            model?.removeActivity(JITAI_ACTIVITY.WALK)
+            model?.removeActivity(NaturalTriggerModel.WALK)
     }
 
     private fun bike() {
         if (bikeButton.isChecked) {
-            model?.addActivity(JITAI_ACTIVITY.BIKE)
-            model?.removeActivity(JITAI_ACTIVITY.SIT)
+            model?.addActivity(NaturalTriggerModel.BIKE)
+            model?.removeActivity(NaturalTriggerModel.SIT)
         } else
-            model?.removeActivity(JITAI_ACTIVITY.BIKE)
+            model?.removeActivity(NaturalTriggerModel.BIKE)
     }
 
     private fun car() {
         if (carButton.isChecked) {
-            model?.addActivity(JITAI_ACTIVITY.CAR)
-            model?.removeActivity(JITAI_ACTIVITY.SIT)
+            model?.addActivity(NaturalTriggerModel.CAR)
+            model?.removeActivity(NaturalTriggerModel.SIT)
         } else
-            model?.removeActivity(JITAI_ACTIVITY.CAR)
+            model?.removeActivity(NaturalTriggerModel.CAR)
     }
 
     private fun bus() {
         if (busButton.isChecked) {
-            model?.addActivity(JITAI_ACTIVITY.BUS)
-            model?.removeActivity(JITAI_ACTIVITY.SIT)
+            model?.addActivity(NaturalTriggerModel.BUS)
+            model?.removeActivity(NaturalTriggerModel.SIT)
         } else
-            model?.removeActivity(JITAI_ACTIVITY.BUS)
+            model?.removeActivity(NaturalTriggerModel.BUS)
     }
 
     private fun sit() {
         if (sitButton.isChecked) {
-            model?.addActivity(JITAI_ACTIVITY.SIT)
-            model?.removeActivity(JITAI_ACTIVITY.WALK)
-            model?.removeActivity(JITAI_ACTIVITY.BIKE)
-            model?.removeActivity(JITAI_ACTIVITY.BUS)
-            model?.removeActivity(JITAI_ACTIVITY.CAR)
+            model?.addActivity(NaturalTriggerModel.SIT)
+            model?.removeActivity(NaturalTriggerModel.WALK)
+            model?.removeActivity(NaturalTriggerModel.BIKE)
+            model?.removeActivity(NaturalTriggerModel.BUS)
+            model?.removeActivity(NaturalTriggerModel.CAR)
         } else
-            model?.removeActivity(JITAI_ACTIVITY.SIT)
+            model?.removeActivity(NaturalTriggerModel.SIT)
     }
 
     override fun updateView() {
         situation_text?.setText(model?.situation)
-        walkButton?.isChecked = model?.checkActivity(JITAI_ACTIVITY.WALK) == true
-        bikeButton?.isChecked = model?.checkActivity(JITAI_ACTIVITY.BIKE) == true
-        busButton?.isChecked = model?.checkActivity(JITAI_ACTIVITY.BUS) == true
-        carButton?.isChecked = model?.checkActivity(JITAI_ACTIVITY.CAR) == true
-        sitButton?.isChecked = model?.checkActivity(JITAI_ACTIVITY.SIT) == true
+        walkButton?.isChecked = model?.checkActivity(NaturalTriggerModel.WALK) == true
+        bikeButton?.isChecked = model?.checkActivity(NaturalTriggerModel.BIKE) == true
+        busButton?.isChecked = model?.checkActivity(NaturalTriggerModel.BUS) == true
+        carButton?.isChecked = model?.checkActivity(NaturalTriggerModel.CAR) == true
+        sitButton?.isChecked = model?.checkActivity(NaturalTriggerModel.SIT) == true
     }
 }

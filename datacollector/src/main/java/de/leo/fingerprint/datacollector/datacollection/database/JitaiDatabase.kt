@@ -33,7 +33,6 @@ import de.leo.fingerprint.datacollector.jitai.manage.MachineLearningJitai
 import de.leo.fingerprint.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
 import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
-import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.JITAI_ACTIVITY
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import org.threeten.bp.LocalTime
 import java.util.*
@@ -43,7 +42,7 @@ import kotlin.collections.HashSet
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1009
+const val DATABASE_VERSION = 1010
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -1369,9 +1368,9 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 deSerializeWifi(it).firstOrNull()
             }
 
-        naturalTrigger.activity = gson.fromJson<HashSet<JITAI_ACTIVITY>>(
+        naturalTrigger.activity = gson.fromJson<HashSet<Int>>(
             cursor.getString(cursor.getColumnIndex(
-                NATURAL_TRIGGER_ACTIVITY)), object : TypeToken<HashSet<JITAI_ACTIVITY>>() {}
+                NATURAL_TRIGGER_ACTIVITY)), object : TypeToken<HashSet<Int>>() {}
                 .getType())
         return naturalTrigger
     }

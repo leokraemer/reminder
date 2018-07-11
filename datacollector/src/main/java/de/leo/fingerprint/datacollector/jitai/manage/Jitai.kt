@@ -67,7 +67,7 @@ abstract class Jitai(val context: Context) {
 
     var weatherTrigger: WeatherTrigger? = null
 
-    var activitTrigger: ActivityTrigger? = null
+    var activitTrigger: List<ActivityTrigger>? = null
 
     internal val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 

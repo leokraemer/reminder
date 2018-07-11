@@ -236,15 +236,15 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 geofenceName.setText("Überall")
             }
             //activity
-            if (checkActivity(JITAI_ACTIVITY.SIT)) {
+            if (checkActivity(NaturalTriggerModel.SIT)) {
                 activity1.setImageResource(sitIcon)
                 activity2.setImageDrawable(null)
                 activity3.setImageDrawable(null)
             } else {
-                val walk = checkActivity(JITAI_ACTIVITY.WALK)
-                val bike = checkActivity(JITAI_ACTIVITY.BIKE)
-                val bus = checkActivity(JITAI_ACTIVITY.BUS)
-                val car = checkActivity(JITAI_ACTIVITY.CAR)
+                val walk = checkActivity(NaturalTriggerModel.WALK)
+                val bike = checkActivity(NaturalTriggerModel.BIKE)
+                val bus = checkActivity(NaturalTriggerModel.BUS)
+                val car = checkActivity(NaturalTriggerModel.CAR)
                 activity1.setImageDrawable(null)
                 activity2.setImageDrawable(null)
                 activity3.setImageDrawable(null)
