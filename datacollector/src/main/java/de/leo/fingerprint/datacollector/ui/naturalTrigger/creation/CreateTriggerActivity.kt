@@ -243,7 +243,7 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
             } else {
                 val walk = checkActivity(NaturalTriggerModel.WALK)
                 val bike = checkActivity(NaturalTriggerModel.BIKE)
-                val bus = checkActivity(NaturalTriggerModel.BUS)
+                val bus = false //checkActivity(NaturalTriggerModel.BUS)
                 val car = checkActivity(NaturalTriggerModel.CAR)
                 activity1.setImageDrawable(null)
                 activity2.setImageDrawable(null)

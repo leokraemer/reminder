@@ -334,8 +334,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                               user,
                               recording,
                               id,
-                              deSerializeActivitys(
-                                  activity),
+                              deSerializeActivitys(activity),
                               totalStepsToday,
                               ambientSound,
                               location,

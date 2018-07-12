@@ -15,7 +15,7 @@ class NaturalTriggerModel() {
         val SIT = DetectedActivity.STILL
         val WALK = DetectedActivity.WALKING
         val BIKE = DetectedActivity.ON_BICYCLE
-        val BUS = DetectedActivity.IN_VEHICLE
+        //val BUS = DetectedActivity.IN_VEHICLE
         val CAR = DetectedActivity.IN_VEHICLE
     }
 

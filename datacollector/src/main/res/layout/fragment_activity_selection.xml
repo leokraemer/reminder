@@ -78,18 +78,6 @@
             app:layout_constraintTop_toTopOf="@+id/busButton" />
 
         <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/busButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_bus_white_48dp" />
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/carButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -105,6 +93,18 @@
             app:layout_constraintStart_toEndOf="@+id/busButton"
             app:layout_constraintTop_toBottomOf="@+id/situation" />
 
+        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/busButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_checkable_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_directions_bus_white_48dp"
+            android:visibility="gone" />
     </TableRow>
 
     <TableRow>
@@ -120,18 +120,6 @@
             app:layout_constraintEnd_toEndOf="@+id/walkButton"
             app:layout_constraintStart_toStartOf="@+id/walkButton"
             app:layout_constraintTop_toBottomOf="@+id/walkButton" />
-
-        <TextView
-            android:id="@+id/busText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Bus\nfahren"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/busButton"
-            app:layout_constraintStart_toStartOf="@+id/busButton"
-            app:layout_constraintTop_toBottomOf="@+id/busButton" />
 
         <TextView
             android:id="@+id/bikeText"
@@ -157,6 +145,18 @@
             app:layout_constraintStart_toStartOf="@+id/carButton"
             app:layout_constraintTop_toBottomOf="@+id/carButton" />
 
+        <TextView
+            android:id="@+id/busText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Bus\nfahren"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/busButton"
+            app:layout_constraintStart_toStartOf="@+id/busButton"
+            app:layout_constraintTop_toBottomOf="@+id/busButton" />
     </TableRow>
 
     <TableRow>
