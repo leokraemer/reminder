@@ -41,7 +41,7 @@ class JitaiListAdapter(context: Context, c: Cursor, val jitaiUpdater: JitaiUpdat
                 cursor.getString(cursor.getColumnIndex(JITAI_TIME_TRIGGER)),
                 TimeTrigger::class.java).toString()
             view.weather.text = cursor.getInt(cursor.getColumnIndex(JITAI_WEATHER)).toString()
-            view.message.text = cursor.getString(cursor.getColumnIndex(JITAI_MESSAGE))
+            view.messageCard.text = cursor.getString(cursor.getColumnIndex(JITAI_MESSAGE))
             val jitaiId = cursor.getInt(cursor.getColumnIndex(ID))
             view.active_toggle_button.isChecked = cursor.getInt(cursor.getColumnIndex(
                 JITAI_ACTIVE)) > 0

@@ -197,12 +197,12 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
                 .setSmallIcon(R.drawable.fp_s)
-                .addAction(R.drawable.baseline_play_arrow_24_white, "Korrekt", PendingIntent
+                .addAction(R.drawable.baseline_play_arrow_24_white, "Jetzt!", PendingIntent
                     .getService(this,
                                 notificationIdModifyer + id,
                                 winIntent(id, sensorDataId)
                                 , PendingIntent.FLAG_ONE_SHOT))
-                .addAction(R.drawable.cancel, "Falsch", PendingIntent
+                .addAction(R.drawable.cancel, "Später", PendingIntent
                     .getService(this,
                                 notificationIdModifyer + id,
                                 failIntent(id, sensorDataId)

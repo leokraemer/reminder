@@ -59,7 +59,7 @@
             android:layout_marginTop="8dp"
             android:text="Situation:"
             app:layout_constraintStart_toStartOf="@+id/textView46"
-            app:layout_constraintTop_toBottomOf="@+id/message" />
+            app:layout_constraintTop_toBottomOf="@+id/messageCard" />
 
         <TextView
             android:id="@+id/goal"
@@ -75,7 +75,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/message"
+            android:id="@+id/messageCard"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -98,7 +98,7 @@
             app:layout_constraintEnd_toStartOf="@+id/active_toggle_button"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView46"
-            app:layout_constraintTop_toBottomOf="@+id/message" />
+            app:layout_constraintTop_toBottomOf="@+id/messageCard" />
 
         <android.support.constraint.Barrier
             android:id="@+id/barrier"

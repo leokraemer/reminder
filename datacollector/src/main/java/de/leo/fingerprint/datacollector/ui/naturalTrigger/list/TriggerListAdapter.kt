@@ -6,8 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CursorAdapter
-import com.fatboyindustrial.gsonjavatime.Converters
-import com.google.gson.GsonBuilder
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
@@ -39,7 +37,7 @@ class TriggerListAdapter(context: Context, c: Cursor, val triggerUpdater: Trigge
                 updateNaturalTriggerReminderCardView(model, view)
                 goal.text = model.goal
                 situation.text = model.situation
-                message.text = model.message
+                messageCard.text = model.message
                 val jitaiId = cursor.getInt(cursor.getColumnIndex(ID))
                 view.active_toggle_button.isChecked = cursor.getInt(cursor.getColumnIndex(
                     NATURAL_TRIGGER_ACTIVE)) > 0
