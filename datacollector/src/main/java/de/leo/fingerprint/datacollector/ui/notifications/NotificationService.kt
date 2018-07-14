@@ -13,6 +13,7 @@ import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import kotlinx.android.synthetic.main.fragment_reminder_selection.view.*
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.toast
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -68,6 +69,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                     Jitai.NOTIFICATION_DELETED, sensorDataId)
                     //if the notification was deleted by the user set one minte timeout
                     notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
+                    toast("one minute timeout")
                 }
                 Jitai.NOTIFICATION_FAIL               -> {
                     Log.d(TAG, "incorrect $sensorDataId")
