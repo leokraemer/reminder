@@ -26,17 +26,16 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
     }
 
     override fun check(sensorData: SensorDataSet) {
-        if ((timeTrigger == null || timeTrigger!!.check(context, sensorData))
-            && (geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData))
-            && (weatherTrigger == null || weatherTrigger!!.check(context, sensorData))
-            && (activitTrigger == null || activitTrigger!!.isEmpty()
-                || activitTrigger!!.any { it.check(context, sensorData) })
-        ) {
-            postNotification(id, sensorData.time, goal, message, sensorData.id)
-            geofenceTrigger?.reset()
-            activitTrigger?.forEach { it.reset() }
-        } else {
-            //removeNotification(id, sensorData.time, sensorData.id)
-        }
+        if ((timeTrigger == null || timeTrigger!!.check(context, sensorData)))
+            if (geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData))
+                if (weatherTrigger == null || weatherTrigger!!.check(context, sensorData))
+                    if (activitTrigger == null || activitTrigger!!.isEmpty()
+                        || activitTrigger!!.any { it.check(context, sensorData) }) {
+                        postNotification(id, sensorData.time, goal, message, sensorData.id)
+                        geofenceTrigger?.reset()
+                        activitTrigger?.forEach { it.reset() }
+                    } else {
+                        //removeNotification(id, sensorData.time, sensorData.id)
+                    }
     }
 }
