@@ -1,5 +1,6 @@
 package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -10,14 +11,18 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
+import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
 import kotlinx.android.synthetic.main.naturaltriggerview.view.*
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.toast
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -126,6 +131,8 @@ class CreateTriggerActivity : GeofenceDialogListener,
         if (mPager!!.currentItem == mPager!!.adapter!!.count - 1) {
             val db = JitaiDatabase.getInstance(this)
             db.enterNaturalTrigger(model)
+            toast("Erinnerung erfolgreich erstellt")
+            startService(intentFor<DataCollectorService>().setAction(UPDATE_JITAI))
             super.onBackPressed()
         }
         mPager!!.currentItem++
