@@ -61,6 +61,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.notifications.FullscreenJitai"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
+        </activity>
+
         <service
             android:name="de.leo.fingerprint.datacollector.datacollection.services.ActivitiesIntentService"
             android:exported="false"></service>

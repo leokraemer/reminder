@@ -1,6 +1,5 @@
 package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -232,10 +231,12 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                         resources.getDrawable(R.drawable.sand_timer_96px))
                 }
                 if (geofence!!.dwell) {
-                    spendTimeTime.setText("" + TimeUnit.MILLISECONDS
+                    spendTime.visibility = View.VISIBLE
+                    spendTime.setText("" + TimeUnit.MILLISECONDS
                         .toMinutes(geofence!!.loiteringDelay.toLong()))
                 } else {
-                    spendTimeTime.setText("")
+                    spendTime.visibility = View.GONE
+                    spendTime.setText("")
                 }
             } else {
                 geofenceIcon.setImageResource(R.drawable.ic_public_white_48dp)
