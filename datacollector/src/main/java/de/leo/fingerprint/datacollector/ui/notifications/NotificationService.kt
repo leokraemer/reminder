@@ -18,6 +18,7 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import android.media.RingtoneManager
 
 
 /**
@@ -25,8 +26,8 @@ import java.util.concurrent.TimeUnit
  */
 class NotificationService : IntentService("NotificationIntentService") {
     companion object {
-        private const val notificationIdModifyer = 19921
-        private const val triggerNotificationIdModifyer = 19922
+        const val NOTIFICATIONIDMODIFYER = 19921
+        const val TRIGGERNOTIFICATIONIDMODIFYER = 4711
         private val TIMEOUT = TimeUnit.SECONDS.toMillis(5)
         private val TIMEOUT_LONG = TimeUnit.MINUTES.toMillis(1)
         private const val TAG = "notification service"
@@ -46,6 +47,7 @@ class NotificationService : IntentService("NotificationIntentService") {
             when (event) {
             //already in db
                 Jitai.CONDITION_MET                   -> {
+                    naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
                     naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
                     Log.d(TAG, "start  $sensorDataId")
                 }
@@ -58,15 +60,15 @@ class NotificationService : IntentService("NotificationIntentService") {
                 Jitai.TOO_FREQUENT_NOTIFICATIONS      -> {
                     Log.d(TAG, "too many $sensorDataId")
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.TOO_FREQUENT_NOTIFICATIONS,
-                                                    sensorDataId)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.TOO_FREQUENT_NOTIFICATIONS,
+                                                  sensorDataId)
                 }
                 Jitai.NOTIFICATION_DELETED            -> {
                     Log.d(TAG, "deleted $sensorDataId")
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_DELETED, sensorDataId)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_DELETED, sensorDataId)
                     //if the notification was deleted by the user set one minte timeout
                     notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
                     toast("one minute timeout")
@@ -75,15 +77,15 @@ class NotificationService : IntentService("NotificationIntentService") {
                     Log.d(TAG, "incorrect $sensorDataId")
                     cancelNotification(jitaiId)
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_FAIL, sensorDataId)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_FAIL, sensorDataId)
                 }
                 Jitai.NOTIFICATION_SUCCESS            -> {
                     Log.d(TAG, "success $sensorDataId")
                     cancelNotification(jitaiId)
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_SUCCESS, sensorDataId)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_SUCCESS, sensorDataId)
                 }
 
             //trigger notifications
@@ -96,8 +98,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                     Log.d(TAG, "$goal notification trigger yes")
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_TRIGGER_YES, -1)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_TRIGGER_YES, -1)
 
                 }
                 Jitai.NOTIFICATION_TRIGGER_NO         -> {
@@ -105,8 +107,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                         "situation")
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_TRIGGER_NO, -1)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_TRIGGER_NO, -1)
 
                 }
                 Jitai.NOTIFICATION_TRIGGER_DELETE     -> {
@@ -114,8 +116,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                           "$goal notification trigger, asking user for confirmation of situation")
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                    System.currentTimeMillis(),
-                                                    Jitai.NOTIFICATION_TRIGGER_DELETE, -1)
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_TRIGGER_DELETE, -1)
 
                 }
 
@@ -146,20 +148,20 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setColor(parseColor("blue"))
                 .addAction(R.drawable.check, "Ja", PendingIntent
                     .getService(this,
-                                triggerNotificationIdModifyer + id,
+                                TRIGGERNOTIFICATIONIDMODIFYER + id,
                                 triggerYesIntent(id)
                                 , PendingIntent.FLAG_ONE_SHOT))
                 .addAction(R.drawable.cancel, "Nein", PendingIntent
                     .getService(this,
-                                triggerNotificationIdModifyer + id,
+                                TRIGGERNOTIFICATIONIDMODIFYER + id,
                                 triggerNoIntent(id)
                                 , PendingIntent.FLAG_ONE_SHOT))
                 .setDeleteIntent(PendingIntent.getService(this,
-                                                          triggerNotificationIdModifyer + id,
+                                                          TRIGGERNOTIFICATIONIDMODIFYER + id,
                                                           triggerDeleteIntent(id)
                                                           , PendingIntent.FLAG_ONE_SHOT))
             notificationStore.put(id, System.currentTimeMillis() + TIMEOUT)
-            mNotificationManager.notify(triggerNotificationIdModifyer + id, mNotifyBuilder.build())
+            mNotificationManager.notify(TRIGGERNOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
         } else {
             //call self in most complicated way
             startService(tooFrequentIntent(id, -1))
@@ -183,56 +185,67 @@ class NotificationService : IntentService("NotificationIntentService") {
             .setAction("jitai_trigger_delete")
 
 
-    fun naturalTriggerFullScreenReminder(id: Int, goal: String, message: String, sensorDataId: Long) {
+    fun naturalTriggerFullScreenReminder(id: Int,
+                                         goal: String,
+                                         message: String,
+                                         sensorDataId: Long) {
         val timestamp = notificationStore.get(id)
         if (timestamp == null || timestamp < System.currentTimeMillis()) {
-            val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()),
-                                               ZoneId.systemDefault())
-            val fullScreenIntent = PendingIntent
-                .getActivity(this,
-                             notificationIdModifyer + id,
-                             fullScreenIntent(id, sensorDataId, goal, message)
-                             , PendingIntent.FLAG_UPDATE_CURRENT)
-            val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
-                .setContentTitle("${time.format(DateTimeFormatter.ofPattern("HH:mm:ss"))}: " +
-                                     "$goal")
-                .setAutoCancel(true)
-                .setOngoing(false)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setWhen(0)
-                .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
-                .setContentText(message)
-                .setSmallIcon(R.drawable.fp_s)
-                .addAction(R.drawable.play_green, "Jetzt!", PendingIntent
-                    .getService(this,
-                                notificationIdModifyer + id,
-                                winIntent(id, sensorDataId)
-                                , PendingIntent.FLAG_ONE_SHOT))
-                .addAction(R.drawable.cancel, "Später", PendingIntent
-                    .getService(this,
-                                notificationIdModifyer + id,
-                                failIntent(id, sensorDataId)
-                                , PendingIntent.FLAG_ONE_SHOT))
-                .setDeleteIntent(PendingIntent.getService(this,
-                                                          notificationIdModifyer + id,
-                                                          deleteIntent(id, sensorDataId)
-                                                          , PendingIntent.FLAG_ONE_SHOT))
-                .setContentIntent(fullScreenIntent)
-                .setFullScreenIntent(fullScreenIntent, true)
             notificationStore.put(id, System.currentTimeMillis() + TIMEOUT)
-            val notification = mNotifyBuilder.build()
-            notification.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            mNotificationManager.notify(notificationIdModifyer + id, notification)
+            startActivity(fullScreenIntent(id, sensorDataId, goal, message))
         } else {
             //call self in most complicated way
             startService(tooFrequentIntent(id, sensorDataId))
         }
     }
 
+    fun naturalTriggerNotification(id: Int, goal: String, message: String, sensorDataId: Long) {
+        val timestamp = notificationStore.get(id)
+        if (timestamp == null || timestamp < System.currentTimeMillis()) {
+            val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()),
+                                               ZoneId.systemDefault())
+            val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            val fullScreenIntent =
+                PendingIntent.getActivity(this,
+                                          NOTIFICATIONIDMODIFYER + id,
+                                          fullScreenIntent(id, sensorDataId, goal, message),
+                                          PendingIntent.FLAG_UPDATE_CURRENT)
+            //notification on default channel to get the priroty_max for the heads up notification
+            val mNotifyBuilder = NotificationCompat.Builder(this)
+                .setContentTitle("${time.format(DateTimeFormatter.ofPattern("HH:mm:ss"))}: " +
+                                     "$goal")
+                .setAutoCancel(true)
+                .setOngoing(false)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setWhen(0)
+                .setSound(alarmSound)
+                .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
+                .setContentText(message)
+                .setSmallIcon(R.drawable.fp_s)
+                .addAction(R.drawable.play_green, "Jetzt!", PendingIntent
+                    .getService(this,
+                                NOTIFICATIONIDMODIFYER + id,
+                                winIntent(id, sensorDataId)
+                                , PendingIntent.FLAG_ONE_SHOT))
+                .addAction(R.drawable.cancel, "Später", PendingIntent
+                    .getService(this,
+                                NOTIFICATIONIDMODIFYER + id,
+                                failIntent(id, sensorDataId)
+                                , PendingIntent.FLAG_ONE_SHOT))
+                .setDeleteIntent(PendingIntent.getService(this,
+                                                          NOTIFICATIONIDMODIFYER + id,
+                                                          deleteIntent(id, sensorDataId)
+                                                          , PendingIntent.FLAG_ONE_SHOT))
+                .setContentIntent(fullScreenIntent)
+            notificationStore.put(id, System.currentTimeMillis() + TIMEOUT)
+            mNotificationManager.notify(NOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
+        }
+    }
+
     fun cancelTriggerNotification(id: Int) {
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationManager.cancel(triggerNotificationIdModifyer + id)
+        mNotificationManager.cancel(TRIGGERNOTIFICATIONIDMODIFYER + id)
     }
 
     private fun failIntent(id: Int, sensorDataId: Long): Intent =
@@ -249,7 +262,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                 JITAI_GOAL to goal,
                 JITAI_MESSAGE to message,
                 JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
-            .setAction("jitai_fullscreen")
+            .setAction("jitai_fullscreen").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
     private fun tooFrequentIntent(id: Int, sensorDataId: Long): Intent =
         applicationContext.intentFor<NotificationService>(
@@ -269,6 +282,6 @@ class NotificationService : IntentService("NotificationIntentService") {
 
     fun cancelNotification(id: Int) {
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        mNotificationManager.cancel(notificationIdModifyer + id)
+        mNotificationManager.cancel(NOTIFICATIONIDMODIFYER + id)
     }
 }
