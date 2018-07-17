@@ -1,6 +1,7 @@
 package de.leo.fingerprint.datacollector.jitai.manage
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
@@ -26,9 +27,10 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
     }
 
     override fun check(sensorData: SensorDataSet) {
-        if ((timeTrigger == null || timeTrigger!!.check(context, sensorData)))
-            if (geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData))
-                if (weatherTrigger == null || weatherTrigger!!.check(context, sensorData))
+        Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
+        if ((timeTrigger == null || timeTrigger!!.check(context, sensorData))) {
+            if (geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData)) {
+                if (weatherTrigger == null || weatherTrigger!!.check(context, sensorData)) {
                     if (activitTrigger == null || activitTrigger!!.isEmpty()
                         || activitTrigger!!.any { it.check(context, sensorData) }) {
                         postNotification(id, sensorData.time, goal, message, sensorData.id)
@@ -37,5 +39,8 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
                     } else {
                         //removeNotification(id, sensorData.time, sensorData.id)
                     }
+                }
+            }
+        }
     }
 }

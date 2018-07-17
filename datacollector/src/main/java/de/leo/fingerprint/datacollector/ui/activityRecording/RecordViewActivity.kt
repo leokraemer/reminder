@@ -233,31 +233,36 @@ class RecordViewActivity : AppCompatActivity() {
     fun getScreenStateValue(i: Int): String? = if (i > 0) "an" else "aus"
 
     private fun initLightView() {
-        val entries = mutableListOf<Entry>()
-
-        val firstTimeStamp = record.ambientLight.first().first
-        record.ambientLight.forEach { value ->
-            val time = value.first - firstTimeStamp
-            entries.add(Entry(time.toFloat(),
-                              value.second.toFloat()))
+        record.ambientLight.firstOrNull()?.let {
+            val firstTimeStamp = it.first
+            val entries = mutableListOf<Entry>()
+            record.ambientLight.forEach { value ->
+                val time = value.first - firstTimeStamp
+                entries.add(Entry(time.toFloat(),
+                                  value.second.toFloat()))
+            }
+            val data = createHeightLineDataSet(entries, "Umgebungslicht")
+            data.color = getResources().getColor(R.color.black)
+            val lineData = LineData(data)
+            lineData.setDrawValues(false)
+            lightchart.data = lineData
+            lightchart.invalidate()
+            lightchart.setTouchEnabled(false)
+            adjustXAxisForTime(lightchart)
+            lightchart.axisLeft.setDrawLabels(true)
+            lightchart.axisLeft.setDrawGridLines(false)
+            lightchart.axisRight.setDrawLabels(false)
+            lightchart.legend.setEnabled(true)
+            lightchart.legend.setEntries(listOf(LegendEntry("Umgebungslicht",
+                                                            Legend.LegendForm.LINE,
+                                                            Float.NaN,
+                                                            Float.NaN,
+                                                            null,
+                                                            0)))
+            lightchart.description.isEnabled = false
         }
-        val data = createHeightLineDataSet(entries, "Umgebungslicht")
-        data.color = getResources().getColor(R.color.black)
-        val lineData = LineData(data)
-        lineData.setDrawValues(false)
-        lightchart.data = lineData
-        lightchart.invalidate()
-        lightchart.setTouchEnabled(false)
-        adjustXAxisForTime(lightchart)
-        lightchart.axisLeft.setDrawLabels(true)
-        lightchart.axisLeft.setDrawGridLines(false)
-        lightchart.axisRight.setDrawLabels(false)
-        lightchart.legend.setEnabled(true)
-        lightchart.legend.setEntries(listOf(LegendEntry("Umgebungslicht", Legend.LegendForm.LINE,
-                                                        Float.NaN,
-                                                        Float.NaN, null, 0)))
-        lightchart.description.isEnabled = false
     }
+
 
     private fun initHeightGraph() {
         val entries = mutableListOf<Entry>()

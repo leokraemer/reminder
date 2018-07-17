@@ -1,7 +1,6 @@
 package de.leo.fingerprint.datacollector.ui.notifications
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
@@ -11,8 +10,9 @@ class FullscreenJitai : AppCompatActivity() {
 
     val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(this) }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setTheme(R.style.AppBaseTheme_Light)
         setContentView(R.layout.activity_full_screen_jitai)
         val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
         val goalText = intent?.getStringExtra(JITAI_GOAL) ?: ""

@@ -41,7 +41,7 @@ class NaturalTriggerModel() {
             }
         }
 
-    var geofence: MyGeofence? = null
+    var  geofence: MyGeofence? = null
         set(value) {
             if (field != value) {
                 field = value
