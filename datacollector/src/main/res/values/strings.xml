@@ -90,5 +90,8 @@
     <string name="record">Aufnehmen</string>
     <string name="work_geofence_name">Arbeit</string>
     <string name="home_geofence_name">Zuhause</string>
+    <string name="situation">Situation</string>
+    <string name="goal">Ziel</string>
+    <string name="message">Nachricht</string>
 
 </resources>

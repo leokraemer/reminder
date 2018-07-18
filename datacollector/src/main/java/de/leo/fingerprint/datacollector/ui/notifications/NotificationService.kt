@@ -71,7 +71,6 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                   Jitai.NOTIFICATION_DELETED, sensorDataId)
                     //if the notification was deleted by the user set one minte timeout
                     notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
-                    toast("one minute timeout")
                 }
                 Jitai.NOTIFICATION_FAIL               -> {
                     Log.d(TAG, "incorrect $sensorDataId")
@@ -206,12 +205,7 @@ class NotificationService : IntentService("NotificationIntentService") {
             val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis()),
                                                ZoneId.systemDefault())
             val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val fullScreenIntent =
-                PendingIntent.getActivity(this,
-                                          NOTIFICATIONIDMODIFYER + id,
-                                          fullScreenIntent(id, sensorDataId, goal, message),
-                                          PendingIntent.FLAG_UPDATE_CURRENT)
-            //notification on default channel to get the priroty_max for the heads up notification
+            //notification on default channel to get the priority_max for the heads up notification
             val mNotifyBuilder = NotificationCompat.Builder(this)
                 .setContentTitle("${time.format(DateTimeFormatter.ofPattern("HH:mm:ss"))}: " +
                                      "$goal")
@@ -223,11 +217,6 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
                 .setSmallIcon(R.drawable.fp_s)
-                .setDeleteIntent(PendingIntent.getService(this,
-                                                          NOTIFICATIONIDMODIFYER + id,
-                                                          deleteIntent(id, sensorDataId)
-                                                          , PendingIntent.FLAG_ONE_SHOT))
-                .setContentIntent(fullScreenIntent)
             mNotificationManager.notify(NOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
         }
     }

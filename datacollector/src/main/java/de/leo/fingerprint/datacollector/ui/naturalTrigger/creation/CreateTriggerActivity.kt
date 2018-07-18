@@ -34,27 +34,6 @@ class CreateTriggerActivity : GeofenceDialogListener,
                               NaturalTriggerModel.ModelChangedListener,
                               AppCompatActivity() {
 
-    override fun modelChangedCallback() {
-        updateNaturalTriggerReminderCardView(model, reminder_card)
-        //enable/disable view paging
-        if (mPager!!.currentItem == 0
-            && (model.goal.isNullOrEmpty() || model.message.isNullOrEmpty())) {
-            mPager?.setPagingEnabled(false)
-        } else if (mPager!!.currentItem == 1 && model.situation.isNullOrEmpty()) {
-            mPager!!.setPagingEnabled(false)
-        } else {
-            mPager?.setPagingEnabled(true)
-        }
-        //update child views
-        activitySelection.updateView()
-        locationSelection.updateView()
-        locationFinish.updateView()
-        goalSelection.updateView()
-        situationSelection.updateView()
-        timeSelection.updateView()
-    }
-
-
     private val model: NaturalTriggerModel = NaturalTriggerModel()
     /**
      * The number of pages (wizard steps) to show in this demo.
@@ -123,6 +102,26 @@ class CreateTriggerActivity : GeofenceDialogListener,
         timeSelection.model = model
         //kick off view initialisation
         modelChangedCallback()
+    }
+
+    override fun modelChangedCallback() {
+        updateNaturalTriggerReminderCardView(model, reminder_card)
+        //enable/disable view paging
+        if (mPager!!.currentItem == 0
+            && (model.goal.isNullOrEmpty() || model.message.isNullOrEmpty())) {
+            mPager?.setPagingEnabled(false)
+        } else if (mPager!!.currentItem == 1 && model.situation.isNullOrEmpty()) {
+            mPager!!.setPagingEnabled(false)
+        } else {
+            mPager?.setPagingEnabled(true)
+        }
+        //update child views
+        activitySelection.updateView()
+        locationSelection.updateView()
+        locationFinish.updateView()
+        goalSelection.updateView()
+        situationSelection.updateView()
+        timeSelection.updateView()
     }
 
     private fun nextButtonClick() {
