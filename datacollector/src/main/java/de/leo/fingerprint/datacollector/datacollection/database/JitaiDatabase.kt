@@ -1288,6 +1288,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
 
     fun enterNaturalTrigger(naturalTrigger: NaturalTriggerModel): Int {
         val cv = ContentValues()
+        if (naturalTrigger.ID != -1)
+            cv.put(ID, naturalTrigger.ID)
         cv.put(NATURAL_TRIGGER_GOAL, naturalTrigger.goal)
         cv.put(NATURAL_TRIGGER_MESSAGE, naturalTrigger.message)
         cv.put(NATURAL_TRIGGER_SITUATION, naturalTrigger.situation)
@@ -1300,14 +1302,14 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         }
         naturalTrigger.geofence?.let {
             //if (it.id == -1) {
-                val geofenceID = enterGeofence(it)
-                cv.put(NATURAL_TRIGGER_GEOFENCE, geofenceID)
+            val geofenceID = enterGeofence(it)
+            cv.put(NATURAL_TRIGGER_GEOFENCE, geofenceID)
             /*} else
                 cv.put(NATURAL_TRIGGER_GEOFENCE, it.id)*/
         }
         var returnval = -1L
         writableDatabase.transaction {
-            returnval = insert(TABLE_NATURAL_TRIGGER, null, cv)
+            returnval = insertWithOnConflict(TABLE_NATURAL_TRIGGER, null, cv, CONFLICT_REPLACE)
         }
         return returnval.toInt()
     }
@@ -1351,6 +1353,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     //cursor is already at position
     fun getNaturalTrigger(cursor: Cursor): NaturalTriggerModel {
         val naturalTrigger = NaturalTriggerModel()
+        naturalTrigger.ID = cursor.getInt(cursor.getColumnIndex(ID))
         naturalTrigger.geofence = getMyGeofence(cursor.getInt(cursor.getColumnIndex
         (NATURAL_TRIGGER_GEOFENCE)))
         naturalTrigger.beginTime = LocalTime.ofSecondOfDay(

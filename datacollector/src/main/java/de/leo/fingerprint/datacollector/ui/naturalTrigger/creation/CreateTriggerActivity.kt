@@ -34,7 +34,15 @@ class CreateTriggerActivity : GeofenceDialogListener,
                               NaturalTriggerModel.ModelChangedListener,
                               AppCompatActivity() {
 
-    private val model: NaturalTriggerModel = NaturalTriggerModel()
+    companion object {
+        const val EDIT = "edit"
+        const val EDIT_COPY = "edit_copy"
+        const val NATURALTRIGGER_ID = "natural_trigger_id"
+    }
+
+    val db by lazy { JitaiDatabase.getInstance(this) }
+
+    private lateinit var model: NaturalTriggerModel
     /**
      * The number of pages (wizard steps) to show in this demo.
      */
@@ -63,7 +71,14 @@ class CreateTriggerActivity : GeofenceDialogListener,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_natural_trigger_tabs)
         setTheme(R.style.AppBaseTheme_Fullscreen)
-
+        val intent = getIntent()
+        val naturalTriggerId = intent.getIntExtra(NATURALTRIGGER_ID, -1)
+        if (naturalTriggerId != -1) {
+            model = db.getNaturalTrigger(naturalTriggerId)
+        }
+        if (intent.action == EDIT_COPY) {
+            model.ID = -1
+        }
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = viewPager
         mPagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
@@ -101,6 +116,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
         locationSelection.model = model
         activitySelection.model = model
         timeSelection.model = model
+
         //kick off view initialisation
         modelChangedCallback()
     }
@@ -128,7 +144,6 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private fun nextButtonClick() {
         //last page
         if (mPager!!.currentItem == mPager!!.adapter!!.count - 1) {
-            val db = JitaiDatabase.getInstance(this)
             db.enterNaturalTrigger(model)
             toast("Erinnerung erfolgreich erstellt")
             startService(intentFor<DataCollectorService>().setAction(UPDATE_JITAI))
