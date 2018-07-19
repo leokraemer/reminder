@@ -10,7 +10,8 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:background="@color/colorPrimary"
+        android:theme="@style/AppBaseTheme">
 
 
         <ToggleButton
@@ -105,9 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="situation,delete"
-            tools:layout_editor_absoluteX="280dp"
-            tools:layout_editor_absoluteY="61dp" />
+            app:constraint_referenced_ids="situation,delete" />
 
         <include
             android:id="@+id/reminder_card"

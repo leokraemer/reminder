@@ -22,7 +22,7 @@ class FullscreenJitai : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppBaseTheme_Light)
+        setTheme(R.style.AppBaseTheme_Light_Fullscreen)
         setContentView(R.layout.activity_full_screen_jitai)
         val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
         val goalText = intent?.getStringExtra(JITAI_GOAL) ?: ""

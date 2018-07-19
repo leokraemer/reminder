@@ -21,7 +21,7 @@
         android:icon="@drawable/fp_s"
         android:label="@string/study_name"
         android:supportsRtl="true"
-        android:theme="@style/AppBaseTheme">
+        android:theme="@style/AppBaseTheme.Light">
         <activity
             android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="@string/study_name"></activity>

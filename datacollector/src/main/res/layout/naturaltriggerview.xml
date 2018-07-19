@@ -15,7 +15,8 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/imageView2"
     tools:layout_height="wrap_content"
-    tools:showIn="@layout/activity_natural_trigger_tabs">
+    tools:showIn="@layout/activity_natural_trigger_tabs"
+    android:theme="@style/AppBaseTheme">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -110,12 +111,14 @@
             android:id="@+id/spendTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="left"
             android:text="300"
             android:textColor="@color/white"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/geofenceDirection"
             app:layout_constraintStart_toEndOf="@+id/geofenceDirection"
-            app:layout_constraintTop_toTopOf="@+id/geofenceDirection" />
+            app:layout_constraintTop_toTopOf="@+id/geofenceDirection"
+            tools:visibility="visible" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
 

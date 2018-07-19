@@ -10,8 +10,19 @@
         <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppBaseTheme.Fullscreen" parent="AppBaseTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:windowTranslucentStatus">true</item>-->
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppBaseTheme.Light.Fullscreen" parent="AppBaseTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:windowTranslucentStatus">true</item>-->
     </style>
 
     <style name="AppBaseTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
@@ -22,7 +33,6 @@
         <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
     </style>
 
