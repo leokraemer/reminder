@@ -988,12 +988,15 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getAllMyGeofences(): List<MyGeofence> {
-        val c = readableDatabase.query(TABLE_GEOFENCE, null, null, null,
+        val c = readableDatabase.query(true, TABLE_GEOFENCE, null, null, null, GEOFENCE_NAME,
                                        null, null, null)
         val list = mutableListOf<MyGeofence>()
         if (c.moveToFirst()) {
             do {
-                list.add(extractMyGeofenceFromCursor(c))
+                list.add(extractMyGeofenceFromCursor(c).copy(enter = false,
+                                                             exit = false,
+                                                             dwell = true,
+                                                             loiteringDelay = 0))
             } while (c.moveToNext())
         }
         c.close()
