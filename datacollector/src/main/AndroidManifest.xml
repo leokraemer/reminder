@@ -18,9 +18,8 @@
     <application
         android:name="de.leo.fingerprint.datacollector.ui.application.DataCollectorApplication"
         android:allowBackup="true"
-        android:icon="@drawable/fp_s"
+        android:icon="@drawable/reminder_ico"
         android:label="@string/study_name"
-        android:supportsRtl="true"
         android:theme="@style/AppBaseTheme.Light">
         <activity
             android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
