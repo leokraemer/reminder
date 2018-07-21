@@ -11,11 +11,11 @@ public class DataCollectorApplication extends Application {
 
     public static boolean WIFI_NAME_ENABLED = true;
     public static boolean LOCATION_ENABLED = true;
-    public static boolean ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED = true;
+    public static boolean ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED = false;
     public static boolean ACTIVITY_ENABLED = true;
-    public static boolean ENVIRONMENT_SENSOR_ENABLED = true;
+    public static boolean ENVIRONMENT_SENSOR_ENABLED = false;
     public static boolean GOOGLE_FITNESS_ENABLED = true;
-    public static boolean AMBIENT_SOUND_ENABLED = true;
+    public static boolean AMBIENT_SOUND_ENABLED = false;
     public static boolean WEATHER_ENABLED = true;
     public static String BROADCAST_EVENT = "com.example.leo.datacollector";
 

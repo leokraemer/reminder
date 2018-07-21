@@ -287,7 +287,7 @@ class DataCollectorService : Service(),
     private fun updateUnAutomaticData() {
         getWiFiName()
         checkScreenOn()
-        ambientSound!!.getAmbientSound()
+        ambientSound?.getAmbientSound()
         googleFitness.readData()
     }
 
@@ -341,9 +341,9 @@ class DataCollectorService : Service(),
             sensorDataSet.wifiInformation = currentWifiName
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
-            Log.d(TAG, currentLatitude.toString() + "")
-            Log.d(TAG, currentLongitude.toString() + "")
-            Log.d(TAG, "" + currentAccurate)
+            Log.d(TAG, "lat: ${currentLatitude}")
+            Log.d(TAG, "long: $currentLongitude")
+            Log.d(TAG, "accuracy $currentAccurate")
             val location = Location("gps")
             location.latitude = currentLatitude
             location.longitude = currentLongitude
@@ -369,35 +369,39 @@ class DataCollectorService : Service(),
     }
 
     private fun uploadEnvironmentData() {
-        doAsync {
-            db!!.enterSingleDimensionDataBatch(recordingId,
-                                               TABLE_REALTIME_AIR,
-                                               myEnvironmentSensor.readPressureData())
-            db!!.enterSingleDimensionDataBatch(recordingId,
-                                               TABLE_REALTIME_TEMPERATURE,
-                                               myEnvironmentSensor.readTemperatureData())
-            db!!.enterSingleDimensionDataBatch(recordingId,
-                                               TABLE_REALTIME_LIGHT,
-                                               myEnvironmentSensor.readLightData())
-            db!!.enterSingleDimensionDataBatch(recordingId,
-                                               TABLE_REALTIME_HUMIDITY,
-                                               myEnvironmentSensor.readHumidityData())
-            db!!.enterSingleDimensionDataBatch(recordingId,
-                                               TABLE_REALTIME_PROXIMITY,
-                                               myEnvironmentSensor.readProximityData())
+        if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+            doAsync {
+                db!!.enterSingleDimensionDataBatch(recordingId,
+                                                   TABLE_REALTIME_AIR,
+                                                   myEnvironmentSensor.readPressureData())
+                db!!.enterSingleDimensionDataBatch(recordingId,
+                                                   TABLE_REALTIME_TEMPERATURE,
+                                                   myEnvironmentSensor.readTemperatureData())
+                db!!.enterSingleDimensionDataBatch(recordingId,
+                                                   TABLE_REALTIME_LIGHT,
+                                                   myEnvironmentSensor.readLightData())
+                db!!.enterSingleDimensionDataBatch(recordingId,
+                                                   TABLE_REALTIME_HUMIDITY,
+                                                   myEnvironmentSensor.readHumidityData())
+                db!!.enterSingleDimensionDataBatch(recordingId,
+                                                   TABLE_REALTIME_PROXIMITY,
+                                                   myEnvironmentSensor.readProximityData())
+            }
         }
     }
 
     private fun uploadMotionData() {
-        val accData = myMotion.readAccData()
-        val rotData = myMotion.readRotData()
-        val magData = myMotion.readMagData()
-        val gyroData = myMotion.readGyroData()
-        doAsync {
-            db!!.enterAccDataBatch(recordingId, accData)
-            db!!.enterGyroDataBatch(recordingId, gyroData)
-            db!!.enterMagDataBatch(recordingId, magData)
-            db!!.enterRotDataBatch(recordingId, rotData)
+        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
+            val accData = myMotion.readAccData()
+            val rotData = myMotion.readRotData()
+            val magData = myMotion.readMagData()
+            val gyroData = myMotion.readGyroData()
+            doAsync {
+                db!!.enterAccDataBatch(recordingId, accData)
+                db!!.enterGyroDataBatch(recordingId, gyroData)
+                db!!.enterMagDataBatch(recordingId, magData)
+                db!!.enterRotDataBatch(recordingId, rotData)
+            }
         }
     }
 
@@ -500,7 +504,7 @@ class DataCollectorService : Service(),
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentText("Reminder service is running.")
-            .setSmallIcon(R.drawable.fp_s)
+            .setSmallIcon(R.drawable.reminder_white)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         startForeground(notificationID, mNotifyBuilder.build())
     }
