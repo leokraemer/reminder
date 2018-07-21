@@ -53,7 +53,7 @@ class WifiListDialogFragment : DialogFragment() {
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         getDialog().getWindow().setTitle("Verfügbare W-LAN Netze")
-        val view = inflater!!.inflate(R.layout.geofence_list_dialog, container, false)
+        val view = inflater.inflate(R.layout.geofence_list_dialog, container, false)
         wifiList = view.geofence_listview
         wifiList.adapter = WifiListAdapter(context!!, scanResults)
         if (scanResults.isEmpty()) {

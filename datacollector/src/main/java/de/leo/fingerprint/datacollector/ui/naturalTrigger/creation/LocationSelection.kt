@@ -24,7 +24,7 @@ class LocationSelection : NaturalTriggerFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        val view = inflater!!.inflate(
+        val view = inflater.inflate(
             R.layout.fragment_location_selection, container, false)
         db = JitaiDatabase.getInstance(context!!)
         homeGeofence = db.getMyGeofence(HOME_ID)

@@ -15,7 +15,7 @@ class ActivitySelection : NaturalTriggerFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater!!.inflate(
+        return inflater.inflate(
             R.layout.fragment_activity_selection, container, false) as ViewGroup
     }
 

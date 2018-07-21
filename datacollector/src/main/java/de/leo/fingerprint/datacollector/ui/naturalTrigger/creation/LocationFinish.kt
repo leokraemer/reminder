@@ -19,7 +19,7 @@ class LocationFinish : NaturalTriggerFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater!!.inflate(
+        return inflater.inflate(
             R.layout.fragment_location_finish, container, false) as ViewGroup
     }
 

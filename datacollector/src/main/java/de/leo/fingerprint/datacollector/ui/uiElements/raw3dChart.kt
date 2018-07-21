@@ -27,8 +27,8 @@ class raw3DChart : LineChart {
 
     private val minuteValueFormatter = object : IAxisValueFormatter {
         override fun getFormattedValue(value: Float, axis: AxisBase?): String =
-                LocalTime.ofNanoOfDay(value.toLong() * 1000)
-                        .format(DateTimeFormatter.ofPattern("mm:ss"))
+            LocalTime.ofNanoOfDay(value.toLong() * 1000)
+                .format(DateTimeFormatter.ofPattern("mm:ss"))
     }
 
     fun setData(type: String, record: ActivityRecord) {
@@ -38,7 +38,7 @@ class raw3DChart : LineChart {
             MAGNET       -> rawdata = record.magnetData
             ORIENTATION  -> rawdata = record.orientationData
             GYROSCOPE    -> rawdata = record.gyroscopData
-            else                                                        -> rawdata = record.accelerometerData
+            else         -> rawdata = record.accelerometerData
         }
         val entries_x = mutableListOf<Entry>()
         val entries_y = mutableListOf<Entry>()
@@ -80,12 +80,12 @@ class raw3DChart : LineChart {
                 ORIENTATION  -> adjustOriGraph()
                 MAGNET       -> adjustMagGraph()
                 GYROSCOPE    -> adjustGyroGraph()
-                else                                                        -> adjustAccGraph()
+                else         -> adjustAccGraph()
             }
         }
     }
 
-    fun setData(type: String, dataIn : Collection<Pair<Long, FloatArray>>) {
+    fun setData(type: String, dataIn: Collection<Pair<Long, FloatArray>>) {
         var rawdata = dataIn
         val entries_x = mutableListOf<Entry>()
         val entries_y = mutableListOf<Entry>()
@@ -124,13 +124,13 @@ class raw3DChart : LineChart {
                 ORIENTATION  -> adjustOriGraph()
                 MAGNET       -> adjustMagGraph()
                 GYROSCOPE    -> adjustGyroGraph()
-                else                                                        -> adjustAccGraph()
+                else         -> adjustAccGraph()
             }
         }
     }
 
     private fun createAccLineDataSet(entries: MutableList<Entry>, label: String):
-            LineDataSet {
+        LineDataSet {
         val accData = LineDataSet(entries, label)
         accData.setDrawCircles(false)
         accData.setColor(R.color.background_material_dark)
@@ -158,17 +158,6 @@ class raw3DChart : LineChart {
     }
 
     private fun adjustOriGraph() {
-        val pi: Float = Math.PI.toFloat()
-        /*(data.getDataSetByLabel("x", true) as LineDataSet)
-                .values.forEach { v -> v.y = v.y * 180f / pi }
-        (data.getDataSetByLabel("y", true) as LineDataSet)
-                .values.forEach { v -> v.y = v.y * 180f / pi }
-        (data.getDataSetByLabel("z", true) as LineDataSet)
-                .values.forEach { v -> v.y = v.y * 180f / pi }
-
-        data.getDataSetByLabel("z", true).label = "z - grad"
-        axisLeft.axisMaximum = 190f
-        axisLeft.axisMinimum = -190f*/
         axisLeft.axisMaximum = 1f
         axisLeft.axisMinimum = -1f
     }

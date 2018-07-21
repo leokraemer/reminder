@@ -54,17 +54,4 @@ class FullscreenJitai : AppCompatActivity() {
             onBackPressed()
         }
     }
-
-
-    private fun vibrate() {
-        // 0 : Start without a delay
-        // 150 : Vibrate for 150 milliseconds
-        // 200 : Pause for 200 milliseconds
-        // 150 : Vibrate for 150 milliseconds
-        val mVibratePattern = longArrayOf(0, 150, 200, 150)
-        // -1 : Do not repeat this pattern
-        // pass 0 if you want to repeat this pattern from 0th index
-        vibrator.vibrate(mVibratePattern, -1)
-    }
-
 }

@@ -39,7 +39,7 @@ class SituationSelection : NaturalTriggerFragment() {
 
         })
 
-        situation_edittext.setOnEditorActionListener { v, actionId, event ->
+        situation_edittext.setOnEditorActionListener { _, actionId, _ ->
             var handled = false
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 activity?.next_page?.performClick()

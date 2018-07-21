@@ -15,7 +15,7 @@ class ReminderSelection : NaturalTriggerFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater!!.inflate(
+        return inflater.inflate(
             R.layout.fragment_reminder_selection, container, false) as ViewGroup
     }
 

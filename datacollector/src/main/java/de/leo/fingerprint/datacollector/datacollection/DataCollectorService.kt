@@ -293,7 +293,7 @@ class DataCollectorService : Service(),
 
 
     private fun getWiFiName() {
-        var wifiInfo: WifiInfo? = null
+        var wifiInfo: WifiInfo?
         try {
             val wifiMgr = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
             wifiInfo = wifiMgr.connectionInfo
@@ -325,7 +325,7 @@ class DataCollectorService : Service(),
                 }
             }
         } else {
-            isCurrentScreenOn = pm.isScreenOn
+            isCurrentScreenOn = pm.isInteractive
         }
     }
 
@@ -496,10 +496,10 @@ class DataCollectorService : Service(),
 
     fun startNotification() {
         val mNotifyBuilder = NotificationCompat.Builder(this)
-            .setContentTitle("DataCollector")
+            .setContentTitle("Smart Reminder")
             .setAutoCancel(false)
             .setOngoing(true)
-            .setContentText("Background service is running.")
+            .setContentText("Reminder service is running.")
             .setSmallIcon(R.drawable.fp_s)
             .setPriority(NotificationCompat.PRIORITY_LOW)
         startForeground(notificationID, mNotifyBuilder.build())

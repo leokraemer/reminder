@@ -201,19 +201,19 @@ class CreateTriggerActivity : GeofenceDialogListener,
     }
 
     override fun onNoGeofenceSelected() {
-        model?.geofence = null
+        model.geofence = null
     }
 
     override fun onGeofenceSelected(geofence: MyGeofence) {
-        model?.geofence = geofence
+        model.geofence = geofence
     }
 
     override fun onWifiSelected(wifi: WifiInfo) {
-        model?.wifi = wifi
+        model.wifi = wifi
     }
 
     override fun onNoWifiSelected() {
-        model?.wifi = null
+        model.wifi = null
     }
 }
 
@@ -237,13 +237,13 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 geofenceName.setText(geofence!!.name)
                 if (geofence!!.enter)
                     geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2))
+                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2, null))
                 else if (geofence!!.exit)
                     geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white))
+                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white, null))
                 else if (geofence!!.dwell) {
                     geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.sand_timer_96px))
+                        resources.getDrawable(R.drawable.sand_timer_96px, null))
                 }
                 if (geofence!!.dwell) {
                     spendTime.visibility = View.VISIBLE

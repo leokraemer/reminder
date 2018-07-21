@@ -83,6 +83,6 @@ class TriggerListAdapter(context: Context, c: Cursor, val triggerUpdater: Trigge
 }
 
 interface TriggerUpdater {
-    fun updateNaturalTrigger(jitai: Int, active: Boolean)
+    fun updateNaturalTrigger(naturalTrigger: Int, active: Boolean)
     fun deleteNaturalTrigger(id: Int)
 }
