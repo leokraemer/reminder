@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import kotlinx.android.synthetic.main.fragment_location_finish.*
 import kotlinx.android.synthetic.main.minutepicker.*
 import java.util.concurrent.TimeUnit
@@ -88,9 +89,10 @@ class LocationFinish : NaturalTriggerFragment() {
     override fun updateView() {
         enterButton?.isChecked = model?.geofence?.enter ?: false
         exitButton?.isChecked = model?.geofence?.exit ?: false
+        enterButton?.isEnabled = model?.geofence?.name != EVERYWHERE
+        exitButton?.isEnabled = model?.geofence?.name != EVERYWHERE
         spendTime?.isChecked = model?.geofence?.dwell ?: false
         if (model?.geofence?.dwell == true) {
-
             spendTime?.isChecked = true
             fiveminutes?.isEnabled = true
             fiveteenminutes?.isEnabled = true

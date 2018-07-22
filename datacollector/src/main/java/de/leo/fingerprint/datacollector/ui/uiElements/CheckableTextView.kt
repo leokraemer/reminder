@@ -25,7 +25,7 @@ class CheckableTextView : TextView, Checkable {
         super(context, attrs, defStyleAttr, defStyleRes)
 
     init {
-        super.setOnClickListener({ _ -> toggle() })
+        super.setOnClickListener { _ -> toggle() }
     }
 
     override fun onCreateDrawableState(extraSpace: Int): IntArray {

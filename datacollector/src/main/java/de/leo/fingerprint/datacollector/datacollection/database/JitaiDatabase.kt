@@ -1304,11 +1304,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                    serializeWifi(it))
         }
         naturalTrigger.geofence?.let {
-            //if (it.id == -1) {
             val geofenceID = enterGeofence(it)
             cv.put(NATURAL_TRIGGER_GEOFENCE, geofenceID)
-            /*} else
-                cv.put(NATURAL_TRIGGER_GEOFENCE, it.id)*/
         }
         var returnval = -1L
         writableDatabase.transaction {

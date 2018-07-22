@@ -75,9 +75,11 @@ class CreateTriggerActivity : GeofenceDialogListener,
         val naturalTriggerId = intent.getIntExtra(NATURALTRIGGER_ID, -1)
         if (naturalTriggerId != -1) {
             model = db.getNaturalTrigger(naturalTriggerId)
-        }
-        if (intent.action == EDIT_COPY) {
-            model.ID = -1
+            if (intent.action == EDIT_COPY) {
+                model.ID = -1
+            }
+        } else {
+            model = NaturalTriggerModel()
         }
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = viewPager

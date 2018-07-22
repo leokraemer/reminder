@@ -14,6 +14,7 @@ import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMap
 import kotlinx.android.synthetic.main.fragment_location_selection.*
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -172,7 +173,7 @@ class LocationSelection : NaturalTriggerFragment() {
     fun clickWorld() {
         uncheckAll()
         worldGeofenceButton.isChecked = true
-        model!!.geofence = null
+        model!!.geofence = everywhere_geofence()
     }
 
     fun clickList() {
@@ -191,6 +192,14 @@ class LocationSelection : NaturalTriggerFragment() {
     fun clickWifi() {
         val dialog = WifiListDialogFragment()
         dialog.show(activity!!.supportFragmentManager, "GeofenceListDialogFragment")
+    }
+
+    companion object {
+        val EVERYWHERE: String = "Überall"
+        fun everywhere_geofence() = MyGeofence(-1, Companion.EVERYWHERE, 0.0, 0.0, Float.MAX_VALUE,
+                                                   false, false,
+                                                   true, TimeUnit.MINUTES.toMillis(5).toInt(),
+                                               WORLD_CODE)
     }
 
 }

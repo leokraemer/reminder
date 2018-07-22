@@ -4,6 +4,7 @@ import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import org.threeten.bp.LocalTime
 
 /**
@@ -43,7 +44,7 @@ class NaturalTriggerModel() {
             }
         }
 
-    var geofence: MyGeofence? = null
+    var geofence: MyGeofence? = everywhere_geofence()
         set(value) {
             if (field != value) {
                 field = value
