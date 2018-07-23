@@ -28,8 +28,8 @@ class LocationSelection : NaturalTriggerFragment() {
         val view = inflater.inflate(
             R.layout.fragment_location_selection, container, false)
         db = JitaiDatabase.getInstance(context!!)
-        homeGeofence = db.getMyGeofence(HOME_ID)
-        workGeofence = db.getMyGeofence(WORK_ID)
+        homeGeofence = db.getMyGeofenceByCode(HOME_CODE)
+        workGeofence = db.getMyGeofenceByCode(WORK_CODE)
         HOME_NAME = context!!.getString(R.string.home_geofence_name)
         WORK_NAME = context!!.getString(R.string.work_geofence_name)
         return view
@@ -133,8 +133,6 @@ class LocationSelection : NaturalTriggerFragment() {
         if (homeGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, HOME_NAME)
-            intent.putExtra(ID,
-                            HOME_ID)
             intent.putExtra(GEOFENCE_IMAGE,
                             HOME_CODE)
             startActivityForResult(intent,
@@ -149,8 +147,6 @@ class LocationSelection : NaturalTriggerFragment() {
         if (workGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, WORK_NAME)
-            intent.putExtra(ID,
-                            WORK_ID)
             intent.putExtra(GEOFENCE_IMAGE,
                             WORK_CODE)
             startActivityForResult(intent,
@@ -215,8 +211,6 @@ interface WifiDialogListener {
 }
 
 
-const val HOME_ID = 161533
-const val WORK_ID = 161534
 const val HOME_CODE = 0
 const val WORK_CODE = 1
 const val CREATE_CODE = 2

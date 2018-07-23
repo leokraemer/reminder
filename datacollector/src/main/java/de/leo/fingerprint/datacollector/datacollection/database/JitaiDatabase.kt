@@ -36,7 +36,6 @@ import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import org.threeten.bp.LocalTime
 import java.util.*
-import kotlin.collections.HashSet
 
 
 /**
@@ -1095,6 +1094,24 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     fun getMyGeofence(id: Int): MyGeofence? {
         val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
                                        null, null, null)
+        var geofece: MyGeofence? = null
+        if (c.moveToFirst())
+            geofece = extractMyGeofenceFromCursor(c)
+        c.close()
+        return geofece
+    }
+
+    //HACK the image code is not necessarily unique. Works only for HOME_CODE and WORK_CODE,
+    // because they can be created only once
+    fun getMyGeofenceByCode(imageCode: Int): MyGeofence? {
+        val c = readableDatabase.query(TABLE_GEOFENCE,
+                                       null,
+                                       "$GEOFENCE_IMAGE = ?",
+                                       arrayOf(imageCode.toString
+                                       ()),
+                                       null,
+                                       null,
+                                       null)
         var geofece: MyGeofence? = null
         if (c.moveToFirst())
             geofece = extractMyGeofenceFromCursor(c)
