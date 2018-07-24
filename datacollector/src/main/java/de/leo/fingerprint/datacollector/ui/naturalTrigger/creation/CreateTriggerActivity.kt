@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
+import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
@@ -146,9 +147,12 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private fun nextButtonClick() {
         //last page
         if (mPager!!.currentItem == mPager!!.adapter!!.count - 1) {
-            db.enterNaturalTrigger(model)
+            val id = db.enterNaturalTrigger(model)
             toast("Erinnerung erfolgreich erstellt")
-            startService(intentFor<DataCollectorService>().setAction(UPDATE_JITAI))
+            startService(intentFor<DataCollectorService>()
+                             .setAction(UPDATE_JITAI)
+                             .putExtra(JITAI_ID, id)
+                        )
             super.onBackPressed()
         }
         mPager!!.currentItem++

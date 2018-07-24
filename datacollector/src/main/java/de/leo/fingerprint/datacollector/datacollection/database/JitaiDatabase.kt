@@ -1231,7 +1231,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return jitais
     }
 
-    fun getActiveNaturalTriggerJitai(): MutableList<Jitai> {
+    fun getAllActiveNaturalTriggerJitai(): MutableList<Jitai> {
         val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
                                        null,
                                        "$NATURAL_TRIGGER_ACTIVE = 1 and $NATURAL_TRIGGER_DELETED" +
@@ -1248,6 +1248,24 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         }
         c.close()
         return jitais
+    }
+
+    fun getActiveNaturalTriggerJitai(id: Int): NaturalTriggerJitai? {
+        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                       null,
+                                       "$ID = $id " +
+                                           "AND $NATURAL_TRIGGER_ACTIVE = 1 " +
+                                           "AND $NATURAL_TRIGGER_DELETED < 1",
+                                       null,
+                                       null,
+                                       null,
+                                       null)
+        var naturalTriggerJitai : NaturalTriggerJitai? = null
+        if (c.moveToFirst()) {
+                naturalTriggerJitai = getNaturalTriggerJitaiFromCursor(c)
+        }
+        c.close()
+        return naturalTriggerJitai
     }
 
     private fun getNaturalTriggerJitaiFromCursor(c: Cursor): NaturalTriggerJitai {

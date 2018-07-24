@@ -7,9 +7,13 @@ import android.os.Bundle
 import android.widget.CursorAdapter
 import android.widget.ListAdapter
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
+import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
+import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.trigger_list.*
+import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 
 /**
@@ -34,6 +38,7 @@ class TriggerManagingActivity : Activity(),
     override fun updateNaturalTrigger(trigger: Int, active: Boolean) {
         db.updateNaturalTrigger(trigger, active)
         updateDataset()
+        updateService(trigger)
     }
 
     private lateinit var listAdapter: ListAdapter
@@ -59,6 +64,13 @@ class TriggerManagingActivity : Activity(),
     private fun addTrigger() {
         val intent = Intent(this, CreateTriggerActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun updateService(trigger: Int) {
+        startService(intentFor<DataCollectorService>()
+                         .setAction(UPDATE_JITAI)
+                         .putExtra(JITAI_ID, trigger)
+                    )
     }
 
     override fun onResume() {

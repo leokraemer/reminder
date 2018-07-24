@@ -18,26 +18,34 @@ data class MyGeofence(var id: Int = -1,
                       val loiteringDelay: Int,
                       val imageResId: Int) {
 
+    var enteredTimestamp: Long = Long.MAX_VALUE
+
     @Transient
-    private var loc: Location? = null
+    private val loc: Location = getLocation()
 
     fun getLocation(): Location {
-        if (loc == null) {
-            loc = Location(name)
-            loc!!.latitude = latitude
-            loc!!.longitude = longitude
-        }
-        return loc!!
+        loc.latitude = latitude
+        loc.longitude = longitude
+        return loc
     }
 
-    fun checkInside(location: Location): Boolean {
-        if (loc == null) {
-            loc = Location(name)
-            loc!!.latitude = latitude
-            loc!!.longitude = longitude
+    fun checkCondition(location: Location): Boolean {
+        if (enter)
+            if (loc.distanceTo(location) < radius)
+                return true
+        if (exit)
+            if (loc.distanceTo(location) > radius)
+                return true
+        if (dwell) {
+            if (loc.distanceTo(location) < radius) {
+                if(enteredTimestamp == Long.MAX_VALUE)
+                    enteredTimestamp = System.currentTimeMillis()
+                if (enteredTimestamp + loiteringDelay < System.currentTimeMillis())
+                    return true
+            } else {
+                enteredTimestamp = Long.MAX_VALUE
+            }
         }
-        if (loc!!.distanceTo(location) < radius)
-            return true
         return false
     }
 }

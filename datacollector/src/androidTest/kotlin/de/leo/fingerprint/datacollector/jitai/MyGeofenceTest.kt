@@ -36,7 +36,7 @@ class MyGeofenceTest() {
     }
 
     @Test
-    fun testMyGeofence() {
+    fun testMyGeofenceEnter() {
         //location distance must be direction independent
         Assert.assertEquals(geofence1.getLocation().distanceTo(geofence2.getLocation()),
                             geofence2.getLocation().distanceTo(geofence1.getLocation()))
@@ -50,7 +50,7 @@ class MyGeofenceTest() {
                                    false,
                                    0,
                                    0)
-        Assert.assertTrue(geofence4.checkInside(geofence3.getLocation()))
-        Assert.assertFalse(geofence3.checkInside(geofence1.getLocation()))
+        Assert.assertTrue(geofence4.checkCondition(geofence3.getLocation()))
+        Assert.assertFalse(geofence3.checkCondition(geofence1.getLocation()))
     }
 }

@@ -27,11 +27,11 @@ class GeofenceTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         //only one location -> no state checks necessary
         if (locations.size == 1)
-            return locations[0].checkInside(sensorData.gps!!)
+            return locations[0].checkCondition(sensorData.gps!!)
 
         var currentGeofence: Int = -1
         for (i in 0 until locations.size) {
-            if (locations[i].checkInside(sensorData.gps!!))
+            if (locations[i].checkCondition(sensorData.gps!!))
                 currentGeofence = i
         }
         //not inside a geofence -> dont update timeout

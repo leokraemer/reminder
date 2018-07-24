@@ -96,7 +96,7 @@ class DataCollectorService : Service(),
     private var userName: String? = null
     private var db: JitaiDatabase? = null
     private var recordingId = -1
-    private var activityRecognizer: ActivityRecognizer? = null
+    private lateinit var activityRecognizer: ActivityRecognizer
     private var wifiScanner: WifiScanner? = null
     private var currentWifis: List<ScanResult> = listOf()
 
@@ -119,15 +119,18 @@ class DataCollectorService : Service(),
         dm = applicationContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
         db = JitaiDatabase.getInstance(applicationContext)
         currentWeatherId = db!!.getLatestWeather()!!.id.toLong()
-        Log.d(TAG, "service started")
+        Log.d(TAG, "service recieved ${intent?.action ?: "unknown signal"}")
         if (!this.isRunning) {
             startDataCollection()
         }
         if (intent != null && intent.action != null)
             when (intent.action) {
                 UPDATE_JITAI            -> {
-                    activityRecognizer = ActivityRecognizer(
-                        baseContext)
+                    val id = intent.getIntExtra(JITAI_ID, -1)
+                    if (id != -1)
+                        activityRecognizer.updateNaturalTrigger(id)
+                    else
+                        activityRecognizer = ActivityRecognizer(baseContext)
                 }
                 START_RECORDING         -> {
                     recordingId = intent.getIntExtra(RECORDING_ID, -1)
@@ -166,8 +169,7 @@ class DataCollectorService : Service(),
     }
 
     private fun startDataCollection() {
-        activityRecognizer = ActivityRecognizer(
-            baseContext)
+        activityRecognizer = ActivityRecognizer(baseContext)
         this.isRunning = true
         if (DataCollectorApplication.LOCATION_ENABLED) {
             //myLocation = MyLocation(this)
