@@ -366,7 +366,7 @@ class DataCollectorService : Service(),
         sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
         uploadMotionData()
         uploadEnvironmentData()
-        activityRecognizer!!.recognizeActivity(sensorDataSet)
+        activityRecognizer.recognizeActivity(sensorDataSet)
         return sensorDataSet.id
     }
 

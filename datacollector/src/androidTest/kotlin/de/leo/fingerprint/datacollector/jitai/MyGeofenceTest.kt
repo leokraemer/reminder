@@ -22,12 +22,17 @@ class MyGeofenceTest() {
 
     lateinit var context: Context
 
-    var geofence1 = MyGeofence(0, "0", 45.0, 0.0, 0f, true,
-                               false, false, 0, 0)
-    var geofence2 = MyGeofence(1, "1", 45.0, 0.1, 1000f, true,
-                               false, false, 0, 0)
-    var geofence3 = MyGeofence(2, "2", 45.0, 0.2, 0f, true,
-                               false, false, 0, 0)
+    /**
+     * The Layout of the geofences is: B - A - C on a line along the 45° line, with about 110 km
+     * between each.
+     */
+
+    var Auberge_du_coq = MyGeofence(0, "A", 45.0, 0.1, 1000f, true,
+                                    false, false, 0, 0)
+    var Buynormand = MyGeofence(1, "B", 45.0, 0.0, 0f, true,
+                                false, false, 0, 0)
+    var Catimini = MyGeofence(2, "C", 45.0, 0.2, 0f, true,
+                              false, false, 0, 0)
 
 
     @Before
@@ -36,21 +41,82 @@ class MyGeofenceTest() {
     }
 
     @Test
-    fun testMyGeofenceEnter() {
+    fun testSymmetryOfGeofences(){
         //location distance must be direction independent
-        Assert.assertEquals(geofence1.getLocation().distanceTo(geofence2.getLocation()),
-                            geofence2.getLocation().distanceTo(geofence1.getLocation()))
-        val geofence4 = MyGeofence(geofence3.id,
-                                   geofence3.name,
-                                   geofence3.latitude,
-                                   geofence3.longitude,
-                                   geofence3.getLocation().distanceTo(geofence2.getLocation()),
-                                   true,
-                                   false,
-                                   false,
-                                   0,
-                                   0)
-        Assert.assertTrue(geofence4.checkCondition(geofence3.getLocation()))
-        Assert.assertFalse(geofence3.checkCondition(geofence1.getLocation()))
+        Assert.assertEquals(Buynormand.location.distanceTo(Auberge_du_coq.location),
+                            Auberge_du_coq.location.distanceTo(Buynormand.location))
+    }
+
+    @Test
+    fun testMyGeofenceEnter() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            true,
+                            false,
+                            false,
+                            0,
+                            0)
+        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertTrue(CA.checkCondition())
+        Assert.assertTrue(CA.update(Buynormand.location, 0L))
+        Assert.assertFalse(CA.checkCondition())
+    }
+
+    @Test
+    fun testMyGeofenceExit() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            false,
+                            true,
+                            false,
+                            0,
+                            0)
+        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertFalse(CA.checkCondition())
+        Assert.assertTrue(CA.update(Buynormand.location, 0L))
+        Assert.assertTrue(CA.checkCondition())
+    }
+
+    @Test
+    fun testMyGeofenceDwell() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            false,
+                            false,
+                            true,
+                            1,
+                            0)
+        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertFalse(CA.checkCondition())
+        Assert.assertTrue(CA.update(Catimini.location, 2L))
+        Assert.assertTrue(CA.checkCondition())
+    }
+
+    @Test
+    fun testCheckStatewithParameters() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            true,
+                            false,
+                            false,
+                            1,
+                            0)
+        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(Catimini.location, 0L))
+        Assert.assertNotSame(CA.checkCondition(), CA.checkCondition(Buynormand.location, 0L))
+        //second check to make sure the state did not change by calling checkCondition(... , ...)
+        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(Catimini.location, 0L))
     }
 }

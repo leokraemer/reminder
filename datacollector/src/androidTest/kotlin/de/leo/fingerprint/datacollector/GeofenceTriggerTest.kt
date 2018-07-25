@@ -18,101 +18,160 @@ class GeofenceTriggerTest {
 
     lateinit var context: Context
 
-    var location1 = Location("testLocation")
-    var location2 = Location("testLocation2")
-    var location3 = Location("testLocation2")
+    var Auberge_du_coq_Location = Location("testLocation")
+    var Buynormand_Location = Location("testLocation2")
+    var Catimini_Location = Location("testLocation2")
 
-    lateinit var geofence1: MyGeofence
-    lateinit var geofence2: MyGeofence
-    lateinit var geofence3: MyGeofence
+    lateinit var Auberge_du_coq: MyGeofence
+    lateinit var Buynormand: MyGeofence
+    lateinit var Catimini: MyGeofence
 
     @Before
     fun setup() {
-        location1.latitude = 45.0
-        location1.longitude = 0.0
-        location2.latitude = 45.0
-        location2.longitude = 1.0
-        location3.latitude = 45.0
-        location3.longitude = 2.0
+        Auberge_du_coq_Location.latitude = 45.0
+        Auberge_du_coq_Location.longitude = 1.0
+        Buynormand_Location.latitude = 45.0
+        Buynormand_Location.longitude = 0.0
+        Catimini_Location.latitude = 45.0
+        Catimini_Location.longitude = 2.0
 
-        geofence1 = MyGeofence(0, "0", location1.latitude, location1.longitude, 1000f, true,
-                               false, false, 0, 0)
-        geofence2 = MyGeofence(1, "1", location2.latitude, location2.longitude, 1000f, true,
-                               false, false, 0, 0)
-        geofence3 = MyGeofence(2, "2", location3.latitude, location3.longitude, 1000f, true,
-                               false, false, 0, 0)
+        /**
+         * The Layout of the geofences is: B - A - C on a line along the 45° line, with about 110 km
+         * between each.
+         */
+
+        Auberge_du_coq = MyGeofence(0,
+                                    "A",
+                                    Auberge_du_coq_Location.latitude,
+                                    Auberge_du_coq_Location.longitude,
+                                    0f,
+                                    true,
+                                    false,
+                                    false,
+                                    1,
+                                    0)
+        Buynormand = MyGeofence(1,
+                                "B",
+                                Buynormand_Location.latitude,
+                                Buynormand_Location.longitude,
+                                0f,
+                                true,
+                                false,
+                                false,
+                                1,
+                                0)
+        Catimini = MyGeofence(2,
+                              "C",
+                              Catimini_Location.latitude,
+                              Catimini_Location.longitude,
+                              0f,
+                              true,
+                              false,
+                              false,
+                              1,
+                              0)
+
+
         context = InstrumentationRegistry.getTargetContext()
     }
 
     @Test
     fun simpleGeofenceTriggerTest() {
-        val sensorData = SensorDataSet(System.currentTimeMillis(),
+        val sensorData = SensorDataSet(0L,
                                        "dummy")
-        sensorData.gps = location1
-        val trigger = GeofenceTrigger(listOf(geofence1))
+        sensorData.gps = Auberge_du_coq_Location
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq))
         Assert.assertTrue(trigger.check(context, sensorData))
-        Assert.assertTrue(trigger.check(context, sensorData))
+        //trigger only once when enter is chosen
+        Assert.assertFalse(trigger.check(context, sensorData))
     }
 
     @Test
     fun twoGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(geofence1, geofence2))
-        val sensorData = SensorDataSet(System.currentTimeMillis(),
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand))
+        val sensorData = SensorDataSet(0L,
                                        "dummy")
-        sensorData.gps = location1
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertTrue(trigger.check(context, sensorData))
-        Assert.assertTrue(trigger.check(context, sensorData))
+        //trigger only once when enter is chosen
+        Assert.assertFalse(trigger.check(context, sensorData))
     }
 
     @Test
     fun breakChainGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(geofence1, geofence2, geofence3))
-        val sensorData = SensorDataSet(System.currentTimeMillis(),
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand, Catimini))
+        val sensorData = SensorDataSet(0L,
                                        "dummy")
-        sensorData.gps = location1
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location1
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
         //break chain by going to end instead of 2 -> reset
-        sensorData.gps = location3
+        sensorData.gps = Catimini_Location
         //must hit location 1 first
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertFalse(trigger.check(context, sensorData))
         //go through whole chain for confirmation
-        sensorData.gps = location1
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location3
+        sensorData.gps = Catimini_Location
         Assert.assertTrue(trigger.check(context, sensorData))
     }
 
 
     @Test
     fun timeoutGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(geofence1, geofence2))
-        val sensorData = SensorDataSet(System.currentTimeMillis(),
-                                       "dummy")
-        sensorData.gps = location1
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand))
+        val sensorData = SensorDataSet(0L, "dummy")
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertTrue(trigger.check(context, sensorData))
-        val sensorData2 = SensorDataSet(
-            System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1),
-            "dummy")
-        sensorData2.gps = location2
+        val sensorData2 = SensorDataSet(TimeUnit.HOURS.toMillis(1), "dummy")
+        sensorData2.gps = Buynormand_Location
         //must fail and return to state 0
         Assert.assertFalse(trigger.check(context, sensorData2))
         //check line to see if reset works properly
-        sensorData.gps = location1
+        sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
-        sensorData.gps = location2
+        sensorData.gps = Buynormand_Location
         Assert.assertTrue(trigger.check(context, sensorData))
     }
 
+    @Test
+    fun exitGeofenceTriggerTest() {
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, exit = true)))
+        val sensorData = SensorDataSet(0L, "dummy")
+        //test outside
+        sensorData.gps = Buynormand_Location
+        Assert.assertFalse(trigger.check(context, sensorData))
+        //entering
+        sensorData.gps = Auberge_du_coq_Location
+        Assert.assertFalse(trigger.check(context, sensorData))
+        //exiting again
+        sensorData.gps = Buynormand_Location
+        Assert.assertTrue(trigger.check(context, sensorData))
+    }
+
+    @Test
+    fun dwellGeofenceTriggerTest() {
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, dwell = true)))
+        val sensorData = SensorDataSet(0L, "dummy")
+        //entering
+        sensorData.gps = Auberge_du_coq_Location
+        Assert.assertFalse(trigger.check(context, sensorData))
+        //loitering
+        val laterSensorData = sensorData.copy(time = 2L)
+        Assert.assertTrue(trigger.check(context, laterSensorData))
+        //exiting again
+        laterSensorData.gps = Buynormand_Location
+        Assert.assertFalse(trigger.check(context, laterSensorData))
+    }
 }

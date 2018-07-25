@@ -406,7 +406,8 @@ private fun createInstance(context: Context,
                         val currentLocation = dataPoint.gps!!
                         //normalized by geofence.radius to [0,1]
                         values[getAttributeIndex(GEOFENCE_PROXIMITY_TO_CENTER + i)] =
-                            geofence.getLocation().distanceTo(currentLocation).toDouble() / geofence.radius
+                            geofence.location.distanceTo(currentLocation).toDouble() /
+                            geofence.radius
                         values[getAttributeIndex(GEOFENCE_X_DISTANCETOCENTER + i)] =
                             normalizeDegreeDistance(
                                 currentLocation.longitude - geofence.longitude)
