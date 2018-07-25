@@ -106,10 +106,10 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
             //addGeofence(geofenceName, latLng!!, geofencesize.toFloat(), enter, exit, dwell)
             if (geofenceID != -1)
                 db.enterGeofence(geofenceID, geofenceName, latLng!!, geofencesize
-                    .toFloat(), true, false, false, fiveMinutes, geofenceIcon)
+                    .toFloat(), true, false, false, false, fiveMinutes, geofenceIcon)
             else
                 geofenceID = db.enterGeofence(geofenceName, latLng!!, geofencesize
-                    .toFloat(), true, false, false, fiveMinutes, geofenceIcon)
+                    .toFloat(), true, false, false, false, fiveMinutes, geofenceIcon)
             val result = Intent()
             result.putExtra(ID, geofenceID)
             setResult(Activity.RESULT_OK, result)

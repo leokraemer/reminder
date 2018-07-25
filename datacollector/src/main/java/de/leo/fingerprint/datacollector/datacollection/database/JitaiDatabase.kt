@@ -994,7 +994,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 list.add(extractMyGeofenceFromCursor(c).copy(enter = false,
                                                              exit = false,
-                                                             dwell = true,
+                                                             dwellInside = true,
                                                              loiteringDelay = 0))
             } while (c.moveToNext())
         }
@@ -1009,6 +1009,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       enter: Boolean,
                       exit: Boolean,
                       dwell: Boolean,
+                      dwellOutside: Boolean,
                       loiteringDelay: Int,
                       icon: Int): Int {
         val cv = ContentValues()
@@ -1020,6 +1021,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         cv.put(GEOFENCE_ENTER, enter)
         cv.put(GEOFENCE_EXIT, exit)
         cv.put(GEOFENCE_DWELL, dwell)
+        cv.put(GEOFENCE_DWELL_OUTSIDE, dwellOutside)
         cv.put(GEOFENCE_VALIDITY, Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
         cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
         cv.put(GEOFENCE_IMAGE, icon)
@@ -1034,11 +1036,11 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return enterGeofence(geofence.name,
                              geofence.latitude,
                              geofence.longitude,
-                             geofence
-                                 .radius,
+                             geofence.radius,
                              geofence.enter,
                              geofence.exit,
-                             geofence.dwell,
+                             geofence.dwellInside,
+                             geofence.dwellOutside,
                              geofence.loiteringDelay,
                              geofence.imageResId)
     }
@@ -1050,6 +1052,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       enter: Boolean,
                       exit: Boolean,
                       dwell: Boolean,
+                      dwellOutside: Boolean,
                       loiteringDelay: Int,
                       icon: Int): Int {
         val cv = ContentValues()
@@ -1060,6 +1063,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         cv.put(GEOFENCE_ENTER, enter)
         cv.put(GEOFENCE_EXIT, exit)
         cv.put(GEOFENCE_DWELL, dwell)
+        cv.put(GEOFENCE_DWELL_OUTSIDE, dwellOutside)
         cv.put(GEOFENCE_VALIDITY, Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
         cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
         cv.put(GEOFENCE_IMAGE, icon)
@@ -1076,10 +1080,11 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       enter: Boolean,
                       exit: Boolean,
                       dwell: Boolean,
+                      dwellOutside: Boolean,
                       loiteringDelay: Int,
                       icon: Int): Int {
         return enterGeofence(name, latLng.latitude, latLng.longitude, radius, enter, exit, dwell,
-                             loiteringDelay, icon)
+                             dwellOutside, loiteringDelay, icon)
     }
 
     fun getGeofence(id: Int): Geofence {
@@ -1140,10 +1145,20 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val imageResId = c.getInt(c.getColumnIndex(GEOFENCE_IMAGE))
         val enter = c.getInt(c.getColumnIndex(GEOFENCE_ENTER)) > 0
         val exit = c.getInt(c.getColumnIndex(GEOFENCE_EXIT)) > 0
-        val dwell = c.getInt(c.getColumnIndex(GEOFENCE_DWELL)) > 0
+        val dwellInside = c.getInt(c.getColumnIndex(GEOFENCE_DWELL)) > 0
+        val dwellOutside = c.getInt(c.getColumnIndex(GEOFENCE_DWELL_OUTSIDE)) > 0
         val loiteringDelay = c.getInt(c.getColumnIndex(GEOFENCE_LOITERING_DELAY))
-        return MyGeofence(id, name, latitude, longitude, radius, enter, exit, dwell,
-                          loiteringDelay, imageResId)
+        return MyGeofence(id,
+                          name,
+                          latitude,
+                          longitude,
+                          radius,
+                          enter,
+                          exit,
+                          dwellInside,
+                          dwellOutside,
+                          loiteringDelay,
+                          imageResId)
     }
 
     private fun getGeofenceForLatlng(name: String,
@@ -1260,9 +1275,9 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                                        null,
                                        null,
                                        null)
-        var naturalTriggerJitai : NaturalTriggerJitai? = null
+        var naturalTriggerJitai: NaturalTriggerJitai? = null
         if (c.moveToFirst()) {
-                naturalTriggerJitai = getNaturalTriggerJitaiFromCursor(c)
+            naturalTriggerJitai = getNaturalTriggerJitaiFromCursor(c)
         }
         c.close()
         return naturalTriggerJitai
@@ -1492,7 +1507,8 @@ const val GEOFENCE_LONG = "geofenceLong"
 const val GEOFENCE_RADIUS = "geofenceRadius"
 const val GEOFENCE_ENTER = "geofenceEnter"
 const val GEOFENCE_EXIT = "geofenceExit"
-const val GEOFENCE_DWELL = "geofenceDwell"
+const val GEOFENCE_DWELL = "geofenceDwellInside"
+const val GEOFENCE_DWELL_OUTSIDE = "geofenceDwellOutside"
 const val GEOFENCE_DATE_ADDED = "geofenceTimestamp"
 const val GEOFENCE_VALIDITY = "geofenceValidity"
 const val GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"

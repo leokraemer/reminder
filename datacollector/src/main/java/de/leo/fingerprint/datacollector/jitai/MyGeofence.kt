@@ -14,18 +14,22 @@ data class MyGeofence(var id: Int = -1,
                       val radius: Float = 0.0F,
                       val enter: Boolean = false,
                       val exit: Boolean = false,
-                      val dwell: Boolean = false,
+                      val dwellInside: Boolean = false,
+                      val dwellOutside: Boolean = false,
                       val loiteringDelay: Int,
                       val imageResId: Int) {
 
     init {
-        if (!(exit || enter || dwell))
+        if (!(exit || enter || dwellInside || dwellOutside))
             throw IllegalStateException("Geofence can never enter a positive state, because " +
                                             "enter, exit and dwell are false")
     }
 
     @Transient
     var enteredTimestamp: Long = Long.MAX_VALUE
+
+    @Transient
+    var exitedTimestamp: Long = Long.MAX_VALUE
 
     @delegate:Transient
     val location: Location by lazy {
@@ -47,15 +51,29 @@ data class MyGeofence(var id: Int = -1,
      */
     fun exited() = !entered
 
+    fun loiteringInside() = loiteringInside
+    fun loiteringOutside() = loiteringOutside
+
     @Transient
-    private var loitering = false
+    private var loiteringInside = false
 
     /**
      * true when entered for at least [loiteringDelay] milliseconds
      */
-    fun loitering(timestamp: Long): Boolean {
-        loitering = enteredTimestamp + loiteringDelay < timestamp
-        return loitering
+    fun loiteringInside(timestamp: Long): Boolean {
+        loiteringInside = enteredTimestamp + loiteringDelay < timestamp
+        return loiteringInside
+    }
+
+    @Transient
+    private var loiteringOutside = false
+
+    /**
+     * true when entered for at least [loiteringDelay] milliseconds
+     */
+    fun loiteringOutside(timestamp: Long): Boolean {
+        loiteringOutside = exitedTimestamp + loiteringDelay < timestamp
+        return loiteringOutside
     }
 
     /**
@@ -68,17 +86,23 @@ data class MyGeofence(var id: Int = -1,
             if (!entered)
                 stateChanged = true
             entered = true
+            exitedTimestamp = Long.MAX_VALUE
             if (enteredTimestamp == Long.MAX_VALUE)
                 enteredTimestamp = timestamp
-            val loiteringBefore = loitering
-            if (loiteringBefore != loitering(timestamp))
+            val loiteringBefore = loiteringInside
+            if (loiteringBefore != loiteringInside(timestamp))
                 stateChanged = true
         } else {
             if (entered)
                 stateChanged = true
             entered = false
-            loitering = false
             enteredTimestamp = Long.MAX_VALUE
+            loiteringInside = false
+            if (exitedTimestamp == Long.MAX_VALUE)
+                exitedTimestamp = timestamp
+            val loiteringBefore = loiteringOutside
+            if (loiteringBefore != loiteringOutside(timestamp))
+                stateChanged = true
         }
         return stateChanged
     }
@@ -89,21 +113,28 @@ data class MyGeofence(var id: Int = -1,
     fun checkCondition(location: Location, timestamp: Long): Boolean {
         var inside = false
         var outside = false
-        var loitering = false
+        var loiteringInside = false
+        var loiteringOutside = false
         if (this.location.distanceTo(location) <= radius) {
             inside = true
             if (enteredTimestamp + loiteringDelay < timestamp)
-                loitering = true
+                loiteringInside = true
         } else {
             outside = true
         }
-        return enter && inside || exit && outside || dwell && loitering
+        return enter && inside
+            || exit && outside
+            || dwellInside && loiteringInside
+            || dwellOutside && loiteringOutside
     }
 
     /**
      * Return the current state of the geofence for the given timestamp
      */
     fun checkCondition(): Boolean {
-        return enter && entered() || exit && exited() || dwell && loitering
+        return enter && entered()
+            || exit && exited()
+            || dwellInside && loiteringInside
+            || dwellOutside && loiteringOutside
     }
 }

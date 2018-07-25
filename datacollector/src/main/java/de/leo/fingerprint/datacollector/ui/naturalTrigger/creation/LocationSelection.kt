@@ -192,9 +192,16 @@ class LocationSelection : NaturalTriggerFragment() {
 
     companion object {
         val EVERYWHERE: String = "Überall"
-        fun everywhere_geofence() = MyGeofence(-1, Companion.EVERYWHERE, 0.0, 0.0, Float.MAX_VALUE,
-                                                   false, false,
-                                                   true, TimeUnit.MINUTES.toMillis(5).toInt(),
+        fun everywhere_geofence() = MyGeofence(-1,
+                                               Companion.EVERYWHERE,
+                                               0.0,
+                                               0.0,
+                                               Float.MAX_VALUE,
+                                               false,
+                                               false,
+                                               false,
+                                               true,
+                                               TimeUnit.MINUTES.toMillis(5).toInt(),
                                                WORLD_CODE)
     }
 

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
 
     <TextView
         android:id="@+id/textView385"
@@ -67,7 +68,7 @@
         app:layout_constraintTop_toTopOf="@+id/enterButton" />
 
     <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/spendTime"
+        android:id="@+id/outside"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="24dp"
@@ -75,7 +76,20 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
-        android:src="@drawable/sand_timer_96px"
+        android:src="@drawable/ic_outside7_white"
+        app:layout_constraintStart_toEndOf="@+id/inside"
+        app:layout_constraintTop_toTopOf="@+id/exitButton" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/inside"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_inside_white"
         app:layout_constraintStart_toEndOf="@+id/exitButton"
         app:layout_constraintTop_toTopOf="@+id/exitButton" />
 
@@ -83,6 +97,7 @@
         android:id="@+id/fiveteenminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginEnd="24dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
@@ -94,8 +109,8 @@
         android:textIsSelectable="false"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/spendTime"
-        app:layout_constraintTop_toTopOf="@+id/fiveminutes" />
+        app:layout_constraintEnd_toStartOf="@+id/thirtyminutes"
+        app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
 
     <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/moreminutes"
@@ -114,7 +129,7 @@
         android:id="@+id/thirtyminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginLeft="24dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
@@ -125,15 +140,15 @@
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
-        app:layout_constraintTop_toTopOf="@+id/fiveteenminutes" />
+        app:layout_constraintEnd_toEndOf="@+id/inside"
+        app:layout_constraintStart_toStartOf="@+id/inside"
+        app:layout_constraintTop_toBottomOf="@+id/insidetv" />
 
     <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/fiveminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginRight="24dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
@@ -146,7 +161,7 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/fiveteenminutes"
-        app:layout_constraintTop_toBottomOf="@+id/textView40" />
+        app:layout_constraintTop_toTopOf="@+id/fiveteenminutes" />
 
     <TextView
         android:id="@+id/enterText"
@@ -173,15 +188,27 @@
         app:layout_constraintTop_toBottomOf="@+id/exitButton" />
 
     <TextView
-        android:id="@+id/textView40"
+        android:id="@+id/outsidetv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:lines="2"
-        android:text="Zeit\nverbringen"
+        android:lines="3"
+        android:text="Außerhalb\nZeit\nverbringen"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/spendTime"
-        app:layout_constraintStart_toStartOf="@+id/spendTime"
-        app:layout_constraintTop_toBottomOf="@+id/spendTime" />
+        app:layout_constraintEnd_toEndOf="@+id/outside"
+        app:layout_constraintStart_toStartOf="@+id/outside"
+        app:layout_constraintTop_toBottomOf="@+id/outside" />
+
+    <TextView
+        android:id="@+id/insidetv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="3"
+        android:text="Innerhalb\nZeit\nverbringen"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/inside"
+        app:layout_constraintStart_toStartOf="@+id/inside"
+        app:layout_constraintTop_toBottomOf="@+id/inside" />
 
 </android.support.constraint.ConstraintLayout>
