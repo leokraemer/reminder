@@ -250,8 +250,11 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 else if (geofence!!.dwellInside) {
                     geofenceDirection.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_inside_white, null))
+                } else if (geofence!!.dwellOutside) {
+                    geofenceDirection.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_outside7_white, null))
                 }
-                if (geofence!!.dwellInside) {
+                if (geofence!!.dwellInside || geofence!!.dwellOutside) {
                     spendTime.visibility = View.VISIBLE
                     spendTime.setText("" + TimeUnit.MILLISECONDS
                         .toMinutes(geofence!!.loiteringDelay.toLong()))

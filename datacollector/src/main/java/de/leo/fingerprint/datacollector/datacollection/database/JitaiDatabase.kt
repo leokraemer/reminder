@@ -41,7 +41,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1010
+const val DATABASE_VERSION = 1012
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -1712,6 +1712,7 @@ const val CREATE_TABLE_GEOFENCE =
         "$GEOFENCE_ENTER bool, " +
         "$GEOFENCE_EXIT bool, " +
         "$GEOFENCE_DWELL bool, " +
+        "$GEOFENCE_DWELL_OUTSIDE bool, " +
         "$GEOFENCE_DATE_ADDED time, " +
         "$GEOFENCE_LOITERING_DELAY number, " +
         "$GEOFENCE_VALIDITY LONG," +

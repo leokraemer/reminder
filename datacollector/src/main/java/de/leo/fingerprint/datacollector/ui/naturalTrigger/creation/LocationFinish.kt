@@ -30,10 +30,10 @@ class LocationFinish : NaturalTriggerFragment() {
         enterText.setOnClickListener { enter() }
         exitButton.setOnClickListener { exit() }
         exitText.setOnClickListener { exit() }
-        inside.setOnClickListener { spendTime() }
-        outside.setOnClickListener { spendTime() }
-        insidetv.setOnClickListener { spendTime() }
-        outsidetv.setOnClickListener { spendTime() }
+        inside.setOnClickListener { spendTimeInside() }
+        outside.setOnClickListener { spendTimeOutside() }
+        insidetv.setOnClickListener { spendTimeInside() }
+        outsidetv.setOnClickListener { spendTimeOutside() }
         fiveminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(5)) }
         fiveteenminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(15)) }
         thirtyminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(30)) }
@@ -64,28 +64,43 @@ class LocationFinish : NaturalTriggerFragment() {
 
     private fun enter() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = true, exit = false, dwellInside = false)
+            model!!.geofence = model!!.geofence!!.copy(enter = true,
+                                                       exit = false,
+                                                       dwellInside = false,
+                                                       dwellOutside = false)
         }
     }
 
     private fun updateLoiteringDelay(millis: Long) {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false, exit = false, dwellInside = true,
-                                                       loiteringDelay = millis.toInt())
+            model!!.geofence = model!!.geofence!!.copy(loiteringDelay = millis.toInt())
         }
     }
 
     private fun exit() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false, exit = true, dwellInside = false)
+            model!!.geofence = model!!.geofence!!.copy(enter = false,
+                                                       exit = true,
+                                                       dwellInside = false,
+                                                       dwellOutside = false)
         }
     }
 
-    private fun spendTime() {
+    private fun spendTimeInside() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false, exit = false, dwellInside = true,
-                                                       loiteringDelay = model!!.geofence!!
-                                                           .loiteringDelay)
+            model!!.geofence = model!!.geofence!!.copy(enter = false,
+                                                       exit = false,
+                                                       dwellInside = true,
+                                                       dwellOutside = false)
+        }
+    }
+
+    private fun spendTimeOutside() {
+        if (model!!.geofence != null) {
+            model!!.geofence = model!!.geofence!!.copy(enter = false,
+                                                       exit = false,
+                                                       dwellInside = false,
+                                                       dwellOutside = true)
         }
     }
 
@@ -95,10 +110,12 @@ class LocationFinish : NaturalTriggerFragment() {
         enterButton?.isEnabled = model?.geofence?.name != EVERYWHERE
         exitButton?.isEnabled = model?.geofence?.name != EVERYWHERE
         inside?.isChecked = model?.geofence?.dwellInside ?: false
-        outside?.isChecked = model?.geofence?.dwellInside ?: false
-        if (model?.geofence?.dwellInside == true) {
-            inside?.isChecked = true
-            outside?.isChecked = true
+        outside?.isChecked = model?.geofence?.dwellOutside ?: false
+        if (model?.geofence?.dwellInside == true || model?.geofence?.dwellOutside == true) {
+            if (model?.geofence?.dwellInside == true)
+                inside?.isChecked = true
+            else
+                outside?.isChecked = true
             fiveminutes?.isEnabled = true
             fiveteenminutes?.isEnabled = true
             thirtyminutes?.isEnabled = true
