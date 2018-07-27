@@ -11,7 +11,7 @@ import org.threeten.bp.LocalTime
  * Model class containing the natural trigger during creation.
  * Created by Leo on 06.03.2018.
  */
-class NaturalTriggerModel() {
+class NaturalTriggerModel {
     companion object JITAI_ACTIVITY {
         val SIT = DetectedActivity.STILL
         val WALK = DetectedActivity.WALKING
