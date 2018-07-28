@@ -76,7 +76,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
-        android:src="@drawable/ic_outside7_white"
+        android:src="@drawable/ic_outside10_white"
         app:layout_constraintStart_toEndOf="@+id/inside"
         app:layout_constraintTop_toTopOf="@+id/exitButton" />
 
@@ -89,7 +89,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
-        android:src="@drawable/ic_inside_white"
+        android:src="@drawable/ic_inside3_white"
         app:layout_constraintStart_toEndOf="@+id/exitButton"
         app:layout_constraintTop_toTopOf="@+id/exitButton" />
 
