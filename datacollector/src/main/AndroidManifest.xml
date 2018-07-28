@@ -22,7 +22,8 @@
         android:theme="@style/AppBaseTheme.Light">
         <activity
             android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
-            android:label="@string/study_name"></activity>
+            android:label="@string/study_name"
+            android:screenOrientation="portrait"></activity>
         <activity android:name="de.leo.fingerprint.datacollector.ui.settings.FingerPrintSettingsActivity"></activity>
 
         <activity
