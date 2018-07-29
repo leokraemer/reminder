@@ -24,11 +24,10 @@
         android:layout_marginStart="8dp"
         android:minHeight="170dp"
         app:cardElevation="4dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/close"
         app:layout_constraintVertical_chainStyle="spread_inside">
 
     </android.support.v7.widget.CardView>
@@ -72,6 +71,19 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/play_green" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/snooze"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:clickable="true"
+        app:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/play"
+        app:layout_constraintEnd_toStartOf="@+id/play"
+        app:layout_constraintHorizontal_bias="0.67"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/play"
+        app:srcCompat="@drawable/ic_schedule_black_48dp" />
 
     <TextView
         android:id="@+id/goal"

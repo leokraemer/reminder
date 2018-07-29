@@ -1,5 +1,6 @@
 package de.leo.fingerprint.datacollector.ui.notifications
 
+import android.app.AlarmManager
 import android.app.IntentService
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,6 +20,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import android.media.RingtoneManager
+import com.google.android.gms.fitness.data.Goal
 
 
 /**
@@ -30,6 +32,7 @@ class NotificationService : IntentService("NotificationIntentService") {
         const val TRIGGERNOTIFICATIONIDMODIFYER = 4711
         private val TIMEOUT = TimeUnit.SECONDS.toMillis(5)
         private val TIMEOUT_LONG = TimeUnit.MINUTES.toMillis(1)
+        private val TIMEOUT_SNOOZE = TimeUnit.MINUTES.toMillis(15)
         private const val TAG = "notification service"
         private val notificationStore: HashMap<Int, Long> = hashMapOf()
         const val CHANNEL = "naturalTriggerReminder"
@@ -78,6 +81,28 @@ class NotificationService : IntentService("NotificationIntentService") {
                     jitaiDatabase.enterJitaiEvent(jitaiId,
                                                   System.currentTimeMillis(),
                                                   Jitai.NOTIFICATION_FAIL, sensorDataId)
+                }
+                Jitai.NOTIFICATION_SNOOZE             -> {
+                    Log.d(TAG, "snooze $sensorDataId")
+                    cancelNotification(jitaiId)
+                    jitaiDatabase.enterJitaiEvent(jitaiId,
+                                                  System.currentTimeMillis(),
+                                                  Jitai.NOTIFICATION_FAIL, sensorDataId)
+                    //set alarm to re-post notification in 15 minutes
+                    val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val intent = applicationContext.intentFor<NotificationService>(
+                        JITAI_EVENT to Jitai.NOTIFICATION_SNOOZE,
+                        JITAI_ID to jitaiId,
+                        JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
+                        JITAI_GOAL to goal,
+                        JITAI_MESSAGE to message)
+                    val pendingIntent = PendingIntent.getService(applicationContext,
+                                                                 12356,
+                                                                 intent,
+                                                                 0)
+                    am.set(AlarmManager.RTC,
+                           System.currentTimeMillis() + TIMEOUT_SNOOZE,
+                           pendingIntent)
                 }
                 Jitai.NOTIFICATION_SUCCESS            -> {
                     Log.d(TAG, "success $sensorDataId")

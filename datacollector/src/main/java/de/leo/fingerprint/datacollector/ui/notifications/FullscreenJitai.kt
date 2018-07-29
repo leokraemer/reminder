@@ -53,5 +53,17 @@ class FullscreenJitai : AppCompatActivity() {
             startService(intent)
             onBackPressed()
         }
+        snooze.onClick {
+            val intent =
+                applicationContext.intentFor<NotificationService>(
+                    JITAI_EVENT to Jitai.NOTIFICATION_SNOOZE,
+                    JITAI_ID to jitaiId,
+                    JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
+                    JITAI_GOAL to goalText,
+                    JITAI_MESSAGE to messageText)
+                    .setAction("jitai_correct")
+            startService(intent)
+            onBackPressed()
+        }
     }
 }
