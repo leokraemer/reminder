@@ -19,10 +19,7 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
                                   TimeTrigger.ALL_DAYS)
         geofenceTrigger = naturalTriggerModel.geofence?.let { GeofenceTrigger(listOf(it)) }
         activitTrigger = naturalTriggerModel.activity?.map {
-            ActivityTrigger(
-                DetectedActivity(it, 0),
-                naturalTriggerModel.geofence!!.loiteringDelay.toLong()
-                           )
+            ActivityTrigger(DetectedActivity(it, 0), naturalTriggerModel.timeInActivity)
         }
     }
 

@@ -41,7 +41,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1012
+const val DATABASE_VERSION = 1013
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -1349,6 +1349,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         cv.put(NATURAL_TRIGGER_BEGIN_TIME, naturalTrigger.beginTime.toSecondOfDay())
         cv.put(NATURAL_TRIGGER_END_TIME, naturalTrigger.endTime.toSecondOfDay())
         cv.put(NATURAL_TRIGGER_ACTIVITY, gson.toJson(naturalTrigger.activity))
+        cv.put(NATURAL_TRIGGER_ACTIVITY_DURATION, naturalTrigger.timeInActivity)
         naturalTrigger.wifi?.let {
             cv.put(NATURAL_TRIGGER_WIFI,
                    serializeWifi(it))
@@ -1403,27 +1404,24 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     //cursor is already at position
     fun getNaturalTrigger(cursor: Cursor): NaturalTriggerModel {
         val naturalTrigger = NaturalTriggerModel()
-        naturalTrigger.ID = cursor.getInt(cursor.getColumnIndex(ID))
-        naturalTrigger.geofence = getMyGeofence(cursor.getInt(cursor.getColumnIndex
-        (NATURAL_TRIGGER_GEOFENCE)))
-        naturalTrigger.beginTime = LocalTime.ofSecondOfDay(
-            cursor.getLong(cursor.getColumnIndex(NATURAL_TRIGGER_BEGIN_TIME)))
-        naturalTrigger.endTime = LocalTime.ofSecondOfDay(
-            cursor.getLong(cursor.getColumnIndex(NATURAL_TRIGGER_END_TIME)))
-        naturalTrigger.goal = cursor.getString(cursor.getColumnIndex(NATURAL_TRIGGER_GOAL))
-        naturalTrigger.message = cursor.getString(cursor.getColumnIndex
-        (NATURAL_TRIGGER_MESSAGE))
-        naturalTrigger.situation = cursor.getString(cursor.getColumnIndex
-        (NATURAL_TRIGGER_SITUATION))
-        naturalTrigger.wifi =
-            cursor.getString(cursor.getColumnIndex(NATURAL_TRIGGER_WIFI))?.let {
+        with(cursor) {
+            naturalTrigger.ID = getInt(getColumnIndex(ID))
+            naturalTrigger.geofence = getMyGeofence(getInt(getColumnIndex(NATURAL_TRIGGER_GEOFENCE)))
+            naturalTrigger.beginTime = LocalTime.ofSecondOfDay(getLong(getColumnIndex(
+                NATURAL_TRIGGER_BEGIN_TIME)))
+            naturalTrigger.endTime = LocalTime.ofSecondOfDay(getLong(getColumnIndex(
+                NATURAL_TRIGGER_END_TIME)))
+            naturalTrigger.goal = getString(getColumnIndex(NATURAL_TRIGGER_GOAL))
+            naturalTrigger.message = getString(getColumnIndex(NATURAL_TRIGGER_MESSAGE))
+            naturalTrigger.situation = getString(getColumnIndex(NATURAL_TRIGGER_SITUATION))
+            naturalTrigger.wifi = getString(getColumnIndex(NATURAL_TRIGGER_WIFI))?.let {
                 deSerializeWifi(it).firstOrNull()
             }
-
-        naturalTrigger.activity = gson.fromJson<HashSet<Int>>(
-            cursor.getString(cursor.getColumnIndex(
-                NATURAL_TRIGGER_ACTIVITY)), object : TypeToken<HashSet<Int>>() {}
-                .getType())
+            naturalTrigger.timeInActivity = getLong(getColumnIndex(NATURAL_TRIGGER_ACTIVITY_DURATION))
+            naturalTrigger.activity = gson.fromJson<HashSet<Int>>(
+                getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
+                object : TypeToken<HashSet<Int>>() {}.getType())
+        }
         return naturalTrigger
     }
 
@@ -1729,6 +1727,7 @@ const val NATURAL_TRIGGER_END_TIME = "natural_trigger_end_time"
 const val NATURAL_TRIGGER_DELETED = "natural_trigger_deleted"
 const val NATURAL_TRIGGER_ACTIVE = "natural_trigger_active"
 const val NATURAL_TRIGGER_ACTIVITY = "natural_trigger_activity"
+const val NATURAL_TRIGGER_ACTIVITY_DURATION = "natural_trigger_activity_duration"
 
 
 const val CREATE_TABLE_NATURAL_TRIGGER =
@@ -1743,4 +1742,5 @@ const val CREATE_TABLE_NATURAL_TRIGGER =
         "$NATURAL_TRIGGER_END_TIME TIME, " +
         "$NATURAL_TRIGGER_DELETED BOOLEAN DEFAULT 0, " + //false
         "$NATURAL_TRIGGER_ACTIVE BOOLEAN DEFAULT 1, " +  //true
-        "$NATURAL_TRIGGER_ACTIVITY TEXT )"
+        "$NATURAL_TRIGGER_ACTIVITY TEXT, " +
+        "$NATURAL_TRIGGER_ACTIVITY_DURATION INTEGER )"

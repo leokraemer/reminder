@@ -73,8 +73,19 @@ class NaturalTriggerModel {
             }
         }
 
-    internal var activity = mutableSetOf<Int>()
+    /**
+     * The time that must be spent in one of the [activity]s, before the trigger is hit. In
+     * milliseconds.
+     */
+    var timeInActivity = 0L
+        set(value) {
+            if (field != value) {
+                field = value
+                modelChangelListener?.modelChangedCallback()
+            }
+        }
 
+    internal var activity = mutableSetOf<Int>()
 
     fun addActivity(a: Int) {
         if (!activity.contains(a)) {

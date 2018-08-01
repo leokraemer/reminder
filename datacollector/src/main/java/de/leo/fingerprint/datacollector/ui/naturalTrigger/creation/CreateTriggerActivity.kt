@@ -249,7 +249,7 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
     view.reminder_card?.apply {
         with(naturalTriggerModel) {
             //geofence
-            if (geofence != null) {
+            if (geofence != null && geofence?.name != EVERYWHERE) {
                 if (geofence!!.imageResId > -1)
                     geofenceIcon.setImageDrawable(
                         resources.obtainTypedArray(R.array.geofence_icons)
@@ -272,27 +272,28 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 }
                 if (geofence!!.dwellInside || geofence!!.dwellOutside) {
                     spendTimeGeofence.visibility = View.VISIBLE
-                    spendTimeGeofence.setText("" + TimeUnit.MILLISECONDS
-                        .toMinutes(geofence!!.loiteringDelay.toLong()))
+                    spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
+                        .toMinutes(geofence!!.loiteringDelay.toLong())}"
                 } else {
                     spendTimeGeofence.visibility = View.GONE
-                    spendTimeGeofence.setText("")
                 }
             } else {
                 geofenceIcon.setImageResource(R.drawable.ic_public_white_48dp)
                 geofenceDirection.setImageDrawable(null)
                 geofenceName.setText("Überall")
+                spendTimeGeofence.visibility = View.GONE
             }
             //activity
-            if (checkActivity(NaturalTriggerModel.SIT)) {
+            val sit = checkActivity(NaturalTriggerModel.SIT)
+            val walk = checkActivity(NaturalTriggerModel.WALK)
+            val bike = checkActivity(NaturalTriggerModel.BIKE)
+            val bus = false //checkActivity(NaturalTriggerModel.BUS)
+            val car = checkActivity(NaturalTriggerModel.CAR)
+            if (sit) {
                 activity1.setImageResource(sitIcon)
                 activity2.setImageDrawable(null)
                 activity3.setImageDrawable(null)
             } else {
-                val walk = checkActivity(NaturalTriggerModel.WALK)
-                val bike = checkActivity(NaturalTriggerModel.BIKE)
-                val bus = false //checkActivity(NaturalTriggerModel.BUS)
-                val car = checkActivity(NaturalTriggerModel.CAR)
                 activity1.setImageDrawable(null)
                 activity2.setImageDrawable(null)
                 activity3.setImageDrawable(null)
@@ -323,6 +324,13 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                         activity2.setImageResource(carIcon)
                 } else if (car) {
                     activity1.setImageResource(carIcon)
+                }
+            }
+            spendTimeActivity.visibility = View.GONE
+            if (walk || car || bike || sit) {
+                if (timeInActivity > 0) {
+                    spendTimeActivity.visibility = View.VISIBLE
+                    spendTimeActivity.text = "${TimeUnit.MILLISECONDS.toMinutes(timeInActivity)}"
                 }
             }
 

@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="8dp"
+    android:layout_columnSpan="4"
     android:stretchColumns="*"
-    tools:background="@color/colorPrimary"
-    android:padding="8dp">
+    android:shrinkColumns="*"
+    tools:background="@color/colorPrimary">
 
     <TableRow>
 
@@ -14,10 +16,10 @@
             android:id="@+id/textView385"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_span="4"
             android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_span="4"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </TableRow>
 
@@ -39,127 +41,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_span="4"
-            android:text="Wählen sie eine Aktivität" />
+            android:text="Wählen sie eine oder mehrere Aktivitäten" />
 
     </TableRow>
 
     <TableRow android:layout_marginTop="8dp">
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/walkButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_walk_white_48dp"
-            app:layout_constraintEnd_toStartOf="@+id/bikeButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bikeButton" />
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/bikeButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_bike_white_48dp"
-            app:layout_constraintEnd_toStartOf="@+id/busButton"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/walkButton"
-            app:layout_constraintTop_toTopOf="@+id/busButton" />
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/carButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_car_white_48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/busButton"
-            app:layout_constraintTop_toBottomOf="@+id/situation" />
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/busButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_bus_white_48dp"
-            android:visibility="gone" />
-    </TableRow>
-
-    <TableRow>
-
-        <TextView
-            android:id="@+id/walkText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Zu Fuss"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/walkButton"
-            app:layout_constraintStart_toStartOf="@+id/walkButton"
-            app:layout_constraintTop_toBottomOf="@+id/walkButton" />
-
-        <TextView
-            android:id="@+id/bikeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Fahrrad\nfahren"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/bikeButton"
-            app:layout_constraintStart_toStartOf="@+id/bikeButton"
-            app:layout_constraintTop_toBottomOf="@+id/bikeButton" />
-
-        <TextView
-            android:id="@+id/carText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Auto"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/carButton"
-            app:layout_constraintStart_toStartOf="@+id/carButton"
-            app:layout_constraintTop_toBottomOf="@+id/carButton" />
-
-        <TextView
-            android:id="@+id/busText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Bus\nfahren"
-            android:textColor="@color/white"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/busButton"
-            app:layout_constraintStart_toStartOf="@+id/busButton"
-            app:layout_constraintTop_toBottomOf="@+id/busButton" />
-    </TableRow>
-
-    <TableRow>
 
         <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/sitButton"
@@ -173,11 +59,45 @@
             android:padding="8dp"
             android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
 
+        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/walkButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_checkable_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_directions_walk_white_48dp" />
+
+        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/bikeButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_checkable_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_directions_bike_white_48dp" />
+
+        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/carButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:background="@drawable/round_checkable_background"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_directions_car_white_48dp" />
+
     </TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+    <TableRow>
 
         <TextView
             android:id="@+id/sitText"
@@ -187,6 +107,143 @@
             android:lines="2"
             android:text="Unbewegt"
             android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/walkText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Zu Fuss"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/bikeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Fahrrad\nfahren"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/carText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Auto"
+            android:textColor="@color/white" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/textView54"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_span="4"
+            android:text="Mindestdauer der Aktivität" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp">
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                android:id="@+id/fiveminutes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+
+                android:padding="8dp"
+                android:text="5"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textIsSelectable="false"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                android:id="@+id/fiveteenminutes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="15"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textIsSelectable="false"
+
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                android:id="@+id/thirtyminutes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="30"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                android:id="@+id/moreminutes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@drawable/round_checkable_background"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@drawable/baseline_more_horiz_white_48dp" />
+        </FrameLayout>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     </TableRow>
 
 </TableLayout>

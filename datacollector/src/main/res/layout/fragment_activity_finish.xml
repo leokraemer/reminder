@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Wählen sie eine Aktion an diesem Ort:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveteenminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="15"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textIsSelectable="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="@+id/thirtyminutes"
+        tools:layout_editor_absoluteX="152dp" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/moreminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/baseline_more_horiz_white_48dp"
+        app:layout_constraintStart_toEndOf="@+id/thirtyminutes"
+        app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/thirtyminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="30"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toBottomOf="@+id/situation" />
+
+    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveminutes"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginRight="24dp"
+        android:background="@drawable/round_checkable_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="8dp"
+        android:text="5"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textIsSelectable="false"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toTopOf="@+id/fiveteenminutes" />
+
+</android.support.constraint.ConstraintLayout>

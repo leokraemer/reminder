@@ -1,11 +1,15 @@
 package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import de.leo.fingerprint.datacollector.R
 import kotlinx.android.synthetic.main.fragment_activity_selection.*
+import kotlinx.android.synthetic.main.minutepicker.*
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Leo on 06.03.2018.
@@ -25,13 +29,35 @@ class ActivitySelection : NaturalTriggerFragment() {
         walkText.setOnClickListener { walk() }
         bikeButton.setOnClickListener { bike() }
         bikeText.setOnClickListener { bike() }
-        //busButton.setOnClickListener { bus() }
-        //busText.setOnClickListener { bus() }
         carButton.setOnClickListener { car() }
         carText.setOnClickListener { car() }
         sitButton.setOnClickListener { sit() }
         sitText.setOnClickListener { sit() }
+        moreminutes.onClick { showMinutePicker() }
+        fiveminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(5) }
+        fiveteenminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(15) }
+        thirtyminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(30) }
         updateView()
+    }
+
+    fun showMinutePicker() {
+        val d = Dialog(context)
+        d.setContentView(R.layout.minutepicker)
+        d.setTitle("Wählen sie eine Dauer:")
+        d.setCancelable(true)
+        d.setCanceledOnTouchOutside(true)
+        d.setOnCancelListener { d.dismiss() }
+        d.minutePicker.minValue = 0
+        d.minutePicker.maxValue = 300
+        d.minutePicker.wrapSelectorWheel = false
+        d.minutePicker.value = TimeUnit.MILLISECONDS.toMinutes(
+            model?.timeInActivity ?: 5L).toInt()
+        d.setMinute.setOnClickListener {
+            model!!.timeInActivity = TimeUnit.MINUTES.toMillis(d.minutePicker.value.toLong())
+            d.dismiss()
+        }
+        d.cancelMinute.setOnClickListener { d.dismiss() }
+        d.show()
     }
 
     private fun walk() {
@@ -78,11 +104,31 @@ class ActivitySelection : NaturalTriggerFragment() {
     }
 
     override fun updateView() {
-        situation_text?.setText(model?.situation)
-        walkButton?.isChecked = model?.checkActivity(NaturalTriggerModel.WALK) == true
-        bikeButton?.isChecked = model?.checkActivity(NaturalTriggerModel.BIKE) == true
-        //busButton?.isChecked = model?.checkActivity(NaturalTriggerModel.BUS) == true
-        carButton?.isChecked = model?.checkActivity(NaturalTriggerModel.CAR) == true
-        sitButton?.isChecked = model?.checkActivity(NaturalTriggerModel.SIT) == true
+        model?.let {
+            val sit = it.checkActivity(NaturalTriggerModel.SIT)
+            val walk = it.checkActivity(NaturalTriggerModel.WALK)
+            val bike = it.checkActivity(NaturalTriggerModel.BIKE)
+            val car = it.checkActivity(NaturalTriggerModel.CAR)
+            situation_text?.setText(it.situation)
+            walkButton?.isChecked = walk
+            bikeButton?.isChecked = bike
+            carButton?.isChecked = car
+            sitButton?.isChecked = sit
+            val activitySelected = sit || walk || bike || car
+            fiveminutes?.isEnabled = activitySelected
+            fiveteenminutes?.isEnabled = activitySelected
+            thirtyminutes?.isEnabled = activitySelected
+            moreminutes?.isEnabled = activitySelected
+            fiveminutes?.isChecked = activitySelected
+                && it.timeInActivity == TimeUnit.MINUTES.toMillis(5)
+            fiveteenminutes?.isChecked = activitySelected
+                && it.timeInActivity == TimeUnit.MINUTES.toMillis(15)
+            thirtyminutes?.isChecked = activitySelected
+                && it.timeInActivity == TimeUnit.MINUTES.toMillis(30)
+            moreminutes?.isChecked = activitySelected
+                && !(fiveminutes?.isChecked == true
+                || fiveteenminutes?.isChecked == true
+                || thirtyminutes?.isChecked == true)
+        }
     }
 }
