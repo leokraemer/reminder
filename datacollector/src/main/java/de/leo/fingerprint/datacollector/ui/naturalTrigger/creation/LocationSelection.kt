@@ -7,14 +7,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.datacollection.database.*
+import de.leo.fingerprint.datacollector.datacollection.database.GEOFENCE_IMAGE
+import de.leo.fingerprint.datacollector.datacollection.database.GEOFENCE_NAME
+import de.leo.fingerprint.datacollector.datacollection.database.ID
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity
 import kotlinx.android.synthetic.main.fragment_location_selection.*
 import org.jetbrains.anko.support.v4.intentFor
 import org.jetbrains.anko.support.v4.toast
-import java.util.concurrent.TimeUnit
 
 
 /**
@@ -192,6 +194,7 @@ class LocationSelection : NaturalTriggerFragment() {
 
     companion object {
         val EVERYWHERE: String = "Überall"
+        //this geofence interprets every check as true
         fun everywhere_geofence() = MyGeofence(-1,
                                                Companion.EVERYWHERE,
                                                0.0,
@@ -199,9 +202,9 @@ class LocationSelection : NaturalTriggerFragment() {
                                                Float.MAX_VALUE,
                                                false,
                                                false,
-                                               false,
                                                true,
-                                               TimeUnit.MINUTES.toMillis(5).toInt(),
+                                               false,
+                                               0,
                                                WORLD_CODE)
     }
 

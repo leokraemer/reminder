@@ -15,6 +15,7 @@ import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
 import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
@@ -53,12 +54,12 @@ class CreateTriggerActivity : GeofenceDialogListener,
      * The pager widget, which handles animation and allows swiping horizontally to access previous
      * and next wizard steps.
      */
-    private var mPager: LockableViewPager? = null
+    private var lockableViewPager: LockableViewPager? = null
 
     /**
      * The pager adapter, which provides the pages to the view pager widget.
      */
-    private var mPagerAdapter: PagerAdapter? = null
+    private var pagerAdapter: PagerAdapter? = null
 
     //Fragments
     private val goalSelection = GoalSelection()
@@ -83,10 +84,10 @@ class CreateTriggerActivity : GeofenceDialogListener,
             model = NaturalTriggerModel()
         }
         // Instantiate a ViewPager and a PagerAdapter.
-        mPager = viewPager
-        mPagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-        mPager!!.adapter = mPagerAdapter
-        mPager!!.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+        lockableViewPager = viewPager
+        pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
+        lockableViewPager!!.adapter = pagerAdapter
+        lockableViewPager!!.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             var scrollState = ViewPager.SCROLL_STATE_IDLE
             override fun onPageScrollStateChanged(state: Int) {
                 scrollState = state
@@ -97,8 +98,9 @@ class CreateTriggerActivity : GeofenceDialogListener,
                                         positionOffsetPixels: Int) {
                 if (position == 2) {
                     expand(reminder_card, positionOffset)
+                } else if (position >= 3) {
+                    expand(reminder_card, 1f)
                 }
-
             }
 
             override fun onPageSelected(position: Int) {
@@ -126,14 +128,15 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     override fun modelChangedCallback() {
         updateNaturalTriggerReminderCardView(model, reminder_card)
+        pagerAdapter?.notifyDataSetChanged()
         //enable/disable view paging
-        if (mPager!!.currentItem == 0
+        if (lockableViewPager!!.currentItem == 0
             && (model.goal.isNullOrEmpty() || model.message.isNullOrEmpty())) {
-            mPager?.setPagingEnabled(false)
-        } else if (mPager!!.currentItem == 1 && model.situation.isNullOrEmpty()) {
-            mPager!!.setPagingEnabled(false)
+            lockableViewPager?.setPagingEnabled(false)
+        } else if (lockableViewPager!!.currentItem == 1 && model.situation.isNullOrEmpty()) {
+            lockableViewPager!!.setPagingEnabled(false)
         } else {
-            mPager?.setPagingEnabled(true)
+            lockableViewPager?.setPagingEnabled(true)
         }
         //update child views
         activitySelection.updateView()
@@ -146,7 +149,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     private fun nextButtonClick() {
         //last page
-        if (mPager!!.currentItem == mPager!!.adapter!!.count - 1) {
+        if (lockableViewPager!!.currentItem == lockableViewPager!!.adapter!!.count - 1) {
             val id = db.enterNaturalTrigger(model)
             toast("Erinnerung erfolgreich erstellt")
             startService(intentFor<DataCollectorService>()
@@ -155,7 +158,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                         )
             super.onBackPressed()
         }
-        mPager!!.currentItem++
+        lockableViewPager!!.currentItem++
     }
 
     fun expand(v: View, positionOffset: Float) {
@@ -172,13 +175,13 @@ class CreateTriggerActivity : GeofenceDialogListener,
     }
 
     override fun onBackPressed() {
-        if (mPager!!.currentItem == 0) {
+        if (lockableViewPager!!.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activity and pops the back stack.
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
-            mPager!!.currentItem = mPager!!.currentItem - 1
+            lockableViewPager!!.currentItem = lockableViewPager!!.currentItem - 1
         }
     }
 
@@ -189,21 +192,34 @@ class CreateTriggerActivity : GeofenceDialogListener,
      */
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) :
         FragmentStatePagerAdapter(fm) {
-        override fun getItem(position: Int): Fragment {
-            return when (position) {
-                0    -> goalSelection
-                1    -> situationSelection
-                2    -> locationSelection
-                3    -> locationFinish
-                4    -> activitySelection
-                5    -> timeSelection
-                else -> timeSelection // error
-            }
-        }
+        private val showGeofenceDwellTimeSelection = (model.geofence?.name != EVERYWHERE
+            && (model.geofence?.dwellOutside == true || model.geofence?.dwellInside == true))
 
-        override fun getCount(): Int {
-            return NUM_PAGES
-        }
+        override fun getItem(position: Int): Fragment =
+            if (showGeofenceDwellTimeSelection)
+                when (position) {
+                    0    -> goalSelection
+                    1    -> situationSelection
+                    2    -> locationSelection
+                    3    -> locationFinish
+                    4    -> activitySelection
+                    5    -> timeSelection
+                    else -> timeSelection // error
+                } else
+                when (position) {
+                    0    -> goalSelection
+                    1    -> situationSelection
+                    2    -> locationSelection
+                    3    -> activitySelection
+                    4    -> timeSelection
+                    else -> timeSelection // error
+                }
+
+        override fun getCount(): Int =
+            if (showGeofenceDwellTimeSelection)
+                NUM_PAGES
+            else
+                NUM_PAGES - 1
     }
 
     override fun onNoGeofenceSelected() {
@@ -255,12 +271,12 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                         resources.getDrawable(R.drawable.ic_outside7_white, null))
                 }
                 if (geofence!!.dwellInside || geofence!!.dwellOutside) {
-                    spendTime.visibility = View.VISIBLE
-                    spendTime.setText("" + TimeUnit.MILLISECONDS
+                    spendTimeGeofence.visibility = View.VISIBLE
+                    spendTimeGeofence.setText("" + TimeUnit.MILLISECONDS
                         .toMinutes(geofence!!.loiteringDelay.toLong()))
                 } else {
-                    spendTime.visibility = View.GONE
-                    spendTime.setText("")
+                    spendTimeGeofence.visibility = View.GONE
+                    spendTimeGeofence.setText("")
                 }
             } else {
                 geofenceIcon.setImageResource(R.drawable.ic_public_white_48dp)
