@@ -27,3 +27,7 @@
 -dontnote android.net.http.*
 -dontnote org.apache.commons.codec.**
 -dontnote org.apache.http.**
+-dontwarn org.joda.convert.**
+-dontwarn javax.annotation.**
+-dontwarn com.google.appengine.**
+-dontwarn org.codehaus.mojo.**

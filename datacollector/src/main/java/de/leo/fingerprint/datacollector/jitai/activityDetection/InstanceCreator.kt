@@ -12,11 +12,11 @@ import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
-import weka.core.Attribute
-import weka.core.DenseInstance
-import weka.core.Instances
-import weka.filters.Filter
-import weka.filters.supervised.instance.Resample
+//import weka.core.Attribute
+//import weka.core.DenseInstance
+//import weka.core.Instances
+//import weka.filters.Filter
+//import weka.filters.supervised.instance.Resample
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -158,7 +158,7 @@ val nominal: List<String> = arrayListOf(MATCH,
                                         NO_MATCH)
 
 
-
+/*
 class FingerPrintAttributes(var numberOfDataPoints : Int = 1) : ArrayList<Attribute>() {
 
     //desired attributes are in comments
@@ -909,4 +909,4 @@ class Fingerprint
     init {
         setClassIndex(getAttributeIndex(CLASSIFICATION))
     }
-}
+}*/
