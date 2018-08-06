@@ -33,13 +33,14 @@
         android:id="@+id/worldGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginEnd="24dp"
         android:background="@drawable/round_checkable_background"
+
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_public_white_48dp"
-        app:layout_constraintStart_toStartOf="@+id/wifiGeofenceButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
 
     <TextView
@@ -59,16 +60,15 @@
         android:id="@+id/wifiGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
+
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_wifi_white_48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/busstopGeofenceButton"
+        app:layout_constraintEnd_toEndOf="@+id/enterButton"
+        app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterText" />
 
     <TextView
@@ -104,7 +104,9 @@
 
         android:padding="8dp"
         android:src="@drawable/ic_work_white_48dp"
-        app:layout_constraintStart_toStartOf="@+id/shopGeofenceButton"
+        app:layout_constraintEnd_toStartOf="@+id/worldGeofenceButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/enterButton"
         app:layout_constraintTop_toTopOf="@+id/homeGeofenceButton" />
 
     <TextView
@@ -124,15 +126,15 @@
         android:id="@+id/homeGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="24dp"
         android:background="@drawable/round_checkable_background"
+
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_home_white_48dp"
-        app:layout_constraintStart_toStartOf="@+id/listGeofenceButton"
-        app:layout_constraintTop_toBottomOf="@+id/situation" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="129dp" />
 
     <TextView
         android:id="@+id/homeText"
@@ -151,16 +153,16 @@
         android:id="@+id/listGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+
+        android:layout_marginStart="8dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_format_list_bulleted_white_48dp"
-        app:layout_constraintEnd_toStartOf="@+id/shopGeofenceButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shopGeofenceButton" />
+        app:layout_constraintEnd_toEndOf="@+id/homeGeofenceButton"
+        app:layout_constraintStart_toStartOf="@+id/homeGeofenceButton"
+        app:layout_constraintTop_toTopOf="@+id/wifiGeofenceButton" />
 
     <TextView
         android:id="@+id/listText"
@@ -179,15 +181,14 @@
         android:id="@+id/shopGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_shopping_cart_white_48dp"
-        app:layout_constraintEnd_toStartOf="@+id/busstopGeofenceButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/listGeofenceButton"
-        app:layout_constraintTop_toTopOf="@+id/busstopGeofenceButton" />
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="229dp"
+        tools:layout_editor_absoluteY="420dp" />
 
     <TextView
         android:id="@+id/shopText"
@@ -198,7 +199,9 @@
 
         android:text="Geschäft"
         android:textColor="@color/white"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/shopGeofenceButton"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/shopGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/shopGeofenceButton" />
 
@@ -206,13 +209,16 @@
         android:id="@+id/enterButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginStart="8dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
-        android:focusable="true"
 
+        android:focusable="true"
         android:padding="8dp"
         android:src="@android:drawable/ic_dialog_map"
-        app:layout_constraintStart_toStartOf="@+id/busstopGeofenceButton"
+        app:layout_constraintEnd_toStartOf="@+id/workGeofenceButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/homeGeofenceButton"
         app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
 
     <TextView
@@ -232,15 +238,14 @@
         android:id="@+id/busstopGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+
         android:clickable="true"
         android:focusable="true"
-
         android:padding="8dp"
         android:src="@drawable/ic_bus_stop"
-        app:layout_constraintEnd_toStartOf="@+id/wifiGeofenceButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/shopGeofenceButton"
-        app:layout_constraintTop_toTopOf="@+id/wifiGeofenceButton" />
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="92dp"
+        tools:layout_editor_absoluteY="325dp" />
 
     <TextView
         android:id="@+id/busStopText"
@@ -251,6 +256,7 @@
 
         android:text="Bushalte-\nstelle"
         android:textColor="@color/white"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/busstopGeofenceButton"
         app:layout_constraintStart_toStartOf="@+id/busstopGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/busstopGeofenceButton" />
