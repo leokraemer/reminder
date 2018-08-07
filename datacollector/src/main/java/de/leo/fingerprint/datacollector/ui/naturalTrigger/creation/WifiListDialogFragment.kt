@@ -92,7 +92,8 @@ class WifiListDialogFragment : DialogFragment() {
                 else -> R.drawable.ic_error_white_48dp
             }
             view.icon.setImageResource(drawableID)
-            view.geofence_name.setText(getItem(position).SSID)
+            view.geofence_name.setText("${getItem(position).SSID},\n${getItem(position)
+                .BSSID}")
             return view
         }
     }
