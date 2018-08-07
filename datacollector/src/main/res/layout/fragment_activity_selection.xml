@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:layout_columnSpan="4"
-    android:stretchColumns="*"
+    android:padding="8dp"
     android:shrinkColumns="*"
+    android:stretchColumns="*"
     tools:background="@color/colorPrimary">
 
     <TableRow>
@@ -34,216 +34,229 @@
 
     </TableRow>
 
-    <TableRow android:layout_marginTop="8dp">
+    <ScrollView>
 
-        <TextView
-            android:id="@+id/situation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="4"
-            android:text="Wählen sie eine oder mehrere Aktivitäten" />
-
-    </TableRow>
-
-    <TableRow android:layout_marginTop="8dp">
-
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/sitButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_columnSpan="4"
             android:padding="8dp"
-            android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            tools:background="@color/colorPrimary">
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/walkButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_walk_white_48dp" />
+            <TableRow android:layout_marginTop="8dp">
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/bikeButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_bike_white_48dp" />
+                <TextView
+                    android:id="@+id/situation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="4"
+                    android:text="Wählen sie eine oder mehrere Aktivitäten" />
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-            android:id="@+id/carButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:adjustViewBounds="true"
-            android:background="@drawable/round_checkable_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            android:src="@drawable/ic_directions_car_white_48dp" />
+            </TableRow>
 
-    </TableRow>
+            <TableRow android:layout_marginTop="8dp">
 
-    <TableRow>
+                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                    android:id="@+id/sitButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/round_checkable_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
 
-        <TextView
-            android:id="@+id/sitText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Unbewegt"
-            android:textColor="@color/white" />
+                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                    android:id="@+id/walkButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/round_checkable_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_walk_white_48dp" />
 
-        <TextView
-            android:id="@+id/walkText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Zu Fuss"
-            android:textColor="@color/white" />
+                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                    android:id="@+id/bikeButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/round_checkable_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_bike_white_48dp" />
 
-        <TextView
-            android:id="@+id/bikeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Fahrrad\nfahren"
-            android:textColor="@color/white" />
+                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                    android:id="@+id/carButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/round_checkable_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_directions_car_white_48dp" />
 
-        <TextView
-            android:id="@+id/carText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:lines="2"
-            android:text="Auto"
-            android:textColor="@color/white" />
+            </TableRow>
 
-    </TableRow>
+            <TableRow>
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp">
+                <TextView
+                    android:id="@+id/sitText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Unbewegt"
+                    android:textColor="@color/white" />
 
-        <TextView
-            android:id="@+id/textView54"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_span="4"
-            android:text="Mindestdauer der Aktivität" />
-    </TableRow>
+                <TextView
+                    android:id="@+id/walkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Zu Fuss"
+                    android:textColor="@color/white" />
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp">
+                <TextView
+                    android:id="@+id/bikeText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Fahrrad\nfahren"
+                    android:textColor="@color/white" />
 
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp">
+                <TextView
+                    android:id="@+id/carText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lines="2"
+                    android:text="Auto"
+                    android:textColor="@color/white" />
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
-                android:id="@+id/fiveminutes"
-                android:layout_width="48dp"
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:id="@+id/textView54"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="4"
+                    android:text="Mindestdauer der Aktivität" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:background="@drawable/round_checkable_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
+                android:layout_marginTop="8dp">
 
-                android:padding="8dp"
-                android:text="5"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textIsSelectable="false"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </FrameLayout>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
 
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp">
+                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                        android:id="@+id/fiveminutes"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/round_checkable_background"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
-                android:id="@+id/fiveteenminutes"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:background="@drawable/round_checkable_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="15"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textIsSelectable="false"
+                        android:padding="8dp"
+                        android:text="5"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textIsSelectable="false"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </FrameLayout>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
 
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp">
+                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                        android:id="@+id/fiveteenminutes"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:background="@drawable/round_checkable_background"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:text="15"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textIsSelectable="false"
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
-                android:id="@+id/thirtyminutes"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:background="@drawable/round_checkable_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="30"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </FrameLayout>
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="48dp"
-            android:layout_height="48dp">
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
-                android:id="@+id/moreminutes"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:background="@drawable/round_checkable_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="8dp"
-                android:src="@drawable/baseline_more_horiz_white_48dp" />
-        </FrameLayout>
+                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                        android:id="@+id/thirtyminutes"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/round_checkable_background"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="30"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </FrameLayout>
 
-    </TableRow>
+                <FrameLayout
+                    android:layout_width="48dp"
+                    android:layout_height="48dp">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                        android:id="@+id/moreminutes"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/round_checkable_background"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:src="@drawable/baseline_more_horiz_white_48dp" />
+                </FrameLayout>
 
-    </TableRow>
+            </TableRow>
 
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </TableRow>
+
+        </TableLayout>
+    </ScrollView>
 </TableLayout>
