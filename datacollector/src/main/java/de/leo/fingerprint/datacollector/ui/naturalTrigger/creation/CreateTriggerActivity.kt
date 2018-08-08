@@ -15,6 +15,7 @@ import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
 import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
@@ -227,11 +228,20 @@ class CreateTriggerActivity : GeofenceDialogListener,
     }
 
     override fun onGeofenceSelected(geofence: MyGeofence) {
-        model.geofence = geofence
+        model.geofence = geofence.copy(enter = model.geofence?.enter == true,
+                                       exit = model.geofence?.exit == true,
+                                       dwellOutside = model.geofence?.dwellOutside == true,
+                                       dwellInside = model.geofence?.dwellInside == true,
+                                       loiteringDelay = model.geofence?.loiteringDelay ?: 0)
     }
 
     override fun onWifiSelected(wifi: WifiInfo) {
-        model.wifi = wifi
+        model.geofence = MyWifiGeofence(bssid = wifi.BSSID,
+                                        enter = model.geofence?.enter == true,
+                                        exit = model.geofence?.exit == true,
+                                        dwellOutside = model.geofence?.dwellOutside == true,
+                                        dwellInside = model.geofence?.dwellInside == true,
+                                        loiteringDelay = model.geofence?.loiteringDelay ?: 0)
     }
 
     override fun onNoWifiSelected() {

@@ -3,6 +3,7 @@ package de.leo.fingerprint.datacollector.jitai
 import android.content.Context
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
+import de.leo.fingerprint.datacollector.checkGeofenceState
 import de.leo.fingerprint.datacollector.ui.EntryActivity
 import junit.framework.Assert
 import org.junit.Before
@@ -60,9 +61,9 @@ class MyGeofenceTest() {
                             false,
                             0,
                             0)
-        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertTrue(CA.update(0L, Catimini.location))
         Assert.assertTrue(CA.checkCondition())
-        Assert.assertTrue(CA.update(Buynormand.location, 0L))
+        Assert.assertTrue(CA.update(0L, Buynormand.location))
         Assert.assertFalse(CA.checkCondition())
     }
 
@@ -79,9 +80,9 @@ class MyGeofenceTest() {
                             false,
                             0,
                             0)
-        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertTrue(CA.update(0L, Catimini.location))
         Assert.assertFalse(CA.checkCondition())
-        Assert.assertTrue(CA.update(Buynormand.location, 0L))
+        Assert.assertTrue(CA.update(0L, Buynormand.location))
         Assert.assertTrue(CA.checkCondition())
     }
 
@@ -98,9 +99,9 @@ class MyGeofenceTest() {
                             false,
                             1,
                             0)
-        Assert.assertTrue(CA.update(Catimini.location, 0L))
+        Assert.assertTrue(CA.update(0L, Catimini.location))
         Assert.assertFalse(CA.checkCondition())
-        Assert.assertTrue(CA.update(Catimini.location, 2L))
+        Assert.assertTrue(CA.update(2L, Catimini.location))
         Assert.assertTrue(CA.checkCondition())
     }
 
@@ -117,14 +118,12 @@ class MyGeofenceTest() {
                             true,
                             1,
                             0)
-        Assert.assertFalse(CA.update(Buynormand.location, 0L))
-        Assert.assertFalse(CA.entered())
-        Assert.assertTrue(CA.exited())
-        Assert.assertFalse(CA.loiteringInside())
-        Assert.assertFalse(CA.loiteringOutside())
-        Assert.assertFalse(CA.checkCondition())
-        Assert.assertTrue(CA.update(Buynormand.location, 2L))
-        Assert.assertTrue(CA.checkCondition())
+        //initial state
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(CA.updateAndCheck(0L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(CA.updateAndCheck(2L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, true)
     }
 
     @Test
@@ -140,10 +139,64 @@ class MyGeofenceTest() {
                             false,
                             1,
                             0)
-        Assert.assertTrue(CA.update(Catimini.location, 0L))
-        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(Catimini.location, 0L))
-        Assert.assertNotSame(CA.checkCondition(), CA.checkCondition(Buynormand.location, 0L))
+        Assert.assertTrue(CA.update(0L, Catimini.location))
+        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(0L, Catimini.location))
+        Assert.assertNotSame(CA.checkCondition(), CA.checkCondition(0L, Buynormand.location))
         //second check to make sure the state did not change by calling checkCondition(... , ...)
-        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(Catimini.location, 0L))
+        Assert.assertEquals(CA.checkCondition(), CA.checkCondition(0L, Catimini.location))
+    }
+
+    @Test
+    fun testRepeatedFiringOfLoiteringDelayInside() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            false,
+                            false,
+                            true,
+                            false,
+                            2,
+                            0)
+        Assert.assertFalse(CA.updateAndCheck(0L, Catimini.location))
+        CA.checkGeofenceState(true, false, false, false)
+        Assert.assertFalse(CA.updateAndCheck(1L, Catimini.location))
+        CA.checkGeofenceState(true, false, false, false)
+        Assert.assertTrue(CA.updateAndCheck(2L, Catimini.location))
+        CA.checkGeofenceState(true, false, true, false)
+        Assert.assertFalse(CA.updateAndCheck(2L, Catimini.location))
+        CA.checkGeofenceState(true, false, false, false)
+        Assert.assertFalse(CA.updateAndCheck(3L, Catimini.location))
+        CA.checkGeofenceState(true, false, false, false)
+        Assert.assertTrue(CA.updateAndCheck(4L, Catimini.location))
+        CA.checkGeofenceState(true, false, true, false)
+    }
+
+    @Test
+    fun testRepeatedFiringOfLoiteringDelayOutside() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(Auberge_du_coq.location),
+                            false,
+                            false,
+                            false,
+                            true,
+                            2,
+                            0)
+        Assert.assertFalse(CA.updateAndCheck(0L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(CA.updateAndCheck(1L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(CA.updateAndCheck(2L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, true)
+        Assert.assertFalse(CA.updateAndCheck(2L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(CA.updateAndCheck(3L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(CA.updateAndCheck(4L, Buynormand.location))
+        CA.checkGeofenceState(false, true, false, true)
     }
 }

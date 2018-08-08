@@ -21,5 +21,4 @@ data class WifiTrigger(val wifi: WifiInfo, var rssiThreshold: Int = -126) : Trig
         }
         return false
     }
-
 }

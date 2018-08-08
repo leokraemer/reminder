@@ -1,23 +1,10 @@
 package de.leo.fingerprint.datacollector.jitai.activityDetection
 
-import android.content.Context
-import android.net.wifi.WifiManager
-import de.leo.fingerprint.datacollector.datacollection.database.*
-import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
-import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
-import de.leo.fingerprint.datacollector.jitai.ProximityTrigger
-import de.leo.fingerprint.datacollector.jitai.algorithms.FFT
-import de.leo.fingerprint.datacollector.jitai.manage.Jitai
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
 //import weka.core.Attribute
 //import weka.core.DenseInstance
 //import weka.core.Instances
 //import weka.filters.Filter
 //import weka.filters.supervised.instance.Resample
-import java.util.concurrent.ConcurrentHashMap
 
 
 /**

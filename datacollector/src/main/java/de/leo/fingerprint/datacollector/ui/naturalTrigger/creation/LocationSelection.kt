@@ -195,30 +195,30 @@ class LocationSelection : NaturalTriggerFragment() {
     companion object {
         val EVERYWHERE: String = "Überall"
         val WIFI: String = "Wifi"
+
         //this geofence interprets every check as true
         fun everywhere_geofence() = MyGeofence(-1,
-                                               Companion.EVERYWHERE,
-                                               0.0,
-                                               0.0,
-                                               Float.MAX_VALUE,
-                                               false,
-                                               false,
-                                               true,
-                                               false,
-                                               0,
-                                               WORLD_CODE)
-
+                                             Companion.EVERYWHERE,
+                                             0.0,
+                                             0.0,
+                                             Float.MAX_VALUE,
+                                             false,
+                                             false,
+                                             true,
+                                             false,
+                                             0,
+                                             WORLD_CODE)
         fun wifi_geofence() = MyGeofence(-1,
-                                         Companion.WIFI,
-                                         0.0,
-                                         0.0,
-                                         Float.MAX_VALUE,
-                                         false,
-                                         false,
-                                         true,
-                                         false,
-                                         0,
-                                         WIFI_CODE)
+                                       Companion.WIFI,
+                                       0.0,
+                                       0.0,
+                                       Float.MAX_VALUE,
+                                       false,
+                                       false,
+                                       true,
+                                       false,
+                                       0,
+                                       WIFI_CODE)
     }
 
 }

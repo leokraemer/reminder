@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import de.leo.fingerprint.datacollector.R
+import de.leo.fingerprint.datacollector.jitai.MyAbstractGeofence
+import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import kotlinx.android.synthetic.main.fragment_location_finish.*
 import kotlinx.android.synthetic.main.minutepicker.*
@@ -64,43 +67,75 @@ class LocationFinish : NaturalTriggerFragment() {
 
     private fun enter() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = true,
-                                                       exit = false,
-                                                       dwellInside = false,
-                                                       dwellOutside = false)
+            val geofence = model!!.geofence
+            when (geofence) {
+                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = true,
+                                                                      exit = false,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = false)
+                is MyGeofence     -> model!!.geofence = geofence.copy(enter = true,
+                                                                      exit = false,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = false)
+            }
         }
     }
 
     private fun updateLoiteringDelay(millis: Long) {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(loiteringDelay = millis.toInt())
+            val geofence = model!!.geofence
+            when (geofence) {
+                is MyWifiGeofence -> model!!.geofence = geofence.copy(loiteringDelay = millis)
+                is MyGeofence     -> model!!.geofence = geofence.copy(loiteringDelay = millis)
+            }
         }
     }
 
     private fun exit() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false,
-                                                       exit = true,
-                                                       dwellInside = false,
-                                                       dwellOutside = false)
+            val geofence = model!!.geofence
+            when (geofence) {
+                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = true,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = false)
+                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = true,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = false)
+            }
         }
     }
 
     private fun spendTimeInside() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false,
-                                                       exit = false,
-                                                       dwellInside = true,
-                                                       dwellOutside = false)
+            val geofence = model!!.geofence
+            when (geofence) {
+                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = false,
+                                                                      dwellInside = true,
+                                                                      dwellOutside = false)
+                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = false,
+                                                                      dwellInside = true,
+                                                                      dwellOutside = false)
+            }
         }
     }
 
     private fun spendTimeOutside() {
         if (model!!.geofence != null) {
-            model!!.geofence = model!!.geofence!!.copy(enter = false,
-                                                       exit = false,
-                                                       dwellInside = false,
-                                                       dwellOutside = true)
+            val geofence = model!!.geofence
+            when (geofence) {
+                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = false,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = true)
+                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
+                                                                      exit = false,
+                                                                      dwellInside = false,
+                                                                      dwellOutside = true)
+            }
         }
     }
 

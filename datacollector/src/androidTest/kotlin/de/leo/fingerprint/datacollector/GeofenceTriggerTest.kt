@@ -155,18 +155,10 @@ class GeofenceTriggerTest {
         //test outside
         sensorData.gps = Buynormand_Location
         val fence = trigger.getCurrentLocation()
-        Assert.assertFalse(fence.entered())
-        Assert.assertTrue(fence.exited())
-        Assert.assertFalse(fence.dwellInside)
-        Assert.assertFalse(fence.dwellOutside)
+        fence.checkGeofenceState(false, true, false, false)
 
         val triggered = trigger.check(context, sensorData)
-
-        Assert.assertFalse(fence.entered())
-        Assert.assertTrue(fence.exited())
-        Assert.assertFalse(fence.dwellInside)
-        Assert.assertFalse(fence.dwellOutside)
-
+        fence.checkGeofenceState(false, true, false, false)
         Assert.assertFalse(triggered)
         //entering
         sensorData.gps = Auberge_du_coq_Location

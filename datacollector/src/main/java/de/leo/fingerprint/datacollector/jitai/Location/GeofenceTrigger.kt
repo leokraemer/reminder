@@ -26,13 +26,14 @@ open class GeofenceTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         //only one location -> no state checks necessary
         if (locations.size == 1) {
-            return locations[0].updateAndCheck(sensorData.gps!!, sensorData.time)
+            return locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
         }
 
-        //########################currently unused code, because paths are not enabled
+        //########################currently unused code, because paths are not enabled in the
+        //######################## trigger creation
         var currentGeofence: Int = -1
         for (i in 0 until locations.size) {
-            if (locations[i].updateAndCheck(sensorData.gps!!, sensorData.time))
+            if (locations[i].updateAndCheck(sensorData.time, sensorData.gps!!))
                 currentGeofence = i
         }
         //not inside a geofence -> dont update timeout
