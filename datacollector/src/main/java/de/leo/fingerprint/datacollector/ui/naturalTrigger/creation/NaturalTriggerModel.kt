@@ -1,8 +1,8 @@
 package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 
 import com.google.android.gms.location.DetectedActivity
-import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
-import de.leo.fingerprint.datacollector.jitai.MyAbstractGeofence
+import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import org.threeten.bp.LocalTime
 
@@ -43,14 +43,14 @@ class NaturalTriggerModel {
             }
         }
 
-    var geofence: MyAbstractGeofence? = everywhere_geofence()
+    var geofence: MyGeofence? = everywhere_geofence()
         set(value) {
             if (field != value) {
                 field = value
                 modelChangelListener?.modelChangedCallback()
             }
         }
-    var wifi: WifiInfo? = null
+    var wifi: MyWifiGeofence? = null
         set(value) {
             if (field != value) {
                 field = value

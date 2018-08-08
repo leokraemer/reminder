@@ -40,7 +40,7 @@ import de.leo.fingerprint.datacollector.BuildConfig
 import de.leo.fingerprint.datacollector.R
 import java.util.concurrent.TimeUnit
 
-val fiveMinutes = TimeUnit.MINUTES.toMillis(5).toInt()
+val fiveMinutes = TimeUnit.MINUTES.toMillis(5)
 
 /**
  * Demonstrates how to create and remove geofences using the GeofencingApi. Uses an IntentService
@@ -164,7 +164,8 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
         }
     }
 
-    fun getGeofenceForLatlng(name: String, latLng: LatLng, radius: Float, enter: Boolean, exit: Boolean, dwell: Boolean, loiteringDelay: Int): Geofence {
+    fun getGeofenceForLatlng(name: String, latLng: LatLng, radius: Float, enter: Boolean, exit:
+    Boolean, dwell: Boolean, loiteringDelay: Long): Geofence {
         val enterI = if (enter) Geofence.GEOFENCE_TRANSITION_ENTER else 0;
         val exitI = if (exit) Geofence.GEOFENCE_TRANSITION_EXIT else 0;
         val dwellI = if (dwell) Geofence.GEOFENCE_TRANSITION_DWELL else 0;
@@ -180,7 +181,7 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
                         radius
                 )
 
-                .setLoiteringDelay(loiteringDelay)
+                .setLoiteringDelay(loiteringDelay.toInt())
 
                 // Set the expiration duration of the geofence. This geofence gets automatically
                 // removed after this period of time.

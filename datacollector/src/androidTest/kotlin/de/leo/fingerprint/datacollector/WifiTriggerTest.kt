@@ -10,6 +10,7 @@ import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.DetectedActivity.IN_VEHICLE
 import com.google.android.gms.location.DetectedActivity.ON_FOOT
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
+import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.jitai.WifiTrigger
 import org.junit.Assert
 import org.junit.Before
@@ -41,7 +42,7 @@ class WifiTriggerTest {
     @Test
     fun testWifiTrigger() {
         //default rssi
-        val trigger = WifiTrigger(WifiInfo(BSSID, RSSI, SSID, IP, NETWORKID))
+        val trigger = WifiTrigger(MyWifiGeofence(bssid = BSSID))
         val sensorData = SensorDataSet(System.currentTimeMillis(), "test")
         Assert.assertFalse(trigger.check(context, sensorData))
         sensorData.wifiInformation = listOf(WifiInfo(BSSID, RSSI, SSID, IP, NETWORKID))
@@ -50,7 +51,7 @@ class WifiTriggerTest {
 
     @Test
     fun testWifiTriggerRSSI() {
-        val trigger = WifiTrigger(WifiInfo(BSSID, RSSI, SSID, IP, NETWORKID), highRssiThreshold)
+        val trigger = WifiTrigger(MyWifiGeofence(bssid = BSSID, rssi = highRssiThreshold))
         val sensorData = SensorDataSet(System.currentTimeMillis(), "test")
         //lower than threshold rssi
         sensorData.wifiInformation = listOf(WifiInfo(BSSID, highRssiThreshold - 1, SSID, IP,

@@ -27,7 +27,7 @@ class MyWifiGeofenceTest() {
     val B = "B"
     val RSSI = 45
 
-    var A_Router = MyWifiGeofence(0, A, RSSI, true, false, false, false, 0)
+    var A_Router = MyWifiGeofence(bssid = A, rssi = RSSI)
 
     @Before
     fun setup() {

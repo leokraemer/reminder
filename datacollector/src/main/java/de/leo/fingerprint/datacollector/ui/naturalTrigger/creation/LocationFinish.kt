@@ -66,78 +66,58 @@ class LocationFinish : NaturalTriggerFragment() {
     }
 
     private fun enter() {
-        if (model!!.geofence != null) {
-            val geofence = model!!.geofence
-            when (geofence) {
-                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = true,
-                                                                      exit = false,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = false)
-                is MyGeofence     -> model!!.geofence = geofence.copy(enter = true,
-                                                                      exit = false,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = false)
-            }
-        }
+        model!!.wifi = model!!.wifi?.copy(enter = true,
+                                          exit = false,
+                                          dwellInside = false,
+                                          dwellOutside = false)
+        model!!.geofence = model!!.geofence?.copy(enter = true,
+                                                  exit = false,
+                                                  dwellInside = false,
+                                                  dwellOutside = false)
+
     }
 
     private fun updateLoiteringDelay(millis: Long) {
-        if (model!!.geofence != null) {
-            val geofence = model!!.geofence
-            when (geofence) {
-                is MyWifiGeofence -> model!!.geofence = geofence.copy(loiteringDelay = millis)
-                is MyGeofence     -> model!!.geofence = geofence.copy(loiteringDelay = millis)
-            }
-        }
+        model!!.geofence = model!!.geofence?.copy(loiteringDelay = millis)
+        model!!.wifi = model!!.wifi?.copy(loiteringDelay = millis)
     }
 
+
     private fun exit() {
-        if (model!!.geofence != null) {
-            val geofence = model!!.geofence
-            when (geofence) {
-                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = true,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = false)
-                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = true,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = false)
-            }
-        }
+        model!!.geofence = model!!.geofence?.copy(enter = false,
+                                                  exit = true,
+                                                  dwellInside = false,
+                                                  dwellOutside = false)
+        model!!.wifi = model!!.wifi?.copy(enter = false,
+                                          exit = true,
+                                          dwellInside = false,
+                                          dwellOutside = false)
+
     }
 
     private fun spendTimeInside() {
-        if (model!!.geofence != null) {
-            val geofence = model!!.geofence
-            when (geofence) {
-                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = false,
-                                                                      dwellInside = true,
-                                                                      dwellOutside = false)
-                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = false,
-                                                                      dwellInside = true,
-                                                                      dwellOutside = false)
-            }
-        }
+        model!!.geofence = model!!.geofence?.copy(enter = false,
+                                                  exit = false,
+                                                  dwellInside = true,
+                                                  dwellOutside = false)
+        model!!.wifi = model!!.wifi?.copy(enter = false,
+                                          exit = false,
+                                          dwellInside = true,
+                                          dwellOutside = false)
     }
 
+
     private fun spendTimeOutside() {
-        if (model!!.geofence != null) {
-            val geofence = model!!.geofence
-            when (geofence) {
-                is MyWifiGeofence -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = false,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = true)
-                is MyGeofence     -> model!!.geofence = geofence.copy(enter = false,
-                                                                      exit = false,
-                                                                      dwellInside = false,
-                                                                      dwellOutside = true)
-            }
-        }
+        model!!.geofence = model!!.geofence?.copy(enter = false,
+                                                  exit = false,
+                                                  dwellInside = false,
+                                                  dwellOutside = true)
+        model!!.wifi = model!!.wifi?.copy(enter = false,
+                                          exit = false,
+                                          dwellInside = false,
+                                          dwellOutside = true)
     }
+
 
     override fun updateView() {
         enterButton?.isChecked = model?.geofence?.enter ?: false

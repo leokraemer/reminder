@@ -228,20 +228,33 @@ class CreateTriggerActivity : GeofenceDialogListener,
     }
 
     override fun onGeofenceSelected(geofence: MyGeofence) {
-        model.geofence = geofence.copy(enter = model.geofence?.enter == true,
-                                       exit = model.geofence?.exit == true,
-                                       dwellOutside = model.geofence?.dwellOutside == true,
-                                       dwellInside = model.geofence?.dwellInside == true,
-                                       loiteringDelay = model.geofence?.loiteringDelay ?: 0)
+        //to get around the invalid state
+        val allfalse = model.wifi?.enter == true
+            || model.wifi?.exit == true
+            || model.wifi?.dwellOutside == true
+            || model.wifi?.dwellInside == true
+        model.geofence = geofence.copy(enter = model.wifi?.enter == true || !allfalse,
+                                       exit = model.wifi?.exit == true,
+                                       dwellOutside = model.wifi?.dwellOutside == true,
+                                       dwellInside = model.wifi?.dwellInside == true,
+                                       loiteringDelay = model.wifi?.loiteringDelay ?: 0)
     }
 
     override fun onWifiSelected(wifi: WifiInfo) {
-        model.geofence = MyWifiGeofence(bssid = wifi.BSSID,
-                                        enter = model.geofence?.enter == true,
-                                        exit = model.geofence?.exit == true,
-                                        dwellOutside = model.geofence?.dwellOutside == true,
-                                        dwellInside = model.geofence?.dwellInside == true,
-                                        loiteringDelay = model.geofence?.loiteringDelay ?: 0)
+        //to get around the invalid state
+        val allfalse = model.geofence?.enter == true
+            || model.geofence?.exit == true
+            || model.geofence?.dwellOutside == true
+            || model.geofence?.dwellInside == true
+        model.wifi = MyWifiGeofence(name = wifi.SSID,
+                                    bssid = wifi.BSSID,
+            //rssi = wifi.rssi //because we do not want that. The
+            // threshholds are unknown
+                                    enter = model.geofence?.enter == true || !allfalse,
+                                    exit = model.geofence?.exit == true,
+                                    dwellOutside = model.geofence?.dwellOutside == true,
+                                    dwellInside = model.geofence?.dwellInside == true,
+                                    loiteringDelay = model.geofence?.loiteringDelay ?: 0)
     }
 
     override fun onNoWifiSelected() {

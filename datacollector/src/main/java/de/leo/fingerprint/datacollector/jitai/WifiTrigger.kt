@@ -9,7 +9,7 @@ import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
  */
 
 /** For rssiThreshold default see according to android.net.wifi.WifiInfo.MIN_RSSI*/
-data class WifiTrigger(val wifi: WifiInfo, var rssiThreshold: Int = -126) : Trigger {
+data class WifiTrigger(val wifi: MyWifiGeofence) : Trigger {
 
     override fun reset() {
         //noop
@@ -17,7 +17,7 @@ data class WifiTrigger(val wifi: WifiInfo, var rssiThreshold: Int = -126) : Trig
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         sensorData.wifiInformation?.let {
-            return it.any { it.BSSID == wifi.BSSID && rssiThreshold <= it.rssi }
+            return it.any { wifi.checkCondition(sensorData.time, it.BSSID, it.rssi) }
         }
         return false
     }

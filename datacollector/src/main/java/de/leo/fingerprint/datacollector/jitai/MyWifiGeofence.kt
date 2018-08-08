@@ -9,20 +9,21 @@ import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.WIFI_CODE
  * @param radius of the geofence in meters
  */
 class MyWifiGeofence(id: Int = -1,
+                     name: String = LocationSelection.WIFI,
                      val bssid: String,
                      val rssi: Int = -126,
-                     enter: Boolean,
-                     exit: Boolean,
-                     dwellInside: Boolean,
-                     dwellOutside: Boolean,
-                     loiteringDelay: Long) : MyAbstractGeofence(id = id,
-                                                                name = LocationSelection.WIFI,
-                                                                enter = enter,
-                                                                exit = exit,
-                                                                dwellInside = dwellInside,
-                                                                dwellOutside = dwellOutside,
-                                                                loiteringDelay = loiteringDelay,
-                                                                imageResId = WIFI_CODE) {
+                     enter: Boolean = true,
+                     exit: Boolean = false,
+                     dwellInside: Boolean = false,
+                     dwellOutside: Boolean = false,
+                     loiteringDelay: Long = 0L) : MyAbstractGeofence(id = id,
+                                                                     name = name,
+                                                                     enter = enter,
+                                                                     exit = exit,
+                                                                     dwellInside = dwellInside,
+                                                                     dwellOutside = dwellOutside,
+                                                                     loiteringDelay = loiteringDelay,
+                                                                     imageResId = WIFI_CODE) {
     override fun checkInside(vararg args: Any) = checkIfInside(args[0] as String, args[1] as Int)
 
 
@@ -30,6 +31,7 @@ class MyWifiGeofence(id: Int = -1,
         this.bssid == bssid && this.rssi <= rssi
 
     fun copy(id: Int = this.id,
+             name: String = LocationSelection.WIFI,
              bssid: String = this.bssid,
              rssi: Int = this.rssi,
              enter: Boolean = this.enter,
@@ -37,6 +39,7 @@ class MyWifiGeofence(id: Int = -1,
              dwellInside: Boolean = this.dwellInside,
              dwellOutside: Boolean = this.dwellOutside,
              loiteringDelay: Long = this.loiteringDelay) = MyWifiGeofence(id,
+                                                                          name,
                                                                           bssid,
                                                                           rssi,
                                                                           enter,

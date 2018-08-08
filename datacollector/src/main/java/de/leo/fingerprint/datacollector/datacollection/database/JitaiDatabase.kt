@@ -21,11 +21,8 @@ import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
 import de.leo.fingerprint.datacollector.datacollection.models.serializeWifi
 import de.leo.fingerprint.datacollector.datacollection.sensors.WeatherCaller
-import de.leo.fingerprint.datacollector.jitai.JitaiEvent
+import de.leo.fingerprint.datacollector.jitai.*
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
-import de.leo.fingerprint.datacollector.jitai.MyGeofence
-import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
 import de.leo.fingerprint.datacollector.jitai.activityDetection.MATCH
 import de.leo.fingerprint.datacollector.jitai.activityDetection.NO_MATCH
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
@@ -113,6 +110,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL(CREATE_TABLE_MAG)
             execSQL(CREATE_TABLE_JITAI)
             execSQL(CREATE_TABLE_GEOFENCE)
+            execSQL(CREATE_TABLE_WIFI_GEOFENCE)
             execSQL(CREATE_TABLE_JITAI_EVENTS)
             execSQL(CREATE_TABLE_NATURAL_TRIGGER)
             createSingleDimensionRealtimeTables(db)
@@ -151,6 +149,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
             execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
+            execSQL("DROP TABLE IF EXISTS $CREATE_TABLE_WIFI_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
             execSQL("DROP TABLE IF EXISTS $TABLE_NATURAL_TRIGGER")
@@ -198,7 +197,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 put(GPS, gps.toString())
                 put(GPSlat, gps?.latitude)
                 put(GPSlng, gps?.longitude)
-                put(WIFI_NAME, wifiInformation?.let{serializeWifi(it)} ?: "null")
+                put(WIFI_NAME, wifiInformation?.let { serializeWifi(it) } ?: "null")
                 put(BLUETOOTH, bluetoothDevices.toString())
                 put(WEATHER, weather)
                 put(SCREEN_STATE, screenState)
@@ -1010,7 +1009,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       exit: Boolean,
                       dwell: Boolean,
                       dwellOutside: Boolean,
-                      loiteringDelay: Int,
+                      loiteringDelay: Long,
                       icon: Int): Int {
         val cv = ContentValues()
         cv.put(ID, id)
@@ -1045,6 +1044,25 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                              geofence.imageResId)
     }
 
+    fun enterMyWifiGeofence(geofence: MyWifiGeofence): Int {
+        val cv = ContentValues()
+        with(geofence) {
+            cv.put(WIFI_GEOFENCE_NAME, name)
+            cv.put(WIFI_GEOFENCE_BSSID, bssid)
+            cv.put(WIFI_GEOFENCE_RSSI, rssi)
+            cv.put(WIFI_GEOFENCE_ENTER, enter)
+            cv.put(WIFI_GEOFENCE_EXIT, exit)
+            cv.put(WIFI_GEOFENCE_DWELL, dwellInside)
+            cv.put(WIFI_GEOFENCE_DWELL_OUTSIDE, dwellOutside)
+            cv.put(WIFI_GEOFENCE_LOITERING_DELAY, loiteringDelay)
+        }
+        var returnval = -1L
+        writableDatabase.transaction {
+            returnval = insert(TABLE_WIFI_GEOFENCE, null, cv)
+        }
+        return returnval.toInt()
+    }
+
     fun enterGeofence(name: String,
                       latitude: Double,
                       longitude: Double,
@@ -1053,7 +1071,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       exit: Boolean,
                       dwell: Boolean,
                       dwellOutside: Boolean,
-                      loiteringDelay: Int,
+                      loiteringDelay: Long,
                       icon: Int): Int {
         val cv = ContentValues()
         cv.put(GEOFENCE_NAME, name)
@@ -1081,7 +1099,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                       exit: Boolean,
                       dwell: Boolean,
                       dwellOutside: Boolean,
-                      loiteringDelay: Int,
+                      loiteringDelay: Long,
                       icon: Int): Int {
         return enterGeofence(name, latLng.latitude, latLng.longitude, radius, enter, exit, dwell,
                              dwellOutside, loiteringDelay, icon)
@@ -1106,8 +1124,18 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return geofece
     }
 
+    fun getMyWifiGeofence(id: Int): MyWifiGeofence? {
+        val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
+                                       null, null, null)
+        var geofece: MyWifiGeofence? = null
+        if (c.moveToFirst())
+            geofece = extractMyWifiGeofenceFromCursor(c)
+        c.close()
+        return geofece
+    }
+
     //HACK the image code is not necessarily unique. Works only for HOME_CODE and WORK_CODE,
-    // because they can be created only once
+// because they can be created only once
     fun getMyGeofenceByCode(imageCode: Int): MyGeofence? {
         val c = readableDatabase.query(TABLE_GEOFENCE,
                                        null,
@@ -1132,7 +1160,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val enter = c.getInt(c.getColumnIndex(GEOFENCE_ENTER)) > 0
         val exit = c.getInt(c.getColumnIndex(GEOFENCE_EXIT)) > 0
         val dwell = c.getInt(c.getColumnIndex(GEOFENCE_DWELL)) > 0
-        val validity = c.getInt(c.getColumnIndex(GEOFENCE_VALIDITY))
+        val validity = c.getLong(c.getColumnIndex(GEOFENCE_VALIDITY))
         return getGeofenceForLatlng(name, latitude, longitude, radius, enter, exit, dwell, validity)
     }
 
@@ -1147,7 +1175,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val exit = c.getInt(c.getColumnIndex(GEOFENCE_EXIT)) > 0
         val dwellInside = c.getInt(c.getColumnIndex(GEOFENCE_DWELL)) > 0
         val dwellOutside = c.getInt(c.getColumnIndex(GEOFENCE_DWELL_OUTSIDE)) > 0
-        val loiteringDelay = c.getInt(c.getColumnIndex(GEOFENCE_LOITERING_DELAY))
+        val loiteringDelay = c.getLong(c.getColumnIndex(GEOFENCE_LOITERING_DELAY))
         return MyGeofence(id,
                           name,
                           latitude,
@@ -1161,6 +1189,27 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                           imageResId)
     }
 
+    private fun extractMyWifiGeofenceFromCursor(c: Cursor): MyWifiGeofence {
+        val bssid = c.getString(c.getColumnIndex(WIFI_GEOFENCE_BSSID))
+        val rssi = c.getInt(c.getColumnIndex(WIFI_GEOFENCE_RSSI))
+        val name = c.getString(c.getColumnIndex(WIFI_GEOFENCE_NAME))
+        val id = c.getInt(c.getColumnIndex(ID))
+        val enter = c.getInt(c.getColumnIndex(WIFI_GEOFENCE_ENTER)) > 0
+        val exit = c.getInt(c.getColumnIndex(WIFI_GEOFENCE_EXIT)) > 0
+        val dwellInside = c.getInt(c.getColumnIndex(WIFI_GEOFENCE_DWELL)) > 0
+        val dwellOutside = c.getInt(c.getColumnIndex(WIFI_GEOFENCE_DWELL_OUTSIDE)) > 0
+        val loiteringDelay = c.getLong(c.getColumnIndex(WIFI_GEOFENCE_LOITERING_DELAY))
+        return MyWifiGeofence(id,
+                              name,
+                              bssid,
+                              rssi,
+                              enter,
+                              exit,
+                              dwellInside,
+                              dwellOutside,
+                              loiteringDelay)
+    }
+
     private fun getGeofenceForLatlng(name: String,
                                      latitude: Double,
                                      longitude: Double,
@@ -1168,14 +1217,14 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                                      enter: Boolean,
                                      exit: Boolean,
                                      dwell: Boolean,
-                                     loiteringDelay: Int): Geofence {
+                                     loiteringDelay: Long): Geofence {
         val enterI = if (enter) Geofence.GEOFENCE_TRANSITION_ENTER else 0;
         val exitI = if (exit) Geofence.GEOFENCE_TRANSITION_EXIT else 0;
         val dwellI = if (dwell) Geofence.GEOFENCE_TRANSITION_DWELL else 0;
         return Geofence.Builder()
             .setRequestId(name)
             .setCircularRegion(latitude, longitude, radius)
-            .setLoiteringDelay(loiteringDelay)
+            .setLoiteringDelay(loiteringDelay.toInt())
             .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
             .setTransitionTypes(enterI or exitI or dwellI)
             .build()
@@ -1351,8 +1400,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         cv.put(NATURAL_TRIGGER_ACTIVITY, gson.toJson(naturalTrigger.activity))
         cv.put(NATURAL_TRIGGER_ACTIVITY_DURATION, naturalTrigger.timeInActivity)
         naturalTrigger.wifi?.let {
-            cv.put(NATURAL_TRIGGER_WIFI,
-                   serializeWifi(it))
+            val wifiID = enterMyWifiGeofence(it)
+            cv.put(NATURAL_TRIGGER_WIFI, wifiID)
         }
         naturalTrigger.geofence?.let {
             val geofenceID = enterGeofence(it)
@@ -1414,9 +1463,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             naturalTrigger.goal = getString(getColumnIndex(NATURAL_TRIGGER_GOAL))
             naturalTrigger.message = getString(getColumnIndex(NATURAL_TRIGGER_MESSAGE))
             naturalTrigger.situation = getString(getColumnIndex(NATURAL_TRIGGER_SITUATION))
-            naturalTrigger.wifi = getString(getColumnIndex(NATURAL_TRIGGER_WIFI))?.let {
-                deSerializeWifi(it).firstOrNull()
-            }
+            naturalTrigger.wifi = getMyWifiGeofence(getInt(getColumnIndex(NATURAL_TRIGGER_WIFI)))
             naturalTrigger.timeInActivity = getLong(getColumnIndex(NATURAL_TRIGGER_ACTIVITY_DURATION))
             naturalTrigger.activity = gson.fromJson<HashSet<Int>>(
                 getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
@@ -1511,6 +1558,17 @@ const val GEOFENCE_DATE_ADDED = "geofenceTimestamp"
 const val GEOFENCE_VALIDITY = "geofenceValidity"
 const val GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
 const val GEOFENCE_IMAGE = "geofenceImage"
+
+//GEOFENCE
+const val TABLE_WIFI_GEOFENCE = "table_geofences"
+const val WIFI_GEOFENCE_NAME = "geofenceName"
+const val WIFI_GEOFENCE_BSSID = "geofenceBssid"
+const val WIFI_GEOFENCE_RSSI = "geofenceRssi"
+const val WIFI_GEOFENCE_ENTER = "geofenceEnter"
+const val WIFI_GEOFENCE_EXIT = "geofenceExit"
+const val WIFI_GEOFENCE_DWELL = "geofenceDwellInside"
+const val WIFI_GEOFENCE_DWELL_OUTSIDE = "geofenceDwellOutside"
+const val WIFI_GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
 
 // Weather
 const val TABLE_WEATHER = "table_weather"
@@ -1715,6 +1773,19 @@ const val CREATE_TABLE_GEOFENCE =
         "$GEOFENCE_LOITERING_DELAY number, " +
         "$GEOFENCE_VALIDITY LONG," +
         "$GEOFENCE_IMAGE INTEGER )"
+
+
+const val CREATE_TABLE_WIFI_GEOFENCE =
+    "CREATE TABLE if not exists $TABLE_GEOFENCE ( " +
+        "$ID integer PRIMARY KEY, " +
+        "$WIFI_GEOFENCE_NAME text, " +
+        "$WIFI_GEOFENCE_BSSID String, " +
+        "$WIFI_GEOFENCE_RSSI INTEGER, " +
+        "$WIFI_GEOFENCE_ENTER bool, " +
+        "$WIFI_GEOFENCE_EXIT bool, " +
+        "$WIFI_GEOFENCE_DWELL bool, " +
+        "$WIFI_GEOFENCE_DWELL_OUTSIDE bool, " +
+        "$WIFI_GEOFENCE_LOITERING_DELAY number )"
 
 const val TABLE_NATURAL_TRIGGER = "table_natural_trigger"
 const val NATURAL_TRIGGER_GOAL = "natural_trigger_goal"
