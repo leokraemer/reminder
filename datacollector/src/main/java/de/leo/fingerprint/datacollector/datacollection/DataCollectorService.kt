@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.location.Location
 import android.net.wifi.ScanResult
-import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Handler
@@ -23,6 +22,7 @@ import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
+import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 import de.leo.fingerprint.datacollector.datacollection.sensors.*
 import de.leo.fingerprint.datacollector.jitai.activityDetection.ActivityRecognizer
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
@@ -87,7 +87,6 @@ class DataCollectorService : Service(),
     internal var ifLocationChanged: Boolean = false
     internal var isRunning: Boolean = false
     internal var isCurrentScreenOn: Boolean = false
-    internal lateinit var currentWifiName: String
     internal lateinit var currentPlaceName: String
     internal lateinit var currentLabel: String
     private var currentActivities = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0))
@@ -98,6 +97,7 @@ class DataCollectorService : Service(),
     private var recordingId = -1
     private lateinit var activityRecognizer: ActivityRecognizer
     private var wifiScanner: WifiScanner? = null
+    private var currentWifiInfo: List<WifiInfo>? = null
     private var currentWifis: List<ScanResult> = listOf()
 
     private lateinit var pm: PowerManager
@@ -203,7 +203,6 @@ class DataCollectorService : Service(),
             weatherCaller = WeatherCaller(this)
         }
         wifiScanner = WifiScanner(this, this)
-        currentWifiName = "null"
         currentLabel = "null"
 
 
@@ -293,27 +292,25 @@ class DataCollectorService : Service(),
         googleFitness.readData()
     }
 
+    val wifiMgr by lazy { applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager }
 
     private fun getWiFiName() {
-        var wifiInfo: WifiInfo?
+        var wifiInfo: android.net.wifi.WifiInfo? = null
         try {
-            val wifiMgr = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
             wifiInfo = wifiMgr.connectionInfo
-
         } catch (e: Exception) {
             Log.d(TAG, "get wifi name error")
-            wifiInfo = null
         }
-        currentWifiName = currentWifis.map {
+        currentWifiInfo = currentWifis.map {
             //replace the connected wifi with better information
             if (wifiInfo?.bssid == it.BSSID) {
-                "[${wifiInfo?.bssid};${wifiInfo?.rssi};${wifiInfo?.ssid};${wifiInfo?.ipAddress};${wifiInfo?.networkId}]"
+                de.leo.fingerprint.datacollector.datacollection.models.WifiInfo(wifiInfo!!)
             } else {
-                "[${it.BSSID};${it.level};${it.SSID};0.0.0.0;-1]"
+                de.leo.fingerprint.datacollector.datacollection.models.WifiInfo(it)
             }
-        }.toString()
+        }
         if (currentWifis.isEmpty()) {
-            currentWifiName = "[${wifiInfo?.bssid};${wifiInfo?.rssi};${wifiInfo?.ssid};${wifiInfo?.ipAddress};${wifiInfo?.networkId}]"
+            currentWifiInfo = wifiInfo?.let { listOf(WifiInfo(wifiInfo)) }
         }
     }
 
@@ -340,7 +337,7 @@ class DataCollectorService : Service(),
             sensorDataSet.activity = currentActivities
         }
         if (DataCollectorApplication.WIFI_NAME_ENABLED) {
-            sensorDataSet.wifiInformation = currentWifiName
+            sensorDataSet.wifiInformation = currentWifiInfo
         }
         if (DataCollectorApplication.LOCATION_ENABLED) {
             Log.d(TAG, "lat: ${currentLatitude}")

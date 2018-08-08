@@ -198,7 +198,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 put(GPS, gps.toString())
                 put(GPSlat, gps?.latitude)
                 put(GPSlng, gps?.longitude)
-                put(WIFI_NAME, wifiInformation)
+                put(WIFI_NAME, wifiInformation?.let{serializeWifi(it)} ?: "null")
                 put(BLUETOOTH, bluetoothDevices.toString())
                 put(WEATHER, weather)
                 put(SCREEN_STATE, screenState)
@@ -325,7 +325,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val gps = Location("from db")
         gps.latitude = c.getDouble(c.getColumnIndex(GPSlat))
         gps.longitude = c.getDouble(c.getColumnIndex(GPSlng))
-        val wifiName = c.getString(c.getColumnIndex(WIFI_NAME))
+        val wifiName = deSerializeWifi(c.getString(c.getColumnIndex(WIFI_NAME)))
         val bluetoothDevices = listOf(c.getString(c.getColumnIndex(BLUETOOTH)))
         val weather = c.getLong(c.getColumnIndex(WEATHER))
         val screenState = c.getInt(c.getColumnIndex(SCREEN_STATE)) > 0

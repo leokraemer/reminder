@@ -60,7 +60,7 @@ data class MyGeofence(var id: Int = -1,
     /**
      * true when entered for at least [loiteringDelay] milliseconds
      */
-    fun loiteringInside(timestamp: Long): Boolean {
+    private fun loiteringInside(timestamp: Long): Boolean {
         loiteringInside = enteredTimestamp + loiteringDelay < timestamp
         return loiteringInside
     }
@@ -71,18 +71,19 @@ data class MyGeofence(var id: Int = -1,
     /**
      * true when entered for at least [loiteringDelay] milliseconds
      */
-    fun loiteringOutside(timestamp: Long): Boolean {
+    private fun loiteringOutside(timestamp: Long): Boolean {
         loiteringOutside = exitedTimestamp + loiteringDelay < timestamp
         return loiteringOutside
     }
 
     /**
-     * Update the state of the geofence
-     * Returns if the state changed
+     * Update the state of the geofence.
+     * Returns if the state changed.
      */
-    fun update(location: Location, timestamp: Long): Boolean {
+    internal fun update(location: Location, timestamp: Long): Boolean {
         var stateChanged = false
         if (this.location.distanceTo(location) <= radius) {
+            //inside
             if (!entered)
                 stateChanged = true
             entered = true
@@ -90,9 +91,13 @@ data class MyGeofence(var id: Int = -1,
             if (enteredTimestamp == Long.MAX_VALUE)
                 enteredTimestamp = timestamp
             val loiteringBefore = loiteringInside
-            if (loiteringBefore != loiteringInside(timestamp))
+            if (loiteringBefore != loiteringInside(timestamp)) {
                 stateChanged = true
+                //reset to hit again after loiteringDelay millis
+                enteredTimestamp = timestamp
+            }
         } else {
+            //outside
             if (entered)
                 stateChanged = true
             entered = false
@@ -101,16 +106,24 @@ data class MyGeofence(var id: Int = -1,
             if (exitedTimestamp == Long.MAX_VALUE)
                 exitedTimestamp = timestamp
             val loiteringBefore = loiteringOutside
-            if (loiteringBefore != loiteringOutside(timestamp))
+            if (loiteringBefore != loiteringOutside(timestamp)) {
                 stateChanged = true
+                //rest to hit again after loiteringDelay millis
+                exitedTimestamp = timestamp
+            }
         }
         return stateChanged
     }
 
     /**
-     * Checkwithout updating
+     * Update the geofences state and return the new state. Main API function.
      */
-    fun checkCondition(location: Location, timestamp: Long): Boolean {
+    fun updateAndCheck(location: Location, timestamp: Long): Boolean {
+        val stateChanged = update(location, timestamp)
+        return stateChanged && checkCondition()
+    }
+
+    private fun checkCondition(location: Location, timestamp: Long): Boolean {
         var inside = false
         var outside = false
         var loiteringInside = false
@@ -129,9 +142,10 @@ data class MyGeofence(var id: Int = -1,
     }
 
     /**
-     * Return the current state of the geofence for the given timestamp
+     * Check current state. Use in conjunction with [update]. Use [updateAndCheck] for simple
+     * access.
      */
-    fun checkCondition(): Boolean {
+    internal fun checkCondition(): Boolean {
         return enter && entered()
             || exit && exited()
             || dwellInside && loiteringInside

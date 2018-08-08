@@ -7,23 +7,16 @@ import android.util.Log
  * @return List<bssid, rssi, ssid, ip, networkId>
  */
 fun deSerializeWifi(wifiNames: String): List<WifiInfo> {
-    val wifis = wifiNames.replace("[", "", false).replace("]", "", false).split(",")
-    wifis.toMutableList().remove("null")
+    val wifis = wifiNames.replace("[", "", false).replace("]", "", false).split(",").toMutableList()
+    wifis.remove("null")
     return wifis.map {
         try {
             val values = it.split(";")
             WifiInfo(values[0],
-                                                                            values[1].toInt(),
-                                                                            values[2],
-                                                                            values[3],
-                                                                            values[4].toInt())
+                     values[1].toInt(), values[2], values[3], values[4].toInt())
         } catch (e: Exception) {
             Log.e("wifi deserilaisation", e.toString())
-            WifiInfo("null",
-                                                                            -100,
-                                                                            "null",
-                                                                            "null",
-                                                                            -1)
+            WifiInfo("null", -100, "null", "null", -1)
         }
     }
 }
@@ -43,14 +36,27 @@ fun serializeWifi(scanResults: List<ScanResult>,
         }
     }.toString()
 
+fun serializeWifi(wifiInfo: List<WifiInfo>): String = wifiInfo.map { serializeWifi(it) }.toString()
 
 fun serializeWifi(wifiInfo: WifiInfo): String =
     "[${wifiInfo.BSSID};${wifiInfo.rssi};${wifiInfo.SSID};${wifiInfo.IP};${wifiInfo.networkId}]"
 
 
-data class WifiInfo(val BSSID: String, val rssi: Int, val SSID: String, val IP:
-String, val networkId: Int) {
-    constructor(scanResult: ScanResult) : this(scanResult.BSSID, scanResult.level, scanResult
-        .SSID, "0.0.0.0", -1)
+data class WifiInfo(val BSSID: String,
+                    val rssi: Int,
+                    val SSID: String,
+                    val IP: String,
+                    val networkId: Int) {
+    constructor(scanResult: ScanResult) : this(scanResult.BSSID,
+                                               scanResult.level,
+                                               scanResult.SSID,
+                                               "0.0.0.0",
+                                               -1)
+
+    constructor(wifiInfo: android.net.wifi.WifiInfo) : this(wifiInfo.bssid,
+                                                            wifiInfo.rssi,
+                                                            wifiInfo.ssid,
+                                                            wifiInfo.ipAddress.toString(),
+                                                            wifiInfo.networkId)
 }
 

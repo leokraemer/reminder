@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Leo on 16.11.2017.
  */
-class GeofenceTrigger() : Trigger {
+open class GeofenceTrigger() : Trigger {
     override fun reset() {
         state = 0
     }
@@ -26,14 +26,13 @@ class GeofenceTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         //only one location -> no state checks necessary
         if (locations.size == 1) {
-            val stateChanged = locations[0].update(sensorData.gps!!, sensorData.time)
-            return stateChanged && locations[0].checkCondition()
+            return locations[0].updateAndCheck(sensorData.gps!!, sensorData.time)
         }
 
+        //########################currently unused code, because paths are not enabled
         var currentGeofence: Int = -1
         for (i in 0 until locations.size) {
-            val stateChanged = locations[i].update(sensorData.gps!!, sensorData.time)
-            if (stateChanged && locations[i].checkCondition())
+            if (locations[i].updateAndCheck(sensorData.gps!!, sensorData.time))
                 currentGeofence = i
         }
         //not inside a geofence -> dont update timeout

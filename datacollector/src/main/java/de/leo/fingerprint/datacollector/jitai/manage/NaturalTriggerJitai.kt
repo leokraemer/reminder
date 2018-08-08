@@ -7,37 +7,48 @@ import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
+import de.leo.fingerprint.datacollector.jitai.WifiTrigger
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 
 class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTriggerModel) : Jitai
                                                                                             (context) {
+
+    val wifiTrigger: WifiTrigger?
 
     init {
         goal = naturalTriggerModel.goal
         message = naturalTriggerModel.message
         timeTrigger = TimeTrigger(naturalTriggerModel.beginTime.rangeTo(naturalTriggerModel.endTime),
                                   TimeTrigger.ALL_DAYS)
-        geofenceTrigger = naturalTriggerModel.geofence?.let { GeofenceTrigger(listOf(it)) }
-        activitTrigger = naturalTriggerModel.activity?.map {
+        geofenceTrigger = naturalTriggerModel.geofence?.let {
+            if (it != everywhere_geofence())
+                GeofenceTrigger(listOf(it))
+            else null
+        }
+        wifiTrigger = naturalTriggerModel.wifi?.let { WifiTrigger(it) }
+        activitTrigger = naturalTriggerModel.activity.map {
             ActivityTrigger(DetectedActivity(it, 0), naturalTriggerModel.timeInActivity)
         }
     }
 
     override fun check(sensorData: SensorDataSet) {
         Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
-        if ((timeTrigger == null || timeTrigger!!.check(context, sensorData))) {
-            if (geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData)) {
-                if (weatherTrigger == null || weatherTrigger!!.check(context, sensorData)) {
-                    if (activitTrigger == null || activitTrigger!!.isEmpty()
-                        || activitTrigger!!.any { it.check(context, sensorData) }) {
-                        postNotification(id, sensorData.time, goal, message, sensorData.id)
-                        geofenceTrigger?.reset()
-                        activitTrigger?.forEach { it.reset() }
-                    } else {
-                        //removeNotification(id, sensorData.time, sensorData.id)
-                    }
-                }
-            }
+        //update all triggers to trigger as early as possible
+        val activityTriggered = activitTrigger == null || activitTrigger!!.isEmpty()
+            || activitTrigger!!.any { it.check(context, sensorData) }
+        val geofenceTriggered =
+            geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData)
+        val wifiTriggered = wifiTrigger == null || wifiTrigger.check(context, sensorData)
+        val weatherTriggered = weatherTrigger == null || weatherTrigger!!.check(context, sensorData)
+        val timeTriggered = timeTrigger == null || timeTrigger!!.check(context, sensorData)
+
+        if (activityTriggered && geofenceTriggered && wifiTriggered && weatherTriggered && timeTriggered) {
+            postNotification(id, sensorData.time, goal, message, sensorData.id)
+            geofenceTrigger?.reset()
+            activitTrigger?.forEach { it.reset() }
+        } else {
+            //removeNotification(id, sensorData.time, sensorData.id)
         }
     }
 }
