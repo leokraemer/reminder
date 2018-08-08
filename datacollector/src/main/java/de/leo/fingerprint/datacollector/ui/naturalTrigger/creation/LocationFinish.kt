@@ -120,14 +120,15 @@ class LocationFinish : NaturalTriggerFragment() {
 
 
     override fun updateView() {
-        enterButton?.isChecked = model?.geofence?.enter ?: false
-        exitButton?.isChecked = model?.geofence?.exit ?: false
-        enterButton?.isEnabled = model?.geofence?.name != EVERYWHERE
-        exitButton?.isEnabled = model?.geofence?.name != EVERYWHERE
-        inside?.isChecked = model?.geofence?.dwellInside ?: false
-        outside?.isChecked = model?.geofence?.dwellOutside ?: false
-        if (model?.geofence?.dwellInside == true || model?.geofence?.dwellOutside == true) {
-            if (model?.geofence?.dwellInside == true)
+        val geofence = model?.wifi ?: model?.geofence
+        enterButton?.isChecked = geofence?.enter ?: false
+        exitButton?.isChecked = geofence?.exit ?: false
+        enterButton?.isEnabled = geofence?.name != EVERYWHERE
+        exitButton?.isEnabled = geofence?.name != EVERYWHERE
+        inside?.isChecked = geofence?.dwellInside ?: false
+        outside?.isChecked = geofence?.dwellOutside ?: false
+        if (geofence?.dwellInside == true || geofence?.dwellOutside == true) {
+            if (geofence.dwellInside == true)
                 inside?.isChecked = true
             else
                 outside?.isChecked = true
@@ -135,11 +136,11 @@ class LocationFinish : NaturalTriggerFragment() {
             fiveteenminutes?.isEnabled = true
             thirtyminutes?.isEnabled = true
             moreminutes?.isEnabled = true
-            fiveminutes?.isChecked = model!!.geofence!!.loiteringDelay.toLong() ==
+            fiveminutes?.isChecked = geofence.loiteringDelay ==
                 TimeUnit.MINUTES.toMillis(5)
-            fiveteenminutes?.isChecked = model!!.geofence!!.loiteringDelay.toLong() ==
+            fiveteenminutes?.isChecked = geofence.loiteringDelay ==
                 TimeUnit.MINUTES.toMillis(15)
-            thirtyminutes?.isChecked = model!!.geofence!!.loiteringDelay.toLong() ==
+            thirtyminutes?.isChecked = geofence.loiteringDelay ==
                 TimeUnit.MINUTES.toMillis(30)
             moreminutes?.isChecked =
                 !fiveminutes.isChecked &&

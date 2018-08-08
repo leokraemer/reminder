@@ -38,7 +38,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1013
+const val DATABASE_VERSION = 1014
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -149,7 +149,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
             execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
-            execSQL("DROP TABLE IF EXISTS $CREATE_TABLE_WIFI_GEOFENCE")
+            execSQL("DROP TABLE IF EXISTS $TABLE_WIFI_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
             execSQL("DROP TABLE IF EXISTS $TABLE_NATURAL_TRIGGER")

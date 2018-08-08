@@ -310,7 +310,11 @@ class DataCollectorService : Service(),
             }
         }
         if (currentWifis.isEmpty()) {
-            currentWifiInfo = wifiInfo?.let { listOf(WifiInfo(wifiInfo)) }
+            currentWifiInfo = wifiInfo?.let {
+                if (wifiInfo.bssid != null)
+                    listOf(WifiInfo(wifiInfo))
+                else null
+            }
         }
     }
 

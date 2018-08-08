@@ -31,7 +31,7 @@ class MyWifiGeofence(id: Int = -1,
         this.bssid == bssid && this.rssi <= rssi
 
     fun copy(id: Int = this.id,
-             name: String = LocationSelection.WIFI,
+             name: String = this.name,
              bssid: String = this.bssid,
              rssi: Int = this.rssi,
              enter: Boolean = this.enter,

@@ -3,6 +3,7 @@ package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -193,11 +194,12 @@ class CreateTriggerActivity : GeofenceDialogListener,
      */
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) :
         FragmentStatePagerAdapter(fm) {
-        private val showGeofenceDwellTimeSelection = (model.geofence?.name != EVERYWHERE
-            && (model.geofence?.dwellOutside == true || model.geofence?.dwellInside == true))
+        private fun showGeofenceDwellTimeSelection(): Boolean {
+            return true
+        }
 
         override fun getItem(position: Int): Fragment =
-            if (showGeofenceDwellTimeSelection)
+            if (showGeofenceDwellTimeSelection())
                 when (position) {
                     0    -> goalSelection
                     1    -> situationSelection
@@ -217,10 +219,33 @@ class CreateTriggerActivity : GeofenceDialogListener,
                 }
 
         override fun getCount(): Int =
-            if (showGeofenceDwellTimeSelection)
+            if (showGeofenceDwellTimeSelection())
                 NUM_PAGES
             else
                 NUM_PAGES - 1
+
+        override fun getItemPosition(item: Any): Int =
+            if (showGeofenceDwellTimeSelection()) {
+                when (item) {
+                    goalSelection      -> 0
+                    situationSelection -> 1
+                    locationSelection  -> 2
+                    locationFinish     -> 3
+                    activitySelection  -> 4
+                    timeSelection      -> 5
+                    else               -> PagerAdapter.POSITION_NONE // error
+                }
+            } else {
+                when (item) {
+                    goalSelection      -> 0
+                    situationSelection -> 1
+                    locationSelection  -> 2
+                    locationFinish     -> PagerAdapter.POSITION_NONE
+                    activitySelection  -> 3
+                    timeSelection      -> 4
+                    else               -> PagerAdapter.POSITION_NONE // error
+                }
+            }
     }
 
     override fun onNoGeofenceSelected() {
@@ -282,10 +307,12 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 geofenceName.setText(geofence!!.name)
                 if (geofence!!.enter)
                     geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2, null))
+                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2,
+                                              null))
                 else if (geofence!!.exit)
                     geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white, null))
+                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white,
+                                              null))
                 else if (geofence!!.dwellInside) {
                     geofenceDirection.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_inside_white, null))
@@ -300,6 +327,37 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 } else {
                     spendTimeGeofence.visibility = View.GONE
                 }
+            } else if (wifi != null) {
+                if (wifi!!.imageResId > -1)
+                    geofenceIcon.setImageDrawable(
+                        resources.obtainTypedArray(R.array.geofence_icons)
+                            .getDrawable(wifi!!.imageResId))
+                else
+                    geofenceIcon.setImageDrawable(null)
+                geofenceName.setText(wifi!!.name)
+                if (wifi!!.enter)
+                    geofenceDirection.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2,
+                                              null))
+                else if (wifi!!.exit)
+                    geofenceDirection.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white,
+                                              null))
+                else if (wifi!!.dwellInside) {
+                    geofenceDirection.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_inside_white, null))
+                } else if (wifi!!.dwellOutside) {
+                    geofenceDirection.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_outside7_white, null))
+                }
+                if (wifi!!.dwellInside || wifi!!.dwellOutside) {
+                    spendTimeGeofence.visibility = View.VISIBLE
+                    spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
+                        .toMinutes(wifi!!.loiteringDelay.toLong())}"
+                } else {
+                    spendTimeGeofence.visibility = View.GONE
+                }
+
             } else {
                 geofenceIcon.setImageResource(R.drawable.ic_public_white_48dp)
                 geofenceDirection.setImageDrawable(null)
