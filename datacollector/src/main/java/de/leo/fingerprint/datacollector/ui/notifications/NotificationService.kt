@@ -7,20 +7,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
+import android.media.RingtoneManager
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.toast
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
-import android.media.RingtoneManager
-import com.google.android.gms.fitness.data.Goal
 
 
 /**

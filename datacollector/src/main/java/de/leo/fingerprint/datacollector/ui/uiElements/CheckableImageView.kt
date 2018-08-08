@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.ui.uiElements
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.View

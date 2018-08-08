@@ -1,21 +1,13 @@
 package de.leo.fingerprint.datacollector.jitai.manage
 
-import android.content.Context
-import android.os.Environment
-import android.util.Log
-import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.jitai.JitaiEvent
-import de.leo.fingerprint.datacollector.jitai.activityDetection.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
 //import weka.classifiers.Classifier
 //import weka.classifiers.Evaluation
 //import weka.classifiers.functions.LibSVM
 //import weka.classifiers.meta.AttributeSelectedClassifier
 //import weka.classifiers.meta.Bagging
 //import weka.core.converters.ArffSaver
-import java.io.File
-import java.util.*
+import android.content.Context
+import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 
 class MachineLearningJitai(context: Context) : Jitai(context) {
     companion object {

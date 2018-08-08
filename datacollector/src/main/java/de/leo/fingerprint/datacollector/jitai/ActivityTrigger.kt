@@ -2,8 +2,6 @@ package de.leo.fingerprint.datacollector.jitai;
 
 import android.content.Context
 import com.google.android.gms.location.DetectedActivity
-import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
-import de.leo.fingerprint.datacollector.datacollection.database.TABLE_REALTIME_AIR
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 
 /**

@@ -14,13 +14,13 @@ import android.view.View;
 
 import de.leo.fingerprint.datacollector.R;
 import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity;
-import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity;
 import de.leo.fingerprint.datacollector.ui.DailyRoutines.MapsActivity;
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity;
 import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingActivity;
 import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingsListActivity;
 import de.leo.fingerprint.datacollector.ui.compare.CompareActivity;
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity;
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity;
 import de.leo.fingerprint.datacollector.utils.PermissionUtils;
 
 import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService.CHANNEL;

@@ -8,11 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import de.leo.fingerprint.datacollector.R
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
 import kotlinx.android.synthetic.main.fragment_situation.*
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.view.inputmethod.InputMethodManager
 
 
 /**

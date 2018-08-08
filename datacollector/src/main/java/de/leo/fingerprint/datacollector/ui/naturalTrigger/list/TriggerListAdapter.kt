@@ -7,20 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CursorAdapter
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.datacollection.database.*
+import de.leo.fingerprint.datacollector.datacollection.database.ID
+import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
+import de.leo.fingerprint.datacollector.datacollection.database.NATURAL_TRIGGER_ACTIVE
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.EDIT
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.EDIT_COPY
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.NATURALTRIGGER_ID
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
-import kotlinx.android.synthetic.main.activity_navigation.view.*
 import kotlinx.android.synthetic.main.trigger_list_element.view.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onLongClick
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.yesButton
+import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk25.coroutines.onLongClick
 
 
 /**

@@ -3,16 +3,13 @@ package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import de.leo.fingerprint.datacollector.R
-import kotlinx.android.synthetic.main.fragment_goal.*
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-import android.widget.TextView.OnEditorActionListener
+import de.leo.fingerprint.datacollector.R
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
+import kotlinx.android.synthetic.main.fragment_goal.*
 
 /**
  * Created by Leo on 06.03.2018.

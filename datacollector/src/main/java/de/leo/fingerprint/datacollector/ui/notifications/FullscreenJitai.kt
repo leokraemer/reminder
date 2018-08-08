@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.ui.notifications
 
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
