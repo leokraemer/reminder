@@ -24,6 +24,8 @@ import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingAc
 import de.leo.fingerprint.datacollector.utils.PermissionUtils;
 
 import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService.CHANNEL;
+import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService
+        .FOREGROUND_CHANNEL;
 
 public class NavigationActivity extends AppCompatActivity {
 
@@ -48,6 +50,19 @@ public class NavigationActivity extends AppCompatActivity {
             String description = getString(R.string.channel_description);
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(CHANNEL, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+        //foreground
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.foreground_channel_name);
+            String description = getString(R.string.foreground_channel_description);
+            int importance = NotificationManager.IMPORTANCE_MIN;
+            NotificationChannel channel = new NotificationChannel(FOREGROUND_CHANNEL, name,
+                    importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

@@ -26,6 +26,7 @@ abstract class Jitai(val context: Context) {
         const val NOTIFICATION_FAIL = 4
         //sooze for 15 minutes
         const val NOTIFICATION_SNOOZE = 12
+        const val NOTIFICATION_SNOOZE_FINISHED = 13
         //"The_notification_timed_out_(conditions_not_met_any_more)"
         const val NOTIFICATION_NOT_VALID_ANY_MORE = 5
         //notification not sent not to bud the user

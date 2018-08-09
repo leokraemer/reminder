@@ -21,6 +21,7 @@ import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelec
 import de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
 import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
+import kotlinx.android.synthetic.main.jitai_list_element.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
 import kotlinx.android.synthetic.main.naturaltriggerview.view.*
 import org.jetbrains.anko.intentFor
@@ -128,9 +129,15 @@ class CreateTriggerActivity : GeofenceDialogListener,
         modelChangedCallback()
     }
 
+    var geofenceUndefinedBefore = true
+
     override fun modelChangedCallback() {
+        //notifyDatasetChanged only when the geofence changed fron defined to undefined or otherwise
+        if (!(geofenceUndefinedBefore xor (model?.geofence?.name == EVERYWHERE))) {
+            pagerAdapter?.notifyDataSetChanged()
+            geofenceUndefinedBefore = model?.geofence?.name == EVERYWHERE
+        }
         updateNaturalTriggerReminderCardView(model, reminder_card)
-        pagerAdapter?.notifyDataSetChanged()
         //enable/disable view paging
         if (lockableViewPager!!.currentItem == 0
             && (model.goal.isNullOrEmpty() || model.message.isNullOrEmpty())) {
@@ -285,6 +292,8 @@ class CreateTriggerActivity : GeofenceDialogListener,
     override fun onNoWifiSelected() {
         model.wifi = null
     }
+
+
 }
 
 private const val sitIcon = R.drawable.ic_airline_seat_recline_normal_white_48dp

@@ -29,6 +29,7 @@ import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.ui.activityRecording.RECORDING_ID
 import de.leo.fingerprint.datacollector.ui.application.DataCollectorApplication
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
+import de.leo.fingerprint.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
 import de.leo.fingerprint.datacollector.utils.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
@@ -58,7 +59,7 @@ class DataCollectorService : Service(),
         val notificationID = 1001
         private val updatesPerSecond = 5
 
-        private val useGooglePlaces = true
+        private val useGooglePlaces = false
     }
 
     private val numberOfSamples: Int = TimeUnit.MINUTES.toSeconds(5).toInt() *
@@ -502,7 +503,7 @@ class DataCollectorService : Service(),
     }
 
     fun startNotification() {
-        val mNotifyBuilder = NotificationCompat.Builder(this)
+        val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
             .setContentTitle("Smart Reminder")
             .setAutoCancel(false)
             .setOngoing(true)

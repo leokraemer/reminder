@@ -30,10 +30,11 @@ class NotificationService : IntentService("NotificationIntentService") {
         const val TRIGGERNOTIFICATIONIDMODIFYER = 4711
         private val TIMEOUT = TimeUnit.SECONDS.toMillis(5)
         private val TIMEOUT_LONG = TimeUnit.MINUTES.toMillis(1)
-        private val TIMEOUT_SNOOZE = TimeUnit.MINUTES.toMillis(15)
+        private val TIMEOUT_SNOOZE = TimeUnit.SECONDS.toMillis(15)
         private const val TAG = "notification service"
         private val notificationStore: HashMap<Int, Long> = hashMapOf()
         const val CHANNEL = "naturalTriggerReminder"
+        const val FOREGROUND_CHANNEL = "naturalTriggerReminderForegroundSerciveChannel"
     }
 
     private val jitaiDatabase: JitaiDatabase by lazy { JitaiDatabase.getInstance(applicationContext) }
@@ -48,6 +49,11 @@ class NotificationService : IntentService("NotificationIntentService") {
             when (event) {
             //already in db
                 Jitai.CONDITION_MET                   -> {
+                    naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
+                    naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
+                    Log.d(TAG, "start  $sensorDataId")
+                }
+                Jitai.NOTIFICATION_SNOOZE_FINISHED    -> {
                     naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
                     naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
                     Log.d(TAG, "start  $sensorDataId")
@@ -89,7 +95,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     //set alarm to re-post notification in 15 minutes
                     val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     val intent = applicationContext.intentFor<NotificationService>(
-                        JITAI_EVENT to Jitai.NOTIFICATION_SNOOZE,
+                        JITAI_EVENT to Jitai.CONDITION_MET,
                         JITAI_ID to jitaiId,
                         JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
                         JITAI_GOAL to goal,
@@ -97,7 +103,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     val pendingIntent = PendingIntent.getService(applicationContext,
                                                                  12356,
                                                                  intent,
-                                                                 0)
+                                                                 PendingIntent.FLAG_UPDATE_CURRENT)
                     am.set(AlarmManager.RTC,
                            System.currentTimeMillis() + TIMEOUT_SNOOZE,
                            pendingIntent)
@@ -229,7 +235,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                ZoneId.systemDefault())
             val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             //notification on default channel to get the priority_max for the heads up notification
-            val mNotifyBuilder = NotificationCompat.Builder(this)
+            val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
                 .setContentTitle("${time.format(DateTimeFormatter.ofPattern("HH:mm:ss"))}: " +
                                      "$goal")
                 .setAutoCancel(true)
@@ -254,15 +260,16 @@ class NotificationService : IntentService("NotificationIntentService") {
             JITAI_EVENT to Jitai.NOTIFICATION_FAIL, JITAI_ID to id,
             JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fail")
 
-    private fun fullScreenIntent(id: Int, sensorDataId: Long, goal: String, message: String):
-        Intent =
-        applicationContext
-            .intentFor<FullscreenJitai>(
-                JITAI_EVENT to Jitai.NOTIFICATION_FULL_SCREEN,
-                JITAI_ID to id,
-                JITAI_GOAL to goal,
-                JITAI_MESSAGE to message,
-                JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
+    private fun fullScreenIntent(id: Int,
+                                 sensorDataId: Long,
+                                 goal: String,
+                                 message: String): Intent =
+        applicationContext.intentFor<FullscreenJitai>(
+            JITAI_EVENT to Jitai.NOTIFICATION_FULL_SCREEN,
+            JITAI_ID to id,
+            JITAI_GOAL to goal,
+            JITAI_MESSAGE to message,
+            JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
             .setAction("jitai_fullscreen").setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
     private fun tooFrequentIntent(id: Int, sensorDataId: Long): Intent =
