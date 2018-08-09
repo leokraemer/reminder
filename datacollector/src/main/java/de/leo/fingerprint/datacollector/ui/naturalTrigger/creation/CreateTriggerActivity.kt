@@ -195,7 +195,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) :
         FragmentStatePagerAdapter(fm) {
         private fun showGeofenceDwellTimeSelection(): Boolean {
-            return true
+            return model.geofence?.name != EVERYWHERE
         }
 
         override fun getItem(position: Int): Fragment =
@@ -224,7 +224,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
             else
                 NUM_PAGES - 1
 
-        override fun getItemPosition(item: Any): Int =
+        override fun getItemPosition(item: Any): Int = PagerAdapter.POSITION_NONE/*
             if (showGeofenceDwellTimeSelection()) {
                 when (item) {
                     goalSelection      -> 0
@@ -245,7 +245,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     timeSelection      -> 4
                     else               -> PagerAdapter.POSITION_NONE // error
                 }
-            }
+            }*/
     }
 
     override fun onNoGeofenceSelected() {
