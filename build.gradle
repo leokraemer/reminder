@@ -2,7 +2,7 @@
 
 buildscript {
     ext.lifecycle_version = "2.0.0-beta01"
-    ext.kotlin_version = '1.2.51'
+    ext.kotlin_version = '1.2.60'
     ext.rxkotlin_version = '2.1.0'
     ext.rxandroid_version = '2.0.1'
     ext.anko_version = '0.10.5'
