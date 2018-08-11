@@ -57,6 +57,15 @@ android {
 }
 
 dependencies {
+
+
+    configurations.all {
+        resolutionStrategy {
+            force "com.android.support:support-annotations:$support_version"
+        }
+    }
+
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin
@@ -124,15 +133,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    androidTestImplementation 'com.android.support:support-annotations:24.0.0'
-    androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'com.android.support.test:rules:0.5'
+    androidTestImplementation "com.android.support:support-annotations:$support_version"
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 
     // Optional -- Hamcrest library
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 
     // Optional -- UI testing with Espresso
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     // Optional -- UI testing with UI Automator
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
