@@ -38,7 +38,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1014
+const val DATABASE_VERSION = 1015
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,

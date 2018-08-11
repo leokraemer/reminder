@@ -28,7 +28,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
     lateinit var db: JitaiDatabase
     var geofenceID: Int = -1
 
-    var geofenceIcon = -1
+    var geofenceIcon = 2
 
     private var geofenceName = ""
         set(value) {
@@ -55,7 +55,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.geofence_activity_main)
-        geofenceIcon = intent.getIntExtra(GEOFENCE_IMAGE, -1)
+        geofenceIcon = intent.getIntExtra(GEOFENCE_IMAGE, 2)
         db = JitaiDatabase.getInstance(this)
         val intent = getIntent()
         //get geofenceId from intent or get new geofenceId

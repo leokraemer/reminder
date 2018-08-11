@@ -118,13 +118,12 @@ class LocationSelection : NaturalTriggerFragment() {
                         workGeofenceButton?.isChecked = true
                     } else if (wifi != null) {
                         wifiGeofenceButton?.isChecked = true
+                    } else if (geofence?.name == EVERYWHERE) {
+                        worldGeofenceButton?.isChecked = true
                     } else {
                         listGeofenceButton?.isChecked = true
                     }
-                } else {
-                    worldGeofenceButton?.isChecked = true
                 }
-
             }
         }
     }
@@ -135,10 +134,8 @@ class LocationSelection : NaturalTriggerFragment() {
         if (homeGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, HOME_NAME)
-            intent.putExtra(GEOFENCE_IMAGE,
-                            HOME_CODE)
-            startActivityForResult(intent,
-                                   HOME_CODE)
+            intent.putExtra(GEOFENCE_IMAGE, HOME_CODE)
+            startActivityForResult(intent, HOME_CODE)
         } else
             model!!.geofence = homeGeofence
     }
@@ -149,10 +146,8 @@ class LocationSelection : NaturalTriggerFragment() {
         if (workGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, WORK_NAME)
-            intent.putExtra(GEOFENCE_IMAGE,
-                            WORK_CODE)
-            startActivityForResult(intent,
-                                   WORK_CODE)
+            intent.putExtra(GEOFENCE_IMAGE, WORK_CODE)
+            startActivityForResult(intent, WORK_CODE)
         } else
             model!!.geofence = workGeofence
     }
@@ -161,10 +156,8 @@ class LocationSelection : NaturalTriggerFragment() {
         uncheckAll()
         worldGeofenceButton.isChecked = true
         val intent = intentFor<GeofenceMapActivity>()
-        intent.putExtra(GEOFENCE_IMAGE,
-                        CREATE_CODE)
-        startActivityForResult(intent,
-                               CREATE_CODE)
+        intent.putExtra(GEOFENCE_IMAGE, CREATE_CODE)
+        startActivityForResult(intent, CREATE_CODE)
 
     }
 
@@ -198,27 +191,16 @@ class LocationSelection : NaturalTriggerFragment() {
 
         //this geofence interprets every check as true
         fun everywhere_geofence() = MyGeofence(-1,
-                                             Companion.EVERYWHERE,
-                                             0.0,
-                                             0.0,
-                                             Float.MAX_VALUE,
-                                             false,
-                                             false,
-                                             true,
-                                             false,
-                                             0,
-                                             WORLD_CODE)
-        fun wifi_geofence() = MyGeofence(-1,
-                                       Companion.WIFI,
-                                       0.0,
-                                       0.0,
-                                       Float.MAX_VALUE,
-                                       false,
-                                       false,
-                                       true,
-                                       false,
-                                       0,
-                                       WIFI_CODE)
+                                               Companion.EVERYWHERE,
+                                               0.0,
+                                               0.0,
+                                               Float.MAX_VALUE,
+                                               false,
+                                               false,
+                                               true,
+                                               false,
+                                               0,
+                                               WORLD_CODE)
     }
 
 }

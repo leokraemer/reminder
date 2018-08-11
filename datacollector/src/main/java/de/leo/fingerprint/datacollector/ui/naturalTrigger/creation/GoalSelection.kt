@@ -34,7 +34,7 @@ class GoalSelection : NaturalTriggerFragment() {
 
             override fun afterTextChanged(s: Editable) {}
         })
-        reminder_edittext.addTextChangedListener(object : TextWatcher {
+        message_edittext.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -48,13 +48,13 @@ class GoalSelection : NaturalTriggerFragment() {
         goal_edittext.setOnEditorActionListener { v, actionId, event ->
             var handled = false
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                reminder_edittext.requestFocus()
+                message_edittext.requestFocus()
                 handled = true
             }
             handled
         }
 
-        reminder_edittext.setOnEditorActionListener { v, actionId, event ->
+        message_edittext.setOnEditorActionListener { v, actionId, event ->
             var handled = false
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 activity?.next_page?.performClick()
@@ -67,7 +67,7 @@ class GoalSelection : NaturalTriggerFragment() {
     override fun updateView() {
         if (model?.goal != goal_edittext?.text.toString())
             goal_edittext?.setText(model?.goal ?: "")
-        if (model?.message != reminder_edittext?.text.toString())
-            reminder_edittext?.setText(model?.message ?: "")
+        if (model?.message != message_edittext?.text.toString())
+            message_edittext?.setText(model?.message ?: "")
     }
 }

@@ -129,20 +129,20 @@ class CreateTriggerActivity : GeofenceDialogListener,
         modelChangedCallback()
     }
 
-    var geofenceUndefinedBefore = true
+    var geofenceUndefinedBefore = NUM_PAGES
 
     override fun modelChangedCallback() {
         //notifyDatasetChanged only when the geofence changed fron defined to undefined or otherwise
-        if (!(geofenceUndefinedBefore xor (model?.geofence?.name == EVERYWHERE))) {
+        if (geofenceUndefinedBefore != pagerAdapter?.count) {
             pagerAdapter?.notifyDataSetChanged()
-            geofenceUndefinedBefore = model?.geofence?.name == EVERYWHERE
+            geofenceUndefinedBefore = pagerAdapter?.count ?: NUM_PAGES
         }
         updateNaturalTriggerReminderCardView(model, reminder_card)
         //enable/disable view paging
         if (lockableViewPager!!.currentItem == 0
-            && (model.goal.isNullOrEmpty() || model.message.isNullOrEmpty())) {
+            && (model.goal.isEmpty() || model.message.isEmpty())) {
             lockableViewPager?.setPagingEnabled(false)
-        } else if (lockableViewPager!!.currentItem == 1 && model.situation.isNullOrEmpty()) {
+        } else if (lockableViewPager!!.currentItem == 1 && model.situation.isEmpty()) {
             lockableViewPager!!.setPagingEnabled(false)
         } else {
             lockableViewPager?.setPagingEnabled(true)
@@ -293,7 +293,10 @@ class CreateTriggerActivity : GeofenceDialogListener,
         model.wifi = null
     }
 
-
+    override fun onStart() {
+        super.onStart()
+        pagerAdapter?.notifyDataSetChanged()
+    }
 }
 
 private const val sitIcon = R.drawable.ic_airline_seat_recline_normal_white_48dp
