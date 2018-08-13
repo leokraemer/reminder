@@ -13,11 +13,14 @@ import android.util.Log
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import org.jetbrains.anko.intentFor
 import org.threeten.bp.Instant
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.LocalTime
 import java.util.concurrent.TimeUnit
 
 
@@ -27,14 +30,17 @@ import java.util.concurrent.TimeUnit
 class NotificationService : IntentService("NotificationIntentService") {
     companion object {
         const val NOTIFICATIONIDMODIFYER = 19921
+        const val DAILY_REMINDER_REQUEST_CODE = 19034
         const val TRIGGERNOTIFICATIONIDMODIFYER = 4711
         private val TIMEOUT = TimeUnit.SECONDS.toMillis(5)
         private val TIMEOUT_LONG = TimeUnit.MINUTES.toMillis(1)
-        private val TIMEOUT_SNOOZE = TimeUnit.SECONDS.toMillis(15)
+        private val TIMEOUT_SNOOZE = TimeUnit.MINUTES.toMillis(15)
         private const val TAG = "notification service"
         private val notificationStore: HashMap<Int, Long> = hashMapOf()
         const val CHANNEL = "naturalTriggerReminder"
         const val FOREGROUND_CHANNEL = "naturalTriggerReminderForegroundSerciveChannel"
+        const val SET_DAILY_REMINDER = "dailyReminder"
+        const val PUSH_DAILY_REMINDER_TO_USER = "dailyReminderToUser"
     }
 
     private val jitaiDatabase: JitaiDatabase by lazy { JitaiDatabase.getInstance(applicationContext) }
@@ -45,9 +51,31 @@ class NotificationService : IntentService("NotificationIntentService") {
         val message = intent?.getStringExtra(JITAI_MESSAGE) ?: ""
         val jitaiId = intent?.getIntExtra(JITAI_ID, -1) ?: -1
         val sensorDataId = intent?.getLongExtra(JITAI_EVENT_SENSORDATASET_ID, -1) ?: -1L
+        when (intent?.action) {
+            PUSH_DAILY_REMINDER_TO_USER -> dailyReminderNotification()
+            SET_DAILY_REMINDER          -> {
+                val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                val intent = applicationContext.intentFor<NotificationService>()
+                intent.action = PUSH_DAILY_REMINDER_TO_USER
+                val pendingIntent = PendingIntent.getService(
+                    applicationContext,
+                    DAILY_REMINDER_REQUEST_CODE,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+                val date = LocalDate.now()
+                //wake up tomorrow at 5:00 am
+                date.plusDays(1)
+                val time = LocalTime.of(5, 0)
+                val dateTime = LocalDateTime.of(date, time)
+                    .atZone(ZoneId.systemDefault())
+                am.set(AlarmManager.RTC_WAKEUP,
+                       dateTime.toEpochSecond(),
+                       pendingIntent)
+            }
+        }
         if (event > 0) {
             when (event) {
-            //already in db
+                //already in db
                 Jitai.CONDITION_MET                   -> {
                     naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
                     naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
@@ -58,7 +86,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
                     Log.d(TAG, "start  $sensorDataId")
                 }
-            //already in db
+                //already in db
                 Jitai.NOTIFICATION_NOT_VALID_ANY_MORE -> {
                     cancelNotification(jitaiId)
                     Log.d(TAG, "not valid $sensorDataId")
@@ -104,9 +132,9 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                                  12356,
                                                                  intent,
                                                                  PendingIntent.FLAG_UPDATE_CURRENT)
-                    am.set(AlarmManager.RTC,
-                           System.currentTimeMillis() + TIMEOUT_SNOOZE,
-                           pendingIntent)
+                    am.setExact(AlarmManager.RTC,
+                                System.currentTimeMillis() + TIMEOUT_SNOOZE,
+                                pendingIntent)
                 }
                 Jitai.NOTIFICATION_SUCCESS            -> {
                     Log.d(TAG, "success $sensorDataId")
@@ -116,7 +144,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                                                   Jitai.NOTIFICATION_SUCCESS, sensorDataId)
                 }
 
-            //trigger notifications
+                //trigger notifications
                 Jitai.NOTIFICATION_TRIGGER            -> {
                     Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
                         "situation")
@@ -245,9 +273,31 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setSound(alarmSound)
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
-                .setSmallIcon(R.drawable.fp_s)
+                .setSmallIcon(R.drawable.reminder_white)
             mNotificationManager.notify(NOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
         }
+    }
+
+    fun dailyReminderNotification() {
+        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        //notification on default channel to get the priority_max for the heads up notification
+        val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
+            .setContentTitle("Morgentliche Erinnerung")
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setWhen(0)
+            .setSound(alarmSound)
+            .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
+            .setContentText("Setzen si sich ihr Ziel für heute")
+            .setSmallIcon(R.drawable.reminder_white)
+            .setContentIntent(PendingIntent.getActivity(this,
+                                                        DAILY_REMINDER_REQUEST_CODE,
+                                                        createIntent(),
+                                                        PendingIntent.FLAG_UPDATE_CURRENT))
+        mNotificationManager.notify(NOTIFICATIONIDMODIFYER + DAILY_REMINDER_REQUEST_CODE,
+                                    mNotifyBuilder.build())
     }
 
     fun cancelTriggerNotification(id: Int) {
@@ -259,6 +309,9 @@ class NotificationService : IntentService("NotificationIntentService") {
         applicationContext.intentFor<NotificationService>(
             JITAI_EVENT to Jitai.NOTIFICATION_FAIL, JITAI_ID to id,
             JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fail")
+
+    private fun createIntent(): Intent =
+        applicationContext.intentFor<CreateTriggerActivity>().setAction("create")
 
     private fun fullScreenIntent(id: Int,
                                  sensorDataId: Long,

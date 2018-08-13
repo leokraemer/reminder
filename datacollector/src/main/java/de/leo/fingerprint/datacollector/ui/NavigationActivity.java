@@ -21,11 +21,14 @@ import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingsListActiv
 import de.leo.fingerprint.datacollector.ui.compare.CompareActivity;
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity;
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity;
+import de.leo.fingerprint.datacollector.ui.notifications.NotificationService;
 import de.leo.fingerprint.datacollector.utils.PermissionUtils;
 
 import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService.CHANNEL;
 import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService
         .FOREGROUND_CHANNEL;
+import static de.leo.fingerprint.datacollector.ui.notifications.NotificationService
+        .SET_DAILY_REMINDER;
 
 public class NavigationActivity extends AppCompatActivity {
 
@@ -40,6 +43,13 @@ public class NavigationActivity extends AppCompatActivity {
         checkPermission();
         checkPermission();
         createNotificationChannel();
+        postDailyNotifier();
+    }
+
+    private void postDailyNotifier() {
+        Intent intent = new Intent(context, NotificationService.class);
+        intent.setAction(SET_DAILY_REMINDER);
+        startService(intent);
     }
 
     private void createNotificationChannel() {
