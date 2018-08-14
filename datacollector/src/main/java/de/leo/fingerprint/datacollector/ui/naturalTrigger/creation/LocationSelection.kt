@@ -69,37 +69,19 @@ class LocationSelection : NaturalTriggerFragment() {
         if (resultCode == Activity.RESULT_OK) {
             val geofenceId = data?.getIntExtra(ID, -1)
             if (requestCode == HOME_CODE && geofenceId != null) {
-                uncheckAll()
-                homeGeofenceButton.isChecked = true
                 homeGeofence = db.getMyGeofence(geofenceId)
                 model!!.geofence = homeGeofence
             }
             if (requestCode == WORK_CODE && geofenceId != null) {
-                uncheckAll()
-                workGeofenceButton.isChecked = true
                 workGeofence = db.getMyGeofence(geofenceId)
                 model!!.geofence = workGeofence
             }
             if (requestCode == CREATE_CODE && geofenceId != null) {
-                uncheckAll()
-                enterButton.isChecked = true
                 model!!.geofence = db.getMyGeofence(geofenceId)
             }
         } else {
-            uncheckAll()
             toast("Erstellen Abgebrochen")
         }
-    }
-
-    private fun uncheckAll() {
-        homeGeofenceButton.isChecked = false
-        workGeofenceButton.isChecked = false
-        enterButton.isChecked = false
-        worldGeofenceButton.isChecked = false
-        wifiGeofenceButton.isChecked = false
-        shopGeofenceButton.isChecked = false
-        listGeofenceButton.isChecked = false
-        busstopGeofenceButton.isChecked = false
     }
 
     override fun updateView() {
@@ -116,21 +98,20 @@ class LocationSelection : NaturalTriggerFragment() {
                         homeGeofenceButton?.isChecked = true
                     } else if (geofence?.id == workGeofence?.id) {
                         workGeofenceButton?.isChecked = true
-                    } else if (wifi != null) {
-                        wifiGeofenceButton?.isChecked = true
                     } else if (geofence?.name == EVERYWHERE) {
                         worldGeofenceButton?.isChecked = true
                     } else {
                         listGeofenceButton?.isChecked = true
                     }
+                } else if (wifi != null) {
+                    wifiGeofenceButton?.isChecked = true
                 }
             }
         }
     }
 
     fun clickHome() {
-        uncheckAll()
-        homeGeofenceButton.isChecked = true
+        model?.wifi = null
         if (homeGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, HOME_NAME)
@@ -141,8 +122,7 @@ class LocationSelection : NaturalTriggerFragment() {
     }
 
     fun clickWork() {
-        uncheckAll()
-        workGeofenceButton.isChecked = true
+        model?.wifi = null
         if (workGeofence == null) {
             val intent = intentFor<GeofenceMapActivity>()
             intent.putExtra(GEOFENCE_NAME, WORK_NAME)
@@ -153,17 +133,13 @@ class LocationSelection : NaturalTriggerFragment() {
     }
 
     fun clickMap() {
-        uncheckAll()
-        worldGeofenceButton.isChecked = true
         val intent = intentFor<GeofenceMapActivity>()
         intent.putExtra(GEOFENCE_IMAGE, CREATE_CODE)
         startActivityForResult(intent, CREATE_CODE)
-
     }
 
     fun clickWorld() {
-        uncheckAll()
-        worldGeofenceButton.isChecked = true
+        model?.wifi = null
         model!!.geofence = everywhere_geofence()
     }
 

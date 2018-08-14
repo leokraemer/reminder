@@ -15,6 +15,7 @@ import de.leo.fingerprint.datacollector.datacollection.DataCollectorService
 import de.leo.fingerprint.datacollector.datacollection.database.JITAI_ID
 import de.leo.fingerprint.datacollector.datacollection.database.JitaiDatabase
 import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
+import de.leo.fingerprint.datacollector.jitai.MyAbstractGeofence
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
@@ -270,6 +271,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                                        dwellOutside = model.wifi?.dwellOutside == true,
                                        dwellInside = model.wifi?.dwellInside == true,
                                        loiteringDelay = model.wifi?.loiteringDelay ?: 0)
+        model.wifi = null
     }
 
     override fun onWifiSelected(wifi: WifiInfo) {
@@ -287,6 +289,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                                     dwellOutside = model.geofence?.dwellOutside == true,
                                     dwellInside = model.geofence?.dwellInside == true,
                                     loiteringDelay = model.geofence?.loiteringDelay ?: 0)
+        model.geofence = null
     }
 
     override fun onNoWifiSelected() {
@@ -310,66 +313,9 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
         with(naturalTriggerModel) {
             //geofence
             if (geofence != null && geofence?.name != EVERYWHERE) {
-                if (geofence!!.imageResId > -1)
-                    geofenceIcon.setImageDrawable(
-                        resources.obtainTypedArray(R.array.geofence_icons)
-                            .getDrawable(geofence!!.imageResId))
-                else
-                    geofenceIcon.setImageDrawable(null)
-                geofenceName.setText(geofence!!.name)
-                if (geofence!!.enter)
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2,
-                                              null))
-                else if (geofence!!.exit)
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white,
-                                              null))
-                else if (geofence!!.dwellInside) {
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_inside_white, null))
-                } else if (geofence!!.dwellOutside) {
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_outside7_white, null))
-                }
-                if (geofence!!.dwellInside || geofence!!.dwellOutside) {
-                    spendTimeGeofence.visibility = View.VISIBLE
-                    spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
-                        .toMinutes(geofence!!.loiteringDelay.toLong())}"
-                } else {
-                    spendTimeGeofence.visibility = View.GONE
-                }
+                updateGeofenceView(this@apply, geofence!!)
             } else if (wifi != null) {
-                if (wifi!!.imageResId > -1)
-                    geofenceIcon.setImageDrawable(
-                        resources.obtainTypedArray(R.array.geofence_icons)
-                            .getDrawable(wifi!!.imageResId))
-                else
-                    geofenceIcon.setImageDrawable(null)
-                geofenceName.setText(wifi!!.name)
-                if (wifi!!.enter)
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2,
-                                              null))
-                else if (wifi!!.exit)
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white,
-                                              null))
-                else if (wifi!!.dwellInside) {
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_inside_white, null))
-                } else if (wifi!!.dwellOutside) {
-                    geofenceDirection.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_outside7_white, null))
-                }
-                if (wifi!!.dwellInside || wifi!!.dwellOutside) {
-                    spendTimeGeofence.visibility = View.VISIBLE
-                    spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
-                        .toMinutes(wifi!!.loiteringDelay.toLong())}"
-                } else {
-                    spendTimeGeofence.visibility = View.GONE
-                }
-
+                updateGeofenceView(this@apply, wifi!!)
             } else {
                 geofenceIcon.setImageResource(R.drawable.ic_public_white_48dp)
                 geofenceDirection.setImageDrawable(null)
@@ -380,7 +326,6 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
             val sit = checkActivity(NaturalTriggerModel.SIT)
             val walk = checkActivity(NaturalTriggerModel.WALK)
             val bike = checkActivity(NaturalTriggerModel.BIKE)
-            val bus = false //checkActivity(NaturalTriggerModel.BUS)
             val car = checkActivity(NaturalTriggerModel.CAR)
             if (sit) {
                 activity1.setImageResource(sitIcon)
@@ -390,40 +335,26 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 activity1.setImageDrawable(null)
                 activity2.setImageDrawable(null)
                 activity3.setImageDrawable(null)
-                if (walk && bike && car && bus) {
-                } else if (walk) {
+                if (walk) {
                     activity1.setImageResource(walkIcon)
                     if (bike) {
                         activity2.setImageResource(bikeIcon)
-                        if (bus)
-                            activity3.setImageResource(busIcon)
-                        else if (car)
-                            activity3.setImageResource(carIcon)
-                    } else if (bus) {
-                        activity2.setImageResource(busIcon)
                         if (car)
                             activity3.setImageResource(carIcon)
-                    } else if (car)
-                        activity2.setImageResource(carIcon)
+                    }
                 } else if (bike) {
                     activity1.setImageResource(bikeIcon)
-                    if (bus)
-                        activity2.setImageResource(busIcon)
-                    else if (car)
-                        activity2.setImageResource(carIcon)
-                } else if (bus) {
-                    activity1.setImageResource(busIcon)
                     if (car)
                         activity2.setImageResource(carIcon)
-                } else if (car) {
+                } else if (car)
                     activity1.setImageResource(carIcon)
-                }
             }
             spendTimeActivity.visibility = View.GONE
             if (walk || car || bike || sit) {
                 if (timeInActivity > 0) {
                     spendTimeActivity.visibility = View.VISIBLE
-                    spendTimeActivity.text = "${TimeUnit.MILLISECONDS.toMinutes(timeInActivity)}"
+                    spendTimeActivity.text = "${TimeUnit.MILLISECONDS.toMinutes(
+                        timeInActivity)}"
                 }
             }
 
@@ -434,5 +365,37 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
 
 
         }
+    }
+}
+
+private fun updateGeofenceView(cardView: View, geofence: MyAbstractGeofence) {
+    if (geofence.imageResId > -1)
+        cardView.geofenceIcon.setImageDrawable(
+            cardView.resources.obtainTypedArray(R.array.geofence_icons)
+                .getDrawable(geofence.imageResId))
+    else
+        cardView.geofenceIcon.setImageDrawable(null)
+    cardView.geofenceName.setText(geofence.name)
+    if (geofence.enter)
+        cardView.geofenceDirection.setImageDrawable(
+            cardView.resources.getDrawable(R.drawable.ic_enter_geofence_fat_arrow_white2,
+                                           null))
+    else if (geofence.exit)
+        cardView.geofenceDirection.setImageDrawable(
+            cardView.resources.getDrawable(R.drawable.ic_exit_geofence_fat_arrow_white,
+                                           null))
+    else if (geofence.dwellInside) {
+        cardView.geofenceDirection.setImageDrawable(
+            cardView.resources.getDrawable(R.drawable.ic_inside3_white, null))
+    } else if (geofence.dwellOutside) {
+        cardView.geofenceDirection.setImageDrawable(
+            cardView.resources.getDrawable(R.drawable.ic_outside10_white, null))
+    }
+    if (geofence.dwellInside || geofence.dwellOutside) {
+        cardView.spendTimeGeofence.visibility = View.VISIBLE
+        cardView.spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
+            .toMinutes(geofence.loiteringDelay)}"
+    } else {
+        cardView.spendTimeGeofence.visibility = View.GONE
     }
 }

@@ -84,6 +84,35 @@ class TriggerCreationTest {
         onView(withId(R.id.time_range_slider)).perform(
             setThumbValue(1, TimeUnit.HOURS.toMinutes(11).toInt()))
         onView(withId(R.id.timeView)).check(matches(withText("10:00-\n11:00")))
+    }
 
+    @Test
+    fun createWifiGeofenceTrigger() {
+        onView(withId(R.id.goal_edittext)).perform(typeText(GOAL), pressImeActionButton())
+        onView(withId(R.id.message_edittext)).perform(typeText(MESSAGE), pressImeActionButton())
+        //next page
+        onView(withId(R.id.situation_edittext)).perform(typeText(SITUATION), pressImeActionButton())
+        //next page
+        onView(withId(R.id.homeGeofenceButton)).perform(click())
+        onView(withId(R.id.geofenceName)).check(matches(withText(GEOFENCE_NAME)))
+        onView(withId(R.id.geofenceIcon)).check(matches(withDrawable(R.drawable.ic_home_white_48dp)))
+        //next page
+        onView(withId(R.id.next_page)).perform(click())
+        onView(withId(R.id.geofenceIcon)).check(matches(withDrawable(R.drawable.ic_home_white_48dp)))
+        onView(withId(R.id.exitButton)).perform(click())
+        onView(withId(R.id.geofenceDirection)).check(matches(withDrawable(R.drawable.ic_exit_geofence_fat_arrow_white)))
+
+        //next page
+        onView(withId(R.id.next_page)).perform(click())
+        onView(withId(R.id.sitButton)).perform(click())
+        onView(withId(R.id.activity1)).check(matches(withDrawable(R.drawable.ic_airline_seat_recline_normal_white_48dp)))
+
+        //next page
+        onView(withId(R.id.next_page)).perform(click())
+        onView(withId(R.id.time_range_slider)).perform(
+            setThumbValue(0, TimeUnit.HOURS.toMinutes(10).toInt()))
+        onView(withId(R.id.time_range_slider)).perform(
+            setThumbValue(1, TimeUnit.HOURS.toMinutes(11).toInt()))
+        onView(withId(R.id.timeView)).check(matches(withText("10:00-\n11:00")))
     }
 }

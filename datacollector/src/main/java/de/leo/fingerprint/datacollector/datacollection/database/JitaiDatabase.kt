@@ -1125,7 +1125,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getMyWifiGeofence(id: Int): MyWifiGeofence? {
-        val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
+        val c = readableDatabase.query(TABLE_WIFI_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
                                        null, null, null)
         var geofece: MyWifiGeofence? = null
         if (c.moveToFirst())

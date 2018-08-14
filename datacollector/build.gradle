@@ -104,7 +104,7 @@ dependencies {
     implementation 'com.github.leokraemer:android-gson-javatime-serialisers:2.1.2'
 
     //design libraries
-    implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
     implementation 'com.romandanylyk:pageindicatorview:1.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     implementation 'com.github.rmaestre:FastDTW:7923e3b'

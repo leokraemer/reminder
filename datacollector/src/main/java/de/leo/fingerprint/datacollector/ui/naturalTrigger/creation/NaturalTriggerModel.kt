@@ -50,6 +50,7 @@ class NaturalTriggerModel {
                 modelChangelListener?.modelChangedCallback()
             }
         }
+
     var wifi: MyWifiGeofence? = null
         set(value) {
             if (field != value) {

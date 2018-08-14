@@ -15,13 +15,10 @@ import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import org.jetbrains.anko.intentFor
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
+import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.LocalTime
 import java.util.concurrent.TimeUnit
+import de.leo.fingerprint.datacollector.utils.TimeUtils.toEpochMillis
 
 
 /**
@@ -62,15 +59,11 @@ class NotificationService : IntentService("NotificationIntentService") {
                     DAILY_REMINDER_REQUEST_CODE,
                     intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
-                val date = LocalDate.now()
                 //wake up tomorrow at 5:00 am
-                date.plusDays(1)
+                var date: LocalDate = LocalDate.now().plusDays(1)
                 val time = LocalTime.of(5, 0)
-                val dateTime = LocalDateTime.of(date, time)
-                    .atZone(ZoneId.systemDefault())
-                am.set(AlarmManager.RTC_WAKEUP,
-                       dateTime.toEpochSecond(),
-                       pendingIntent)
+                val dateTime = LocalDateTime.of(date, time).atZone(ZoneId.systemDefault())
+                am.set(AlarmManager.RTC_WAKEUP, dateTime.toEpochMillis(), pendingIntent)
             }
         }
         if (event > 0) {
@@ -280,7 +273,6 @@ class NotificationService : IntentService("NotificationIntentService") {
 
     fun dailyReminderNotification() {
         val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         //notification on default channel to get the priority_max for the heads up notification
         val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
             .setContentTitle("Morgentliche Erinnerung")
@@ -288,9 +280,7 @@ class NotificationService : IntentService("NotificationIntentService") {
             .setOngoing(false)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setWhen(0)
-            .setSound(alarmSound)
-            .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
-            .setContentText("Setzen si sich ihr Ziel für heute")
+            .setContentText("Setzen sie sich ihr Ziel für heute")
             .setSmallIcon(R.drawable.reminder_white)
             .setContentIntent(PendingIntent.getActivity(this,
                                                         DAILY_REMINDER_REQUEST_CODE,
@@ -346,3 +336,4 @@ class NotificationService : IntentService("NotificationIntentService") {
         mNotificationManager.cancel(NOTIFICATIONIDMODIFYER + id)
     }
 }
+
