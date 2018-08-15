@@ -14,6 +14,7 @@ import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerListAdapter
 import org.jetbrains.anko.intentFor
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
@@ -301,7 +302,7 @@ class NotificationService : IntentService("NotificationIntentService") {
             JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fail")
 
     private fun createIntent(): Intent =
-        applicationContext.intentFor<CreateTriggerActivity>().setAction("create")
+        applicationContext.intentFor<TriggerListAdapter>().setAction("create")
 
     private fun fullScreenIntent(id: Int,
                                  sensorDataId: Long,
