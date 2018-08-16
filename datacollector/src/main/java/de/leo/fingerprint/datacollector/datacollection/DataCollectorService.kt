@@ -34,10 +34,8 @@ import de.leo.fingerprint.datacollector.utils.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
 import java.util.*
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MINUTES
 
 class DataCollectorService : Service(),
                              MyLocationListener,
@@ -57,17 +55,15 @@ class DataCollectorService : Service(),
         val TAG = "DataCollectorService"
 
         val notificationID = 1001
-        private val updatesPerSecond = 5
+        private val UPDATE_DELAY = 5L
+        private val WEATHER_UPDATE_DELAY = MINUTES.toMillis(30)
 
         private val useGooglePlaces = false
     }
 
-    private val numberOfSamples: Int = TimeUnit.MINUTES.toSeconds(5).toInt() *
-        updatesPerSecond
-
     private val sample = 0
 
-    private var weatherUpdateCnt = 0
+    private var weatherUpdateCnt = 0L
 
     internal lateinit var myMotion: MotionSensors
     //internal lateinit var myLocation: MyLocation
@@ -254,15 +250,13 @@ class DataCollectorService : Service(),
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
-                val currentTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()
-                    .toEpochMilli()
+                //get the time when the update started to reduce jitter
+                val currentTime = System.currentTimeMillis()
                 //we assume that the operation finishes before it must be called again
-                handler.postDelayed(this, 5000)
+                handler.postDelayed(this, UPDATE_DELAY)
                 if (isRunning) {
-                    if (weatherUpdateCnt == 1) {
+                    if (weatherUpdateCnt == WEATHER_UPDATE_DELAY) {
                         weatherCaller.getCurrentWeather()
-                    } else if (weatherUpdateCnt == 3600 * updatesPerSecond) {//update
-                        // per hour
                         weatherUpdateCnt = 0
                     }
                     weatherUpdateCnt++
@@ -334,9 +328,7 @@ class DataCollectorService : Service(),
     }
 
     private fun uploadDataSet(currentTime: Long): Long {
-        val sensorDataSet = SensorDataSet(
-            currentTime,
-            "username")
+        val sensorDataSet = SensorDataSet(currentTime, "username")
         sensorDataSet.recordingId = recordingId
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
             sensorDataSet.activity = currentActivities

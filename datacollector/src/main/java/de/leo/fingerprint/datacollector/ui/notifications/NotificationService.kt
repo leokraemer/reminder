@@ -13,13 +13,12 @@ import android.util.Log
 import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
-import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerListAdapter
+import de.leo.fingerprint.datacollector.utils.TimeUtils.toEpochMillis
 import org.jetbrains.anko.intentFor
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
-import de.leo.fingerprint.datacollector.utils.TimeUtils.toEpochMillis
 
 
 /**

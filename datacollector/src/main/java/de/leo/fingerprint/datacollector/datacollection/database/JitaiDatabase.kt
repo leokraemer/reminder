@@ -120,7 +120,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("CREATE INDEX air_timestamp_index ON $TABLE_REALTIME_AIR ($TIMESTAMP)")
             execSQL("CREATE INDEX prox_timestamp_index ON $TABLE_REALTIME_PROXIMITY ($TIMESTAMP)")
             execSQL("CREATE INDEX light_timestamp_index ON $TABLE_REALTIME_LIGHT ($TIMESTAMP)")
-            execSQL("CREATE INDEX sensorDataSet_timestamp_index ON $TABLE ($TIMESTAMP)")
+            execSQL("CREATE INDEX sensorDataSet_timestamp_index ON $TABLE_SENSORDATA ($TIMESTAMP)")
         }
         insertFirstEvent(db)
     }
@@ -144,7 +144,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
         db!!.transaction {
-            execSQL("DROP TABLE IF EXISTS $TABLE")
+            execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
             execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
             execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
@@ -169,7 +169,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val cv = sensorDataSetToContentValues(sensorDataSet)
         var id = -1L
         writableDatabase.transaction {
-            id = insertOrThrow(TABLE, null, cv)
+            id = insertOrThrow(TABLE_SENSORDATA, null, cv)
         }
         return id
     }
@@ -178,7 +178,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         writableDatabase.transaction {
             for (sensorDataSet in data) {
                 val cv = sensorDataSetToContentValues(sensorDataSet)
-                insertOrThrow(TABLE, null, cv)
+                insertOrThrow(TABLE_SENSORDATA, null, cv)
             }
         }
     }
@@ -219,7 +219,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             }
         }
         val ids = sb.toString()
-        val c = readableDatabase.query(TABLE, null, "$ID IN ( $ids )",
+        val c = readableDatabase.query(TABLE_SENSORDATA, null, "$ID IN ( $ids )",
                                        null,
                                        null,
                                        null,
@@ -229,8 +229,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 val s = sensorDataSetFromCursor(c)
                 val event = events[events.indexOfFirst { it.sensorDatasetId == s.id }]
-                list.add(Pair(s, if (event.event in arrayOf(Jitai
-                                                                .NOTIFICATION_SUCCESS, Jitai.NOW))
+                list.add(Pair(s, if (event.event in arrayOf(Jitai.NOTIFICATION_SUCCESS, Jitai.NOW))
                     MATCH else NO_MATCH))
             } while (c.moveToNext())
         }
@@ -242,7 +241,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
      * get the sensordatasets for these events
      */
     fun getSensorDatasetForTimestamp(timestamp: Long): SensorDataSet? {
-        val c = readableDatabase.query(TABLE, null,
+        val c = readableDatabase.query(TABLE_SENSORDATA, null,
                                        "$TIMESTAMP BETWEEN ${timestamp - 7500} AND $timestamp",
                                        null,
                                        null,
@@ -275,7 +274,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             }
         }
         val ids = sb.toString()
-        val c = readableDatabase.query(TABLE, null, "$ID IN ( $ids )",
+        val c = readableDatabase.query(TABLE_SENSORDATA, null, "$ID IN ( $ids )",
                                        null,
                                        null,
                                        null,
@@ -296,7 +295,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getSensorDataset(id: Long): SensorDataSet? {
-        val c = readableDatabase.query(TABLE, null, "$ID = ?",
+        val c = readableDatabase.query(TABLE_SENSORDATA, null, "$ID = ?",
                                        arrayOf(id.toString()),
                                        null,
                                        null,
@@ -539,7 +538,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getStepData(until: Long): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(TABLE,
+        val c = readableDatabase.query(TABLE_SENSORDATA,
                                        arrayOf(STEPS,
                                                TIMESTAMP),
                                        "$TIMESTAMP > ?",
@@ -587,7 +586,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
 
 
     fun getSoundData(begin: Long, end: Long): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(TABLE,
+        val c = readableDatabase.query(TABLE_SENSORDATA,
                                        arrayOf(ABIENT_SOUND,
                                                TIMESTAMP),
                                        "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
@@ -612,7 +611,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getScreenState(begin: Long, end: Long): MutableList<Pair<Long, Boolean>> {
-        val c = readableDatabase.query(TABLE,
+        val c = readableDatabase.query(TABLE_SENSORDATA,
                                        arrayOf(SCREEN_STATE,
                                                TIMESTAMP),
                                        "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
@@ -729,7 +728,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
      */
     fun getLatestRecordingId(): Int {
         val c = writableDatabase.query(true,
-                                       TABLE,
+                                       TABLE_SENSORDATA,
                                        arrayOf(RECORDING),
                                        null,
                                        null,
@@ -799,20 +798,20 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun getRecordings(): Cursor {
-        return readableDatabase.rawQuery("SELECT DISTINCT $TABLE.$RECORDING AS '_id'," +
+        return readableDatabase.rawQuery("SELECT DISTINCT $TABLE_SENSORDATA.$RECORDING AS '_id'," +
                                              " $RECORDING_NAME " +
                                              " FROM $TABLE_RECORDINGS " +
-                                             " LEFT JOIN $TABLE " +
-                                             " ON $TABLE.$RECORDING " +
+                                             " LEFT JOIN $TABLE_SENSORDATA " +
+                                             " ON $TABLE_SENSORDATA.$RECORDING " +
                                              "= $TABLE_RECORDINGS.$RECORDING_ID",
                                          null)
     }
 
     fun getRecording(rec_id: Int): ActivityRecord {
         val c = readableDatabase.rawQuery(
-            "SELECT * FROM $TABLE " +
+            "SELECT * FROM $TABLE_SENSORDATA " +
                 "LEFT JOIN $TABLE_WEATHER " +
-                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE.$WEATHER " +
+                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE_SENSORDATA.$WEATHER " +
                 "WHERE $RECORDING = ? " +
                 "ORDER BY $TIMESTAMP"
             , arrayOf("" + rec_id))
@@ -890,9 +889,9 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     fun getReferenceRecording(rec_id: Int, limit: Int): ActivityRecord {
         val c = readableDatabase.rawQuery(
             "SELECT * FROM ( " +
-                "SELECT * FROM $TABLE " +
+                "SELECT * FROM $TABLE_SENSORDATA " +
                 "LEFT JOIN $TABLE_WEATHER " +
-                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE.$WEATHER " +
+                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE_SENSORDATA.$WEATHER " +
                 "WHERE $RECORDING = ? " +
                 "ORDER BY $TIMESTAMP DESC " +
                 "LIMIT '$limit' ) " +
@@ -1541,6 +1540,25 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         c.close()
         return list
     }
+
+
+    fun getSensorDataSets(begin: Long, end: Long): List<SensorDataSet> {
+        val c = readableDatabase.query(TABLE_SENSORDATA, null,
+                                       "$TIMESTAMP BETWEEN $begin AND $end",
+                                       null,
+                                       null,
+                                       null,
+                                       TIMESTAMP,
+                                       null)
+        val list = mutableListOf<SensorDataSet>()
+        if (c.moveToFirst()) {
+            do {
+                list.add(sensorDataSetFromCursor(c))
+            } while (c.moveToNext())
+        }
+        c.close()
+        return list
+    }
 }
 
 
@@ -1577,7 +1595,7 @@ const val WEATHER_JSON = "weather_json"
 const val WEATHER_TIMESTAMP = "weather_timestamp"
 
 // SensorData
-const val TABLE = "sensorData"
+const val TABLE_SENSORDATA = "sensorData"
 const val ID = "_id"
 const val SESSION = "session_id"
 const val RECORDING = "recording_id"
@@ -1667,7 +1685,7 @@ const val CREATE_TABLE_JITAI =
         ");"
 
 const val CREATE_TABLE_SENSORDATA =
-    "CREATE TABLE if not exists $TABLE (" +
+    "CREATE TABLE if not exists $TABLE_SENSORDATA (" +
         "$ID integer PRIMARY KEY, " +
         "$SESSION integer, " +
         "$RECORDING integer, " +

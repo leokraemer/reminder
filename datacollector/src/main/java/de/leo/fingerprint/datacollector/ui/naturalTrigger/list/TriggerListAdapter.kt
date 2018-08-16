@@ -26,10 +26,7 @@ import org.jetbrains.anko.sdk25.coroutines.onLongClick
  * Created by Leo on 22.01.2018.
  */
 class TriggerListAdapter(context: Context, c: Cursor, val triggerUpdater: TriggerUpdater) :
-    CursorAdapter
-    (context,
-     c,
-     true) {
+    CursorAdapter(context, c, true) {
     override fun newView(context: Context?, cursor: Cursor?, parent: ViewGroup?): View {
         val layoutInflater: LayoutInflater = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = layoutInflater.inflate(R.layout.trigger_list_element, parent, false)
