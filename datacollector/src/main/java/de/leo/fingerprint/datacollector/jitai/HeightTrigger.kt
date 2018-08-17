@@ -47,9 +47,9 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         if (db == null)
             db = JitaiDatabase.getInstance(context)
-        return !db!!.getSensorValues(sensorData.time - interval, sensorData.time,
+        return db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                      TABLE_REALTIME_AIR)
-                .any { v -> v.second > threshold }
+                .any { v -> v.second < threshold }
     }
 
     override fun reset() {

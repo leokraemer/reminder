@@ -13,7 +13,7 @@ class DatabaseBackedActivityTrigger(override val activity: DetectedActivity,
                                     override val duration: Long) :
     ActivityTrigger(activity, duration) {
 
-    init{
+    init {
         lastTime = 0L
     }
 
@@ -40,5 +40,4 @@ class DatabaseBackedActivityTrigger(override val activity: DetectedActivity,
         }
         return positiveMatches.count() >= (pastSensorData.count() * percentageThreshold)
     }
-
 }

@@ -18,6 +18,7 @@ import de.leo.fingerprint.datacollector.testUtil.ViewPagerIdlingResource
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.HOME_CODE
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -39,11 +40,13 @@ class TriggerCreationTest {
 
     private val GEOFENCE_NAME = "testGeofence"
 
+    lateinit var db : JitaiDatabase
+
     @Before
     fun setup() {
         IdlingRegistry.getInstance()
             .register(ViewPagerIdlingResource(mActivityRule.activity.viewPager, "viewpager"))
-        JitaiDatabase.getInstance(getTargetContext()).enterGeofence(0,
+        db.enterGeofence(0,
                                                                     GEOFENCE_NAME,
                                                                     LatLng(0.0, 0.0),
                                                                     0f,
@@ -53,6 +56,11 @@ class TriggerCreationTest {
                                                                     false,
                                                                     1L,
                                                                     HOME_CODE)
+    }
+
+    @After
+    fun close(){
+        db.close()
     }
 
 

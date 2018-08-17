@@ -35,7 +35,7 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import java.util.*
-import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.*
 
 class DataCollectorService : Service(),
                              MyLocationListener,
@@ -55,7 +55,7 @@ class DataCollectorService : Service(),
         val TAG = "DataCollectorService"
 
         val notificationID = 1001
-        private val UPDATE_DELAY = 5L
+        private val UPDATE_DELAY = SECONDS.toMillis(10L)
         private val WEATHER_UPDATE_DELAY = MINUTES.toMillis(30)
 
         private val useGooglePlaces = false
