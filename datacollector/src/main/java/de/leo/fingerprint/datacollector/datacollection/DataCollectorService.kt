@@ -55,7 +55,7 @@ class DataCollectorService : Service(),
         val TAG = "DataCollectorService"
 
         val notificationID = 1001
-        private val UPDATE_DELAY = SECONDS.toMillis(10L)
+        val UPDATE_DELAY = SECONDS.toMillis(10L)
         private val WEATHER_UPDATE_DELAY = MINUTES.toMillis(30)
 
         private val useGooglePlaces = false

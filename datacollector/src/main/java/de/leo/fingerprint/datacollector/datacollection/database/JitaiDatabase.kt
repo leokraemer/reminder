@@ -587,8 +587,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
 
     fun getSoundData(begin: Long, end: Long): MutableList<Pair<Long, Double>> {
         val c = readableDatabase.query(TABLE_SENSORDATA,
-                                       arrayOf(ABIENT_SOUND,
-                                               TIMESTAMP),
+                                       arrayOf(ABIENT_SOUND, TIMESTAMP),
                                        "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
                                        arrayOf(begin.toString(), end.toString()),
                                        null,
@@ -612,8 +611,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
 
     fun getScreenState(begin: Long, end: Long): MutableList<Pair<Long, Boolean>> {
         val c = readableDatabase.query(TABLE_SENSORDATA,
-                                       arrayOf(SCREEN_STATE,
-                                               TIMESTAMP),
+                                       arrayOf(SCREEN_STATE, TIMESTAMP),
                                        "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
                                        arrayOf(begin.toString(), end.toString()),
                                        null,
@@ -638,8 +636,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     fun getSensorValues(begin: Long, end: Long, table: String): MutableList<Pair<Long,
         Double>> {
         val c = readableDatabase.query(table,
-                                       arrayOf(X,
-                                               TIMESTAMP),
+                                       arrayOf(X, TIMESTAMP),
                                        "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
                                        arrayOf(begin.toString(), end.toString()),
                                        null,
@@ -663,8 +660,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     fun getProximity(time: Long): MutableList<Pair<Long,
         Double>> {
         val c = readableDatabase.query(TABLE_REALTIME_PROXIMITY,
-                                       arrayOf(X,
-                                               TIMESTAMP),
+                                       arrayOf(X, TIMESTAMP),
                                        "$TIMESTAMP <= ?",
                                        arrayOf(time.toString()),
                                        null,

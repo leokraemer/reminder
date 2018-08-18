@@ -18,10 +18,7 @@ import de.leo.fingerprint.datacollector.testUtil.ViewPagerIdlingResource
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.HOME_CODE
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
 
@@ -40,26 +37,30 @@ class TriggerCreationTest {
 
     private val GEOFENCE_NAME = "testGeofence"
 
-    lateinit var db : JitaiDatabase
+    lateinit var db: JitaiDatabase
 
     @Before
     fun setup() {
         IdlingRegistry.getInstance()
             .register(ViewPagerIdlingResource(mActivityRule.activity.viewPager, "viewpager"))
-        db.enterGeofence(0,
-                                                                    GEOFENCE_NAME,
-                                                                    LatLng(0.0, 0.0),
-                                                                    0f,
-                                                                    true,
-                                                                    false,
-                                                                    false,
-                                                                    false,
-                                                                    1L,
-                                                                    HOME_CODE)
+
+        db = JitaiDatabase.getInstance(getTargetContext())
+        getTargetContext().deleteDatabase(JitaiDatabase.NAME)
+        //should enter first geofence in a new database
+        Assert.assertEquals(0, db.enterGeofence(0,
+                                                GEOFENCE_NAME,
+                                                LatLng(0.0, 0.0),
+                                                0f,
+                                                true,
+                                                false,
+                                                false,
+                                                false,
+                                                1L,
+                                                HOME_CODE))
     }
 
     @After
-    fun close(){
+    fun close() {
         db.close()
     }
 
