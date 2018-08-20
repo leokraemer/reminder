@@ -8,10 +8,11 @@ import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
 import de.leo.fingerprint.datacollector.jitai.WifiTrigger
+import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 
-class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTriggerModel) : Jitai
+open class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTriggerModel) : Jitai
                                                                                             (context) {
 
     val wifiTrigger: WifiTrigger?
@@ -22,7 +23,7 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
         timeTrigger = TimeTrigger(naturalTriggerModel.beginTime.rangeTo(naturalTriggerModel.endTime),
                                   TimeTrigger.ALL_DAYS)
         geofenceTrigger = naturalTriggerModel.geofence?.let {
-            if (it != everywhere_geofence())
+            if (it.name != EVERYWHERE)
                 GeofenceTrigger(listOf(it))
             else null
         }
@@ -32,7 +33,7 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
         }
     }
 
-    override fun check(sensorData: SensorDataSet) {
+    override fun check(sensorData: SensorDataSet): Boolean {
         Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
         //update all triggers to trigger as early as possible
         val activityTriggered = activitTrigger == null || activitTrigger!!.isEmpty()
@@ -47,8 +48,10 @@ class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTrig
             postNotification(id, sensorData.time, goal, message, sensorData.id)
             geofenceTrigger?.reset()
             activitTrigger?.forEach { it.reset() }
+            return true
         } else {
             //removeNotification(id, sensorData.time, sensorData.id)
+            return false
         }
     }
 }

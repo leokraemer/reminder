@@ -14,7 +14,7 @@ class MachineLearningJitai(context: Context) : Jitai(context) {
         const val ARFF_PREFIX = "ex3_getSensordata_by_timestamp"
     }
 
-    override fun check(sensorData: SensorDataSet) {
+    override fun check(sensorData: SensorDataSet) : Boolean {
         /*if (classifier == null) {
             events = db!!.getJitaiEventsForTraining(id)
             updateClassfier(sensorData)
@@ -36,6 +36,7 @@ class MachineLearningJitai(context: Context) : Jitai(context) {
         } else {
             //removeNotification(id, sensorData.time, sensorData.id)
         }*/
+        return false
     }/*
 
     var numberOfDataPoints: Int = 1

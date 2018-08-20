@@ -86,6 +86,7 @@ class NaturalTriggerModel {
         }
 
     internal var activity = mutableSetOf<Int>()
+        private set
 
     fun addActivity(a: Int) {
         if (!activity.contains(a)) {

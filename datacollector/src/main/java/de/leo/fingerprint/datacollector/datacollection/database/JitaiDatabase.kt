@@ -1460,9 +1460,12 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             naturalTrigger.situation = getString(getColumnIndex(NATURAL_TRIGGER_SITUATION))
             naturalTrigger.wifi = getMyWifiGeofence(getInt(getColumnIndex(NATURAL_TRIGGER_WIFI)))
             naturalTrigger.timeInActivity = getLong(getColumnIndex(NATURAL_TRIGGER_ACTIVITY_DURATION))
-            naturalTrigger.activity = gson.fromJson<HashSet<Int>>(
+            val activities = gson.fromJson<HashSet<Int>>(
                 getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
                 object : TypeToken<HashSet<Int>>() {}.getType())
+            activities.forEach {
+                naturalTrigger.addActivity((it as DetectedActivity).type)
+            }
         }
         return naturalTrigger
     }

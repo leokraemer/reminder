@@ -24,7 +24,7 @@ open class ActivityTrigger(open val activity: DetectedActivity, open val duratio
             if (lastTime == Long.MAX_VALUE)
                 lastTime = sensorData.time
             //the activity has occurred long enough
-            if (sensorData.time - lastTime > duration)
+            if (sensorData.time - lastTime >= duration)
                 return true
             return false
         } else {

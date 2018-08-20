@@ -60,7 +60,7 @@ abstract class Jitai(val context: Context) {
 
     internal val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 
-    abstract fun check(sensorData: SensorDataSet)
+    abstract fun check(sensorData: SensorDataSet): Boolean
 
     private fun removeNotification(id: Int, timestamp: Long, sensorDataId: Long) {
         JitaiDatabase.getInstance(context).enterJitaiEvent(id,
@@ -74,7 +74,7 @@ abstract class Jitai(val context: Context) {
         context.startService(intent)
     }
 
-    internal fun postNotification(id: Int, timestamp: Long, goal: String, message: String,
+    internal open fun postNotification(id: Int, timestamp: Long, goal: String, message: String,
                                   sensorDataId: Long) {
         JitaiDatabase.getInstance(context).enterJitaiEvent(id,
                                                            timestamp,
