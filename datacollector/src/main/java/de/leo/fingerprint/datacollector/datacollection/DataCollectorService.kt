@@ -35,7 +35,8 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.longToast
 import java.util.*
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
 
 class DataCollectorService : Service(),
                              MyLocationListener,
@@ -150,10 +151,10 @@ class DataCollectorService : Service(),
                     val jitaiId = intent.getIntExtra(JITAI_ID, -1)
                     if (jitaiId > -1) {
                         doAsync {
-                            db!!.enterJitaiEvent(jitaiId,
-                                                 System.currentTimeMillis(),
-                                                 Jitai.NOW,
-                                                 uploadDataSet(System.currentTimeMillis()))
+                            db!!.enterUserJitaiEvent(jitaiId,
+                                                     System.currentTimeMillis(),
+                                                     Jitai.NOW,
+                                                     uploadDataSet(System.currentTimeMillis()))
                             Log.d(TAG, "entered now event for $jitaiId")
                         }
                         longToast("Aktivität aufgezeichnet")

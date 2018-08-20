@@ -99,7 +99,6 @@ class RecordViewActivity : AppCompatActivity() {
         }
         activity_switch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                db.insertEvent(rec_id)
                 activity_switch.isChecked = true
             }
         })

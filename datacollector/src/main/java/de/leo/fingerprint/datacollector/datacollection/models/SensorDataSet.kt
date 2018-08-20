@@ -24,5 +24,4 @@ data class SensorDataSet @JvmOverloads constructor(
     var screenState: Boolean = false,
 
     //via network
-    var weather: Long? = null
-                                                  )
+    var weather: Long? = null)

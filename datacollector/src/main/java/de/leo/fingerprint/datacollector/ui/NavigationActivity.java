@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import de.leo.fingerprint.datacollector.R;
-import de.leo.fingerprint.datacollector.jitai.manage.JitaiManagingActivity;
 import de.leo.fingerprint.datacollector.ui.DailyRoutines.MapsActivity;
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity;
 import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingActivity;
@@ -114,11 +113,6 @@ public class NavigationActivity extends AppCompatActivity {
 
     public void onButtonGeofence(View view) {
         Intent intent = new Intent(context, GeofenceMapActivity.class);
-        startActivity(intent);
-    }
-
-    public void onButtonJitai(View view) {
-        Intent intent = new Intent(context, JitaiManagingActivity.class);
         startActivity(intent);
     }
 

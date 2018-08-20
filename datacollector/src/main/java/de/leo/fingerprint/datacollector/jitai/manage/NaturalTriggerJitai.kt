@@ -7,15 +7,25 @@ import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.fingerprint.datacollector.jitai.TimeTrigger
+import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
 import de.leo.fingerprint.datacollector.jitai.WifiTrigger
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
-import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 
-open class NaturalTriggerJitai(context: Context, val naturalTriggerModel: NaturalTriggerModel) : Jitai
-                                                                                            (context) {
+open class NaturalTriggerJitai(override var id: Int,
+                               context: Context,
+                               val naturalTriggerModel: NaturalTriggerModel) : Jitai(context) {
+    override val message: String
+    override val goal: String
 
     val wifiTrigger: WifiTrigger?
+    val timeTrigger: TimeTrigger?
+
+    val geofenceTrigger: GeofenceTrigger?
+
+    val weatherTrigger: WeatherTrigger? = null
+
+    val activitTrigger: List<ActivityTrigger>?
 
     init {
         goal = naturalTriggerModel.goal

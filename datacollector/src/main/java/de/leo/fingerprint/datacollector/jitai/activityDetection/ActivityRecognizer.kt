@@ -16,7 +16,6 @@ class ActivityRecognizer(val context: Context) {
     val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 
     init {
-        jitaiList.addAll(db.getActiveMachineLearningJitai())
         jitaiList.addAll(db.getAllActiveNaturalTriggerJitai())
     }
 

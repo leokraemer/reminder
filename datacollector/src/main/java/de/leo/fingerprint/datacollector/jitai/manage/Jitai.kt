@@ -3,10 +3,6 @@ package de.leo.fingerprint.datacollector.jitai.manage
 import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
-import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
-import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
 import de.leo.fingerprint.datacollector.ui.notifications.NotificationService
 import org.jetbrains.anko.intentFor
 
@@ -47,26 +43,19 @@ abstract class Jitai(val context: Context) {
     }
 
     var active = true
-    var goal: String = ""
-    var message: String = ""
-    var id: Int = -1
-    var timeTrigger: TimeTrigger? = null
-
-    var geofenceTrigger: GeofenceTrigger? = null
-
-    var weatherTrigger: WeatherTrigger? = null
-
-    var activitTrigger: List<ActivityTrigger>? = null
+    abstract val goal: String
+    abstract val message: String
+    abstract var id: Int
 
     internal val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 
     abstract fun check(sensorData: SensorDataSet): Boolean
 
     private fun removeNotification(id: Int, timestamp: Long, sensorDataId: Long) {
-        JitaiDatabase.getInstance(context).enterJitaiEvent(id,
-                                                           timestamp,
-                                                           NOTIFICATION_NOT_VALID_ANY_MORE,
-                                                           sensorDataId)
+        JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
+                                                               timestamp,
+                                                               NOTIFICATION_NOT_VALID_ANY_MORE,
+                                                               sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
                                                             JITAI_EVENT to
                                                                 NOTIFICATION_NOT_VALID_ANY_MORE,
@@ -76,10 +65,10 @@ abstract class Jitai(val context: Context) {
 
     internal open fun postNotification(id: Int, timestamp: Long, goal: String, message: String,
                                   sensorDataId: Long) {
-        JitaiDatabase.getInstance(context).enterJitaiEvent(id,
-                                                           timestamp,
-                                                           CONDITION_MET,
-                                                           sensorDataId)
+        JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
+                                                               timestamp,
+                                                               CONDITION_MET,
+                                                               sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
                                                             JITAI_EVENT to CONDITION_MET,
                                                             JITAI_GOAL to goal,

@@ -87,32 +87,32 @@ class NotificationService : IntentService("NotificationIntentService") {
 
                 Jitai.TOO_FREQUENT_NOTIFICATIONS      -> {
                     Log.d(TAG, "too many $sensorDataId")
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.TOO_FREQUENT_NOTIFICATIONS,
-                                                  sensorDataId)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.TOO_FREQUENT_NOTIFICATIONS,
+                                                      sensorDataId)
                 }
                 Jitai.NOTIFICATION_DELETED            -> {
                     Log.d(TAG, "deleted $sensorDataId")
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_DELETED, sensorDataId)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_DELETED, sensorDataId)
                     //if the notification was deleted by the user set one minte timeout
                     notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
                 }
                 Jitai.NOTIFICATION_FAIL               -> {
                     Log.d(TAG, "incorrect $sensorDataId")
                     cancelNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_FAIL, sensorDataId)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_FAIL, sensorDataId)
                 }
                 Jitai.NOTIFICATION_SNOOZE             -> {
                     Log.d(TAG, "snooze $sensorDataId")
                     cancelNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_FAIL, sensorDataId)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_FAIL, sensorDataId)
                     //set alarm to re-post notification in 15 minutes
                     val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     val intent = applicationContext.intentFor<NotificationService>(
@@ -132,9 +132,9 @@ class NotificationService : IntentService("NotificationIntentService") {
                 Jitai.NOTIFICATION_SUCCESS            -> {
                     Log.d(TAG, "success $sensorDataId")
                     cancelNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_SUCCESS, sensorDataId)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_SUCCESS, sensorDataId)
                 }
 
                 //trigger notifications
@@ -146,27 +146,27 @@ class NotificationService : IntentService("NotificationIntentService") {
                 Jitai.NOTIFICATION_TRIGGER_YES        -> {
                     Log.d(TAG, "$goal notification trigger yes")
                     cancelTriggerNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_TRIGGER_YES, -1)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_TRIGGER_YES, -1)
 
                 }
                 Jitai.NOTIFICATION_TRIGGER_NO         -> {
                     Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
                         "situation")
                     cancelTriggerNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_TRIGGER_NO, -1)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_TRIGGER_NO, -1)
 
                 }
                 Jitai.NOTIFICATION_TRIGGER_DELETE     -> {
                     Log.d(TAG,
                           "$goal notification trigger, asking user for confirmation of situation")
                     cancelTriggerNotification(jitaiId)
-                    jitaiDatabase.enterJitaiEvent(jitaiId,
-                                                  System.currentTimeMillis(),
-                                                  Jitai.NOTIFICATION_TRIGGER_DELETE, -1)
+                    jitaiDatabase.enterUserJitaiEvent(jitaiId,
+                                                      System.currentTimeMillis(),
+                                                      Jitai.NOTIFICATION_TRIGGER_DELETE, -1)
 
                 }
 

@@ -17,7 +17,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.threeten.bp.LocalTime
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
 
 @RunWith(AndroidJUnit4::class)
 class NaturalTriggerJitaiTest {
@@ -38,7 +39,7 @@ class NaturalTriggerJitaiTest {
         val sitNaturalTriggerModel = testNaturalTriggerModel()
         sitNaturalTriggerModel.addActivity(NaturalTriggerModel.SIT)
         sitNaturalTriggerModel.timeInActivity = FIVE_MINUTES
-        val activityJitai = TestNaturalTriggerJitai(context, sitNaturalTriggerModel)
+        val activityJitai = TestNaturalTriggerJitai(-1, context, sitNaturalTriggerModel)
         for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
             //match only every 5 minutes
@@ -67,7 +68,7 @@ class NaturalTriggerJitaiTest {
                                   longitude = Catimini_Location.longitude,
                                   radius = 100F)
         geofenceNaturalTriggerModel.geofence = geofence
-        val geofenceJitai = TestNaturalTriggerJitai(context, geofenceNaturalTriggerModel)
+        val geofenceJitai = TestNaturalTriggerJitai(-1, context, geofenceNaturalTriggerModel)
         for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
             //match only every 5 minutes
@@ -98,7 +99,9 @@ class NaturalTriggerJitaiTest {
         activityGeofenceNaturalTriggerModel.addActivity(NaturalTriggerModel.SIT)
         activityGeofenceNaturalTriggerModel.timeInActivity = FIVE_MINUTES
         activityGeofenceNaturalTriggerModel.geofence = geofence
-        val geofenceJitai = TestNaturalTriggerJitai(context, activityGeofenceNaturalTriggerModel)
+        val geofenceJitai = TestNaturalTriggerJitai(-1,
+                                                    context,
+                                                    activityGeofenceNaturalTriggerModel)
         for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
             //match only every 5 minutes

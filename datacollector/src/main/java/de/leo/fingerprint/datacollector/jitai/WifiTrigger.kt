@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.jitai;
 
 import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.datacollection.models.WifiInfo
 
 /**
  * Created by Leo on 16.11.2017.

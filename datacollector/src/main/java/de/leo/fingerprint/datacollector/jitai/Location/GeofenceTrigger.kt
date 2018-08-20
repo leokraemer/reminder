@@ -2,7 +2,6 @@ package de.leo.fingerprint.datacollector.jitai.Location
 
 import android.content.Context
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.jitai.MyAbstractGeofence
 import de.leo.fingerprint.datacollector.jitai.MyGeofence
 import de.leo.fingerprint.datacollector.jitai.Trigger
 import java.util.concurrent.TimeUnit

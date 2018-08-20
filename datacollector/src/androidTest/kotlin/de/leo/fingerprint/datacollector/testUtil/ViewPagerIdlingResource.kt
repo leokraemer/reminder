@@ -1,8 +1,8 @@
 package de.leo.fingerprint.datacollector.testUtil
 
-import android.support.v4.view.ViewPager
-import android.support.test.espresso.IdlingResource.ResourceCallback
 import android.support.test.espresso.IdlingResource
+import android.support.test.espresso.IdlingResource.ResourceCallback
+import android.support.v4.view.ViewPager
 
 
 class ViewPagerIdlingResource(viewPager: ViewPager, private val mName: String) : IdlingResource {

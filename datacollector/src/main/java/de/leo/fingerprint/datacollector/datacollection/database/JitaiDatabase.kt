@@ -21,12 +21,12 @@ import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
 import de.leo.fingerprint.datacollector.datacollection.models.serializeWifi
 import de.leo.fingerprint.datacollector.datacollection.sensors.WeatherCaller
-import de.leo.fingerprint.datacollector.jitai.*
-import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
+import de.leo.fingerprint.datacollector.jitai.JitaiEvent
+import de.leo.fingerprint.datacollector.jitai.MyGeofence
+import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.jitai.activityDetection.MATCH
 import de.leo.fingerprint.datacollector.jitai.activityDetection.NO_MATCH
 import de.leo.fingerprint.datacollector.jitai.manage.Jitai
-import de.leo.fingerprint.datacollector.jitai.manage.MachineLearningJitai
 import de.leo.fingerprint.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
 import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
@@ -108,7 +108,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL(CREATE_TABLE_GYRO)
             execSQL(CREATE_TABLE_ROT)
             execSQL(CREATE_TABLE_MAG)
-            execSQL(CREATE_TABLE_JITAI)
             execSQL(CREATE_TABLE_GEOFENCE)
             execSQL(CREATE_TABLE_WIFI_GEOFENCE)
             execSQL(CREATE_TABLE_JITAI_EVENTS)
@@ -913,26 +912,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
 
-    fun insertEvent(event: Int): Long {
-        val cv = ContentValues()
-        cv.put(EVENT, event)
-        cv.put(USERNAME,
-               RECOGNIZE)
-        cv.put(TIMESTAMP, System.currentTimeMillis())
-        var id = 0L
-        writableDatabase.transaction { id = insertOrThrow(TABLE_EVENTS, null, cv) }
-        return id
-    }
-
-    fun insertEvent(event: Int, user: String): Long {
-        val cv = ContentValues()
-        cv.put(EVENT, event)
-        cv.put(USERNAME, user)
-        cv.put(TIMESTAMP, System.currentTimeMillis())
-        var id = 0L
-        writableDatabase.transaction { id = insertOrThrow(TABLE_EVENTS, null, cv) }
-        return id
-    }
 
     private fun insertFirstEvent(db: SQLiteDatabase): Long {
         val cv = ContentValues()
@@ -1228,7 +1207,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     /**
      * Enter a jitai and get it returned back with the Id it has in the database.
      */
-    fun enterJitai(jitai: Jitai): Jitai {
+    fun enterNaturalTriggerJitai(jitai: NaturalTriggerJitai): NaturalTriggerJitai {
         val cv = ContentValues()
         cv.put(JITAI_GOAL, jitai.goal)
         cv.put(JITAI_MESSAGE, jitai.message)
@@ -1240,54 +1219,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         writableDatabase.transaction { id = insert(TABLE_JITAI, null, cv) }
         jitai.id = id.toInt()
         return jitai
-    }
-
-
-    fun updateJitai(jitai: Jitai): Jitai {
-        val cv = ContentValues()
-        cv.put(JITAI_GOAL, jitai.goal)
-        cv.put(JITAI_MESSAGE, jitai.message)
-        //TODO expand
-        val id = writableDatabase.update(TABLE_JITAI, cv, "$ID = ?", arrayOf(jitai.id.toString()))
-        jitai.id = id.toInt()
-        return jitai
-    }
-
-    fun updateJitai(jitai: Int, active: Boolean) {
-        val cv = ContentValues()
-        cv.put(JITAI_ACTIVE, active)
-        writableDatabase.update(TABLE_JITAI, cv, "$ID = ?", arrayOf(jitai.toString()))
-    }
-
-    fun allJitai(): Cursor {
-        return readableDatabase.query(TABLE_JITAI, null, "$JITAI_DELETED < 1", null, null,
-                                      null, null)
-    }
-
-    fun getJitai(id: Int): Jitai {
-        val c = readableDatabase.query(TABLE_JITAI, null, "$ID = ? and $JITAI_DELETED < 1",
-                                       arrayOf(id.toString()), null, null, null)
-        val jitai = getJitaiFromCursor(c)
-        c.close()
-        return jitai
-    }
-
-    fun getActiveMachineLearningJitai(): MutableList<Jitai> {
-        val c = readableDatabase.query(TABLE_JITAI,
-                                       null,
-                                       "$JITAI_ACTIVE = ? and $JITAI_DELETED < 1",
-                                       arrayOf("1"),
-                                       null,
-                                       null,
-                                       null)
-        val jitais = mutableListOf<Jitai>()
-        if (c.moveToFirst()) {
-            do {
-                jitais.add(getJitaiFromCursor(c))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return jitais
     }
 
     fun getAllActiveNaturalTriggerJitai(): MutableList<NaturalTriggerJitai> {
@@ -1329,34 +1260,13 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
 
     private fun getNaturalTriggerJitaiFromCursor(c: Cursor): NaturalTriggerJitai {
         val naturalTrigger = getNaturalTrigger(c)
-        val jitai = NaturalTriggerJitai(context, naturalTrigger)
-        jitai.id = c.getInt(c.getColumnIndex(ID))
+        val id = c.getInt(c.getColumnIndex(ID))
+        val jitai = NaturalTriggerJitai(id, context, naturalTrigger)
         jitai.active = c.getInt(c.getColumnIndex(NATURAL_TRIGGER_ACTIVE)) > 0
         return jitai
     }
 
-    private fun getJitaiFromCursor(c: Cursor): Jitai {
-        val jitai = MachineLearningJitai(context)
-        jitai.goal = c.getString(c.getColumnIndex(JITAI_GOAL))
-        jitai.message = c.getString(c.getColumnIndex(JITAI_MESSAGE))
-        jitai.timeTrigger = gson.fromJson(c.getString(c.getColumnIndex(JITAI_TIME_TRIGGER)),
-                                          TimeTrigger::class.java)
-        jitai.geofenceTrigger = gson.fromJson(c.getString(c.getColumnIndex(JITAI_GEOFENCE)),
-                                              GeofenceTrigger::class.java)
-        jitai.weatherTrigger = gson.fromJson(c.getString(c.getColumnIndex(JITAI_WEATHER)),
-                                             WeatherTrigger::class.java)
-        jitai.id = c.getInt(c.getColumnIndex(ID))
-        jitai.active = c.getInt(c.getColumnIndex(JITAI_ACTIVE)) > 0
-        return jitai
-    }
-
-    fun deleteJitai(id: Int) {
-        val cv = ContentValues()
-        cv.put(JITAI_DELETED, true)
-        writableDatabase.transaction { update(TABLE_JITAI, cv, "$ID = ?", arrayOf(id.toString())) }
-    }
-
-    fun enterJitaiEvent(id: Int, timestamp: Long, eventName: Int, sensorDatasetId: Long) {
+    fun enterUserJitaiEvent(id: Int, timestamp: Long, eventName: Int, sensorDatasetId: Long) {
         val cv = ContentValues()
         cv.put(JITAI_ID, id)
         cv.put(TIMESTAMP, timestamp)
@@ -1460,12 +1370,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             naturalTrigger.situation = getString(getColumnIndex(NATURAL_TRIGGER_SITUATION))
             naturalTrigger.wifi = getMyWifiGeofence(getInt(getColumnIndex(NATURAL_TRIGGER_WIFI)))
             naturalTrigger.timeInActivity = getLong(getColumnIndex(NATURAL_TRIGGER_ACTIVITY_DURATION))
-            val activities = gson.fromJson<HashSet<Int>>(
+            gson.fromJson<HashSet<Int>>(
                 getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
-                object : TypeToken<HashSet<Int>>() {}.getType())
-            activities.forEach {
-                naturalTrigger.addActivity((it as DetectedActivity).type)
-            }
+                object : TypeToken<HashSet<Int>>() {}.getType()).forEach{naturalTrigger
+                                                                                         .addActivity(it)}
         }
         return naturalTrigger
     }
@@ -1671,18 +1579,6 @@ const val JITAI_ID = "jitai_id"
 const val JITAI_EVENT_SENSORDATASET_ID = "jitai_sensorDataSet_id"
 
 //Create table statements
-const val CREATE_TABLE_JITAI =
-    "CREATE TABLE if not exists $TABLE_JITAI (" +
-        "$ID integer PRIMARY KEY, " +
-        "$JITAI_GOAL text, " +
-        "$JITAI_ACTIVE bool, " +
-        "$JITAI_MESSAGE text, " +
-        "$JITAI_GEOFENCE text, " +
-        "$JITAI_TIME_TRIGGER text, " +
-        "$JITAI_WEATHER text, " +
-        "$JITAI_DELETED Boolean default 0 " +
-        ");"
-
 const val CREATE_TABLE_SENSORDATA =
     "CREATE TABLE if not exists $TABLE_SENSORDATA (" +
         "$ID integer PRIMARY KEY, " +

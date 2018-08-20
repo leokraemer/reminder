@@ -3,7 +3,6 @@ package de.leo.fingerprint.datacollector.ui.naturalTrigger.creation
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -22,7 +21,6 @@ import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelec
 import de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
 import de.leo.fingerprint.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
-import kotlinx.android.synthetic.main.jitai_list_element.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
 import kotlinx.android.synthetic.main.naturaltriggerview.view.*
 import org.jetbrains.anko.intentFor
@@ -160,11 +158,11 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private fun nextButtonClick() {
         //last page
         if (lockableViewPager!!.currentItem == lockableViewPager!!.adapter!!.count - 1) {
-            val id = db.enterNaturalTrigger(model)
+            model.ID = db.enterNaturalTrigger(model)
             toast("Erinnerung erfolgreich erstellt")
             startService(intentFor<DataCollectorService>()
                              .setAction(UPDATE_JITAI)
-                             .putExtra(JITAI_ID, id)
+                             .putExtra(JITAI_ID, model.ID)
                         )
             super.onBackPressed()
         }

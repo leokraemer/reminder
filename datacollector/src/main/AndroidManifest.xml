@@ -41,9 +41,6 @@
             android:label="Erinnerung erstellen"></activity>
 
         <activity
-            android:name="de.leo.fingerprint.datacollector.jitai.manage.AddJitaiActivity"
-            android:label="Add Jitai"></activity>
-        <activity
             android:name="de.leo.fingerprint.datacollector.ui.activityRecording.RecordingsListActivity"
             android:label="Alle Aufnahmen"></activity>
         <activity
@@ -79,9 +76,6 @@
             android:exported="true"></service>
 
         <service android:name="de.leo.fingerprint.datacollector.ui.notifications.NotificationService" />
-        <service
-            android:name="de.leo.fingerprint.datacollector.ui.widget.WidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -95,17 +89,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_API_KEY" />
         <service android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
-
-        <receiver android:name="de.leo.fingerprint.datacollector.ui.widget.ClassificationWidget">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/classificationwidget" />
-        </receiver>
-
-
     </application>
 
 </manifest>

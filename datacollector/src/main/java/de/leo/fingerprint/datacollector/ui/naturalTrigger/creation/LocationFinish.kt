@@ -6,9 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import de.leo.fingerprint.datacollector.R
-import de.leo.fingerprint.datacollector.jitai.MyAbstractGeofence
-import de.leo.fingerprint.datacollector.jitai.MyGeofence
-import de.leo.fingerprint.datacollector.jitai.MyWifiGeofence
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import kotlinx.android.synthetic.main.fragment_location_finish.*
 import kotlinx.android.synthetic.main.minutepicker.*
