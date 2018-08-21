@@ -8,7 +8,8 @@ import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
  * Created by Leo on 16.11.2017.
  */
 
-open class ActivityTrigger(open val activity: DetectedActivity, open val duration: Long) : Trigger {
+open class ActivityTrigger(open val activities: List<DetectedActivity>, open val duration: Long) :
+    Trigger {
 
     //in percent
     open val confidenceThreshold = 20
@@ -19,11 +20,19 @@ open class ActivityTrigger(open val activity: DetectedActivity, open val duratio
     }
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
-        if (sensorData.activity.find { it.type == activity.type }?.let { it.confidence > confidenceThreshold } == true) {
-            //first seen the activity
+        if (sensorData.activity.find { outer ->
+                activities.any { inner ->
+                    inner.type == outer.type
+                }
+            }?.let {
+                it
+                    .confidence >
+                    confidenceThreshold
+            } == true) {
+            //first seen the activities
             if (lastTime == Long.MAX_VALUE)
                 lastTime = sensorData.time
-            //the activity has occurred long enough
+            //the activities has occurred long enough
             if (sensorData.time - lastTime >= duration)
                 return true
             return false

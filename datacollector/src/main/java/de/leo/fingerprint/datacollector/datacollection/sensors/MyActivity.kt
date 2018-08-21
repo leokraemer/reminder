@@ -107,7 +107,7 @@ class MyActivity(private val context: Context) : GoogleApiClient.ConnectionCallb
 
     override fun onResult(status: Status) {
         if (status.isSuccess) {
-            Log.d("Activity Detection", "Successfully added activity detection.")
+            Log.d("Activity Detection", "Successfully added activities detection.")
 
         } else {
             Log.e("Activity Detection", "Error: " + status.statusMessage!!)

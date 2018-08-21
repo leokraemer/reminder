@@ -35,12 +35,12 @@ class WifiListDialogFragment : DialogFragment() {
     // Override the Fragment.onAttach() method to instantiate the GeofenceDialogListener
     override fun onAttach(activity: Context) {
         super.onAttach(activity)
-        // Verify that the host activity implements the callback interface
+        // Verify that the host activities implements the callback interface
         try {
             // Instantiate the GeofenceDialogListener so we can send events to the host
             mListener = activity as WifiDialogListener
         } catch (e: ClassCastException) {
-            // The activity doesn't implement the interface, throw exception
+            // The activities doesn't implement the interface, throw exception
             throw ClassCastException(activity.toString() + " must implement GeofenceDialogListener")
         }
         mWifiManager = activity.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager

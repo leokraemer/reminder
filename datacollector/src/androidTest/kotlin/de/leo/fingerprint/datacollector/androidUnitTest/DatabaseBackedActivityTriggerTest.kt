@@ -47,7 +47,8 @@ class DatabaseBackedActivityTriggerTest {
 
     @Test
     fun testActivityTriggerUninterrupted() {
-        val trigger = DatabaseBackedActivityTrigger(DetectedActivity(IN_VEHICLE, 100), FIVE_SECONDS)
+        val trigger = DatabaseBackedActivityTrigger(listOf(DetectedActivity(IN_VEHICLE, 100)),
+                                                    FIVE_SECONDS)
         val sensorData = SensorDataSet(0, "test")
         val sensorData2 = SensorDataSet(0 + SIX_SECONDS, "test")
         sensorData.activity = listOf(inVehicle)
@@ -61,7 +62,7 @@ class DatabaseBackedActivityTriggerTest {
 
     @Test
     fun testDatabaseBackedActivityTriggerRepeatEvent() {
-        val trigger = DatabaseBackedActivityTrigger(DetectedActivity(IN_VEHICLE, 100),
+        val trigger = DatabaseBackedActivityTrigger(listOf(DetectedActivity(IN_VEHICLE, 100)),
                                                     FIVE_SECONDS, 1.0)
         val sensorData = SensorDataSet(0, "test")
         val sensorData2 = SensorDataSet(0 + SIX_SECONDS, "test")
@@ -80,7 +81,8 @@ class DatabaseBackedActivityTriggerTest {
 
     @Test
     fun testDatabaseBackedActivityTriggerInterrupted() {
-        val trigger = DatabaseBackedActivityTrigger(DetectedActivity(IN_VEHICLE, 100), FIVE_SECONDS)
+        val trigger = DatabaseBackedActivityTrigger(listOf(DetectedActivity(IN_VEHICLE, 100)),
+                                                    FIVE_SECONDS)
         val sensorData = SensorDataSet(0, "test")
         val interuptionSensorData = SensorDataSet(0 + TWO_SECONDS, "test")
         val sensorData2 = SensorDataSet(0 + SIX_SECONDS, "test")
@@ -93,7 +95,8 @@ class DatabaseBackedActivityTriggerTest {
 
     @Test
     fun testDatabaseBackedActivityTriggerReset() {
-        val trigger = DatabaseBackedActivityTrigger(DetectedActivity(IN_VEHICLE, 100), FIVE_SECONDS)
+        val trigger = DatabaseBackedActivityTrigger(listOf(DetectedActivity(IN_VEHICLE, 100)),
+                                                    FIVE_SECONDS)
         val sensorData = SensorDataSet(0, "test")
         val sensorData2 = SensorDataSet(0 + SIX_SECONDS, "test")
         sensorData.activity = listOf(inVehicle)

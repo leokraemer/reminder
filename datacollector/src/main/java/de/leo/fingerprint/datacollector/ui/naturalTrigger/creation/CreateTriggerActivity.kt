@@ -185,7 +185,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
     override fun onBackPressed() {
         if (lockableViewPager!!.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
-            // Back button. This calls finish() on this activity and pops the back stack.
+            // Back button. This calls finish() on this activities and pops the back stack.
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
@@ -320,7 +320,7 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
                 geofenceName.setText("Überall")
                 spendTimeGeofence.visibility = View.GONE
             }
-            //activity
+            //activities
             val sit = checkActivity(NaturalTriggerModel.SIT)
             val walk = checkActivity(NaturalTriggerModel.WALK)
             val bike = checkActivity(NaturalTriggerModel.BIKE)

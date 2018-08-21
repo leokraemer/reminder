@@ -10,17 +10,17 @@ import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
  * Created by Leo on 16.11.2017.
  */
 
-class DatabaseBackedActivityTrigger(override val activity: DetectedActivity,
+class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivity>,
                                     override val duration: Long,
                                     val percentageThreshold: Double = 90.0 / 100.0) :
-    ActivityTrigger(activity, duration) {
+    ActivityTrigger(activities, duration) {
 
     init {
         lastTime = 0L
     }
 
     override fun reset() {
-        lastTime = System.currentTimeMillis()
+        lastTime = Long.MAX_VALUE
     }
 
     //in percent
@@ -30,8 +30,10 @@ class DatabaseBackedActivityTrigger(override val activity: DetectedActivity,
     private val errorMargin = DataCollectorService.UPDATE_DELAY
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
+        if (lastTime == Long.MAX_VALUE)
+            lastTime = sensorData.time
         //check if the trigger was already reset
-        if (sensorData.time - lastTime <= duration)
+        if (sensorData.time - lastTime < duration)
             return false
         if (!::db.isInitialized) db = JitaiDatabase.getInstance(context)
         val end = sensorData.time
@@ -40,8 +42,10 @@ class DatabaseBackedActivityTrigger(override val activity: DetectedActivity,
         //get relevant samples
         val pastSensorData = db.getSensorDataSets(begin, end)
         val positiveMatches = pastSensorData.filter { sensorDataSet ->
-            sensorDataSet.activity.any {
-                it.type == this.activity.type && it.confidence >= confidenceThreshold
+            sensorDataSet.activity.any { outer ->
+                activities.any { inner ->
+                    inner.type == outer.type && outer.confidence >= confidenceThreshold
+                }
             }
         }
         val firstPositiveTimestamp = positiveMatches.firstOrNull()?.time ?: 0

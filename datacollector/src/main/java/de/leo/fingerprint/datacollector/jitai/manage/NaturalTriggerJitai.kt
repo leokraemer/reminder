@@ -4,11 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.location.DetectedActivity
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
-import de.leo.fingerprint.datacollector.jitai.ActivityTrigger
+import de.leo.fingerprint.datacollector.jitai.*
 import de.leo.fingerprint.datacollector.jitai.Location.GeofenceTrigger
-import de.leo.fingerprint.datacollector.jitai.TimeTrigger
-import de.leo.fingerprint.datacollector.jitai.WeatherTrigger
-import de.leo.fingerprint.datacollector.jitai.WifiTrigger
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 
@@ -25,7 +22,7 @@ open class NaturalTriggerJitai(override var id: Int,
 
     val weatherTrigger: WeatherTrigger? = null
 
-    val activitTrigger: List<ActivityTrigger>?
+    val activitTrigger: ActivityTrigger?
 
     init {
         goal = naturalTriggerModel.goal
@@ -38,26 +35,28 @@ open class NaturalTriggerJitai(override var id: Int,
             else null
         }
         wifiTrigger = naturalTriggerModel.wifi?.let { WifiTrigger(it) }
-        activitTrigger = naturalTriggerModel.activity.map {
-            ActivityTrigger(DetectedActivity(it, 0), naturalTriggerModel.timeInActivity)
-        }
+        activitTrigger = if (naturalTriggerModel.activity.isNotEmpty()) {
+            DatabaseBackedActivityTrigger(naturalTriggerModel.activity.map {
+                DetectedActivity(it, 0)
+            }, naturalTriggerModel.timeInActivity)
+        } else null
     }
+
 
     override fun check(sensorData: SensorDataSet): Boolean {
         Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
         //update all triggers to trigger as early as possible
-        val activityTriggered = activitTrigger == null || activitTrigger!!.isEmpty()
-            || activitTrigger!!.any { it.check(context, sensorData) }
+        val activityTriggered = activitTrigger == null || activitTrigger.check(context, sensorData)
         val geofenceTriggered =
-            geofenceTrigger == null || geofenceTrigger!!.check(context, sensorData)
+            geofenceTrigger == null || geofenceTrigger.check(context, sensorData)
         val wifiTriggered = wifiTrigger == null || wifiTrigger.check(context, sensorData)
-        val weatherTriggered = weatherTrigger == null || weatherTrigger!!.check(context, sensorData)
-        val timeTriggered = timeTrigger == null || timeTrigger!!.check(context, sensorData)
+        val weatherTriggered = weatherTrigger == null || weatherTrigger.check(context, sensorData)
+        val timeTriggered = timeTrigger == null || timeTrigger.check(context, sensorData)
 
         if (activityTriggered && geofenceTriggered && wifiTriggered && weatherTriggered && timeTriggered) {
             postNotification(id, sensorData.time, goal, message, sensorData.id)
             geofenceTrigger?.reset()
-            activitTrigger?.forEach { it.reset() }
+            activitTrigger?.reset()
             return true
         } else {
             //removeNotification(id, sensorData.time, sensorData.id)

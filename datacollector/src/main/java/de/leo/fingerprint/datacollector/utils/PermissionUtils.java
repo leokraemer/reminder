@@ -114,7 +114,7 @@ public abstract class PermissionUtils {
      * A dialog that explains the use of the location permission and requests the necessary
      * permission.
      * <p>
-     * The activity should implement
+     * The activities should implement
      * {@link android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback}
      * to handle permit or denial of this permission request.
      */

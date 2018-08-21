@@ -13,7 +13,7 @@ import org.threeten.bp.LocalTime
 class NaturalTriggerModel {
     companion object JITAI_ACTIVITY {
         val SIT = DetectedActivity.STILL
-        val WALK = DetectedActivity.WALKING
+        val WALK = DetectedActivity.ON_FOOT
         val BIKE = DetectedActivity.ON_BICYCLE
         //val BUS = DetectedActivity.IN_VEHICLE
         val CAR = DetectedActivity.IN_VEHICLE

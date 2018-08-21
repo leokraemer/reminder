@@ -159,7 +159,7 @@ public class FingerPrintSettingsActivity extends PreferenceActivity {
 
     /**
      * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * activities is showing a two-pane settings UI.
      */
     public static class GeneralPreferenceFragment extends PreferenceFragment {
         @Override

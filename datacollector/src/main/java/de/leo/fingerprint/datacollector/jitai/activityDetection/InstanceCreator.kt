@@ -230,7 +230,7 @@ class FingerPrintAttributes(var numberOfDataPoints : Int = 1) : ArrayList<Attrib
 
             //height
             addAttribute(HEIGHT_DIFFERENCE_IN_INTERVAL + i)
-            //detected activity
+            //detected activities
             add(Attribute(DETECTED_ACTIVITY + i,
                           ACTIVITIES))
             addAttribute(DETECTED_ACTIVITY_CONFIDENCE + i)
@@ -347,7 +347,7 @@ private fun dumbResample(reduced: Instances): Instances {
     return Filter.useFilter(reduced, resampleFilter)
 }
 
-const val windowSize = 5200 // equals 260 * 20 and therefore 256 activity samples at 50Hz (plus 4
+const val windowSize = 5200 // equals 260 * 20 and therefore 256 activities samples at 50Hz (plus 4
 // for
 // fluctuations)
 
@@ -649,7 +649,7 @@ private fun createInstance(context: Context,
                             calcHeigthDifference(
                                 heightData)
 
-                        val detectedActivitys = dataPoint.activity.sortedBy { it.confidence }
+                        val detectedActivitys = dataPoint.activities.sortedBy { it.confidence }
                         values[getAttributeIndex(DETECTED_ACTIVITY + i)] = detectedActivitys[0]!!.type
                             .toDouble()
                         values[getAttributeIndex(DETECTED_ACTIVITY_CONFIDENCE + i)] = detectedActivitys[0]!!.confidence

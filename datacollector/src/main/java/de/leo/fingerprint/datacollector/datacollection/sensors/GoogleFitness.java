@@ -110,7 +110,7 @@ public class GoogleFitness{
                         if (status.isSuccess()) {
                             if (status.getStatusCode()
                                     == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
-                                Log.i(TAG, "Existing subscription for activity detected.");
+                                Log.i(TAG, "Existing subscription for activities detected.");
                             } else {
                                 Log.i(TAG, "Successfully subscribed!");
                             }
