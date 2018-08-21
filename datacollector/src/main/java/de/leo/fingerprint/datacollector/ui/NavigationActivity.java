@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import de.leo.fingerprint.datacollector.R;
-import de.leo.fingerprint.datacollector.ui.DailyRoutines.MapsActivity;
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity;
 import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingActivity;
 import de.leo.fingerprint.datacollector.ui.activityRecording.RecordingsListActivity;
@@ -98,11 +97,6 @@ public class NavigationActivity extends AppCompatActivity {
 
     public void onButtonEntry(View view) {
         Intent intent = new Intent(context, EntryActivity.class);
-        startActivity(intent);
-    }
-
-    public void onButtonMaps(View view) {
-        Intent intent = new Intent(context, MapsActivity.class);
         startActivity(intent);
     }
 

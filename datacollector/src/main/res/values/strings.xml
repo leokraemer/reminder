@@ -38,13 +38,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="not_logged_in">Not logged in</string>
-    <string name="logged_in">Welcome, %1$s</string>
-    <string name="action_logout">Log Out</string>
-    <string name="action_login">Log In</string>
-    <string name="log_in">Login</string>
-
-
     <!-- geofencing stuff-->
 
     <!-- Buttons strings -->
