@@ -215,8 +215,8 @@ class DataCollectorService : Service(),
     override fun onCreate() {
         super.onCreate()
         isRunning = false
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
-        userName = sharedPreferences.getString("fingerprint_user_name", "userName")
+        userName = PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.user_name), null)
         startNotification()
     }
 
@@ -329,7 +329,7 @@ class DataCollectorService : Service(),
     }
 
     private fun uploadDataSet(currentTime: Long): Long {
-        val sensorDataSet = SensorDataSet(currentTime, "username")
+        val sensorDataSet = SensorDataSet(currentTime, userName!!)
         sensorDataSet.recordingId = recordingId
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
             sensorDataSet.activity = currentActivities

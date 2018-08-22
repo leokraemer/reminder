@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.hardware.SensorEvent
 import android.location.Location
+import android.preference.PreferenceManager
 import android.util.Log
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
@@ -16,6 +17,7 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
@@ -31,6 +33,7 @@ import de.leo.fingerprint.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
 import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
 import org.threeten.bp.LocalTime
 import java.util.*
 
@@ -912,11 +915,12 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
 
-
     private fun insertFirstEvent(db: SQLiteDatabase): Long {
+        val username = PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(context.getString(R.string.user_name), null)
         val cv = ContentValues()
         cv.put(EVENT, -1)
-        cv.put(USERNAME, "dummy")
+        cv.put(USERNAME, username)
         cv.put(TIMESTAMP, 0)
         var id = 0L
         db.transaction { id = insertOrThrow(TABLE_EVENTS, null, cv) }
@@ -1372,8 +1376,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             naturalTrigger.timeInActivity = getLong(getColumnIndex(NATURAL_TRIGGER_ACTIVITY_DURATION))
             gson.fromJson<HashSet<Int>>(
                 getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
-                object : TypeToken<HashSet<Int>>() {}.getType()).forEach{naturalTrigger
-                                                                                         .addActivity(it)}
+                object : TypeToken<HashSet<Int>>() {}.getType()).forEach {
+                naturalTrigger
+                    .addActivity(it)
+            }
         }
         return naturalTrigger
     }

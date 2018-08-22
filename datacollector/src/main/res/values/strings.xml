@@ -89,5 +89,7 @@
     <string name="situation">Situation</string>
     <string name="goal">Ziel</string>
     <string name="message">Nachricht</string>
+    <string name="user_name">userName</string>
+    <string name="enter_user_name">Bitte geben sie ihre ID ein</string>
 
 </resources>
