@@ -90,7 +90,10 @@ class DataCollectorService : Service(),
     private var currentActivities = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0))
     private var currentWeatherId: Long = -1
     internal var currentSteps: Long = 0
-    private var userName: String? = null
+    private val userName: String by lazy {
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.user_name), null)
+    }
     private var db: JitaiDatabase? = null
     private var recordingId = -1
     private lateinit var activityRecognizer: ActivityRecognizer
@@ -153,9 +156,10 @@ class DataCollectorService : Service(),
                         doAsync {
                             db!!.enterUserJitaiEvent(jitaiId,
                                                      System.currentTimeMillis(),
+                                                     userName,
                                                      Jitai.NOW,
                                                      uploadDataSet(System.currentTimeMillis()))
-                            Log.d(TAG, "entered now event for $jitaiId")
+                            Log.d(TAG, "entered now eventType for $jitaiId")
                         }
                         longToast("Aktivität aufgezeichnet")
                     } else
@@ -215,8 +219,6 @@ class DataCollectorService : Service(),
     override fun onCreate() {
         super.onCreate()
         isRunning = false
-        userName = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString(getString(R.string.user_name), null)
         startNotification()
     }
 

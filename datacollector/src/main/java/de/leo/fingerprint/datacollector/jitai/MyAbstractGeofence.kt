@@ -50,6 +50,9 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
     var loiteringOutside = false
         protected set
 
+    @Transient
+    var lastTimestamp : Long = 0
+
     /**
      * Update the state of the geofence.
      * Returns if the state changed.
@@ -62,9 +65,11 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
                 stateChanged = true
             entered = true
             exitedTimestamp = Long.MAX_VALUE
+            loiteringOutside = false
             if (enteredTimestamp == Long.MAX_VALUE)
                 enteredTimestamp = timestamp
-            val loiteringBefore = loiteringInside
+            //loiteringbefore is invalid, if the update interval is smaller than loiteringDelay
+            val loiteringBefore = loiteringInside && lastTimestamp - timestamp > loiteringDelay
             loiteringInside = enteredTimestamp + loiteringDelay <= timestamp
             if (loiteringBefore != loiteringInside) {
                 stateChanged = true
@@ -80,7 +85,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
             loiteringInside = false
             if (exitedTimestamp == Long.MAX_VALUE)
                 exitedTimestamp = timestamp
-            val loiteringBefore = loiteringOutside
+            val loiteringBefore = loiteringOutside && lastTimestamp - timestamp > loiteringDelay
             loiteringOutside = exitedTimestamp + loiteringDelay <= timestamp
             if (loiteringBefore != loiteringOutside) {
                 stateChanged = true
@@ -88,6 +93,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
                 exitedTimestamp = timestamp
             }
         }
+        lastTimestamp = timestamp
         return stateChanged
     }
 
@@ -129,4 +135,34 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
     }
 
     abstract fun checkInside(vararg args: Any): Boolean
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as MyAbstractGeofence
+
+        if (id != other.id) return false
+        if (name != other.name) return false
+        if (enter != other.enter) return false
+        if (exit != other.exit) return false
+        if (dwellInside != other.dwellInside) return false
+        if (dwellOutside != other.dwellOutside) return false
+        if (loiteringDelay != other.loiteringDelay) return false
+        if (imageResId != other.imageResId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id
+        result = 31 * result + name.hashCode()
+        result = 31 * result + enter.hashCode()
+        result = 31 * result + exit.hashCode()
+        result = 31 * result + dwellInside.hashCode()
+        result = 31 * result + dwellOutside.hashCode()
+        result = 31 * result + loiteringDelay.hashCode()
+        result = 31 * result + imageResId
+        return result
+    }
 }

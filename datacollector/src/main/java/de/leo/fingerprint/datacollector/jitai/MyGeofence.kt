@@ -58,4 +58,27 @@ class MyGeofence(id: Int = -1,
                                                              loiteringDelay,
                                                              imageResId)
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MyGeofence
+
+        if (latitude != other.latitude) return false
+        if (longitude != other.longitude) return false
+        if (radius != other.radius) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + latitude.hashCode()
+        result = 31 * result + longitude.hashCode()
+        result = 31 * result + radius.hashCode()
+        return result
+    }
+
+
 }

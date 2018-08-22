@@ -94,9 +94,6 @@ class RecordViewActivity : AppCompatActivity() {
         if (record.screenState.size > 0)
             initScreenView()
         initStepsView()
-        if (db.getRecognizedActivitiesId() == rec_id) {
-            activity_switch.isChecked = true
-        }
         activity_switch.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                 activity_switch.isChecked = true

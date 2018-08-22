@@ -47,4 +47,24 @@ class MyWifiGeofence(id: Int = -1,
                                                                           dwellInside,
                                                                           dwellOutside,
                                                                           loiteringDelay)
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as MyWifiGeofence
+
+        if (bssid != other.bssid) return false
+        if (rssi != other.rssi) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + bssid.hashCode()
+        result = 31 * result + rssi
+        return result
+    }
 }

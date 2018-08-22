@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color.parseColor
 import android.media.RingtoneManager
+import android.preference.PreferenceManager
 import android.support.v4.app.NotificationCompat
 import android.util.Log
 import de.leo.fingerprint.datacollector.R
@@ -41,6 +42,10 @@ class NotificationService : IntentService("NotificationIntentService") {
     }
 
     private val jitaiDatabase: JitaiDatabase by lazy { JitaiDatabase.getInstance(applicationContext) }
+    private val username: String by lazy {
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .getString(getString(R.string.user_name), null)
+    }
 
     override fun onHandleIntent(intent: Intent?) {
         val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
@@ -89,6 +94,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     Log.d(TAG, "too many $sensorDataId")
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.TOO_FREQUENT_NOTIFICATIONS,
                                                       sensorDataId)
                 }
@@ -96,6 +102,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     Log.d(TAG, "deleted $sensorDataId")
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_DELETED, sensorDataId)
                     //if the notification was deleted by the user set one minte timeout
                     notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
@@ -105,6 +112,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_FAIL, sensorDataId)
                 }
                 Jitai.NOTIFICATION_SNOOZE             -> {
@@ -112,6 +120,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_FAIL, sensorDataId)
                     //set alarm to re-post notification in 15 minutes
                     val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -134,6 +143,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_SUCCESS, sensorDataId)
                 }
 
@@ -148,6 +158,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_TRIGGER_YES, -1)
 
                 }
@@ -157,6 +168,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_TRIGGER_NO, -1)
 
                 }
@@ -166,6 +178,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                     cancelTriggerNotification(jitaiId)
                     jitaiDatabase.enterUserJitaiEvent(jitaiId,
                                                       System.currentTimeMillis(),
+                                                      username,
                                                       Jitai.NOTIFICATION_TRIGGER_DELETE, -1)
 
                 }

@@ -97,10 +97,6 @@ class RecordingActivity : Activity() {
         setContentView(R.layout.recording_activity)
         db = JitaiDatabase.getInstance(applicationContext)
         recordingIdInt = db.getLatestRecordingId() + 1
-        if (db.getRecognizedActivitiesId() > 0) {
-            reference = db.getReferenceRecording(db.getRecognizedActivitiesId(), 20)
-            reference_chart.setData(ACCELERATION, reference!!)
-        }
         start_recording.setOnClickListener({ _ -> startRecording() })
     }
 

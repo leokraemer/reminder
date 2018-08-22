@@ -42,7 +42,7 @@ class GeofenceListDialogFragment : DialogFragment() {
                               savedInstanceState: Bundle?): View? {
         getDialog().getWindow().setTitle("Ihre Orte")
         val view = inflater.inflate(R.layout.geofence_list_dialog, container, false)
-        val list = JitaiDatabase.getInstance(context!!).getAllMyGeofences()
+        val list = JitaiDatabase.getInstance(context!!).getAllMyGeofencesDistinct()
         val empty = view.empty
         if (list.isEmpty()) {
             empty.setText("Keine Orte vorhanden.")

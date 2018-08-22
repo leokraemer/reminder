@@ -1,6 +1,8 @@
 package de.leo.fingerprint.datacollector.jitai.manage
 
 import android.content.Context
+import android.preference.PreferenceManager
+import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.database.*
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.ui.notifications.NotificationService
@@ -48,12 +50,18 @@ abstract class Jitai(val context: Context) {
     abstract var id: Int
 
     internal val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
+    private val userName: String by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(context.getString(R.string.user_name), null)
+    }
+
 
     abstract fun check(sensorData: SensorDataSet): Boolean
 
     private fun removeNotification(id: Int, timestamp: Long, sensorDataId: Long) {
         JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
                                                                timestamp,
+                                                               userName,
                                                                NOTIFICATION_NOT_VALID_ANY_MORE,
                                                                sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
@@ -64,9 +72,10 @@ abstract class Jitai(val context: Context) {
     }
 
     internal open fun postNotification(id: Int, timestamp: Long, goal: String, message: String,
-                                  sensorDataId: Long) {
+                                       sensorDataId: Long) {
         JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
                                                                timestamp,
+                                                               userName,
                                                                CONDITION_MET,
                                                                sensorDataId)
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,

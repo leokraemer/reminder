@@ -18,8 +18,8 @@ class AskingTrigger(val jitaiId: Int, val validity: Long) : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         if (preconditions.all { check(context, sensorData) }) {
             val events = JitaiDatabase.getInstance(context).getJitaiTriggerEvents(jitaiId)
-            val latestYes = events.lastOrNull { it.event == Jitai.NOTIFICATION_TRIGGER_YES }
-            val latestNo = events.lastOrNull { it.event == Jitai.NOTIFICATION_TRIGGER_NO }
+            val latestYes = events.lastOrNull { it.eventType == Jitai.NOTIFICATION_TRIGGER_YES }
+            val latestNo = events.lastOrNull { it.eventType == Jitai.NOTIFICATION_TRIGGER_NO }
             val yesTime = latestYes?.timestamp ?: -1
             val noTime = latestNo?.timestamp ?: 0
             if (noTime < yesTime && yesTime + validity > sensorData.time )

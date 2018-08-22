@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.hardware.SensorEvent
 import android.location.Location
-import android.preference.PreferenceManager
 import android.util.Log
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
@@ -17,7 +16,6 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import de.leo.fingerprint.datacollector.R
 import de.leo.fingerprint.datacollector.datacollection.models.SensorDataSet
 import de.leo.fingerprint.datacollector.datacollection.models.Weather
 import de.leo.fingerprint.datacollector.datacollection.models.deSerializeWifi
@@ -33,7 +31,6 @@ import de.leo.fingerprint.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.Constants
 import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
-import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
 import org.threeten.bp.LocalTime
 import java.util.*
 
@@ -104,7 +101,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         Log.d(TAG, "onCreate to ${db?.version}")
         db!!.transaction {
             execSQL(CREATE_TABLE_SENSORDATA)
-            execSQL(CREATE_TABLE_EVENTS)
             execSQL(CREATE_TABLE_WEATHER)
             execSQL(CREATE_TABLE_RECORDINGS)
             execSQL(CREATE_TABLE_ACC)
@@ -124,7 +120,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             execSQL("CREATE INDEX light_timestamp_index ON $TABLE_REALTIME_LIGHT ($TIMESTAMP)")
             execSQL("CREATE INDEX sensorDataSet_timestamp_index ON $TABLE_SENSORDATA ($TIMESTAMP)")
         }
-        insertFirstEvent(db)
     }
 
     /**
@@ -147,7 +142,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
         db!!.transaction {
             execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
-            execSQL("DROP TABLE IF EXISTS $TABLE_EVENTS")
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
             execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
@@ -231,8 +225,9 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 val s = sensorDataSetFromCursor(c)
                 val event = events[events.indexOfFirst { it.sensorDatasetId == s.id }]
-                list.add(Pair(s, if (event.event in arrayOf(Jitai.NOTIFICATION_SUCCESS, Jitai.NOW))
-                    MATCH else NO_MATCH))
+                list.add(Pair(s,
+                              if (event.eventType in arrayOf(Jitai.NOTIFICATION_SUCCESS, Jitai.NOW))
+                                  MATCH else NO_MATCH))
             } while (c.moveToNext())
         }
         c.close()
@@ -288,7 +283,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 val event = events[events.indexOfFirst { it.sensorDatasetId == s.id }]
                 list.add(Pair(s,
                               if (event.JITAI_ID == id
-                                  && event.event in arrayOf(Jitai.NOTIFICATION_SUCCESS, Jitai.NOW))
+                                  && event.eventType in arrayOf(Jitai.NOTIFICATION_SUCCESS,
+                                                                Jitai.NOW))
                                   MATCH else NO_MATCH))
             } while (c.moveToNext())
         }
@@ -914,40 +910,11 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return record
     }
 
-
-    private fun insertFirstEvent(db: SQLiteDatabase): Long {
-        val username = PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(context.getString(R.string.user_name), null)
-        val cv = ContentValues()
-        cv.put(EVENT, -1)
-        cv.put(USERNAME, username)
-        cv.put(TIMESTAMP, 0)
-        var id = 0L
-        db.transaction { id = insertOrThrow(TABLE_EVENTS, null, cv) }
-        return id
-    }
-
-    fun getRecognizedActivitiesId(): Int {
-        val cursor = readableDatabase.rawQuery("SELECT * FROM $TABLE_EVENTS WHERE " +
-                                                   "$USERNAME = \"$RECOGNIZE\" ORDER BY " +
-                                                   "$TIMESTAMP " +
-                                                   "DESC LIMIT \"1\"", null)
-
-        var returnval = -1
-        if (cursor.count > 0) {
-            cursor.moveToFirst()
-            returnval = cursor.getInt(cursor.getColumnIndex(EVENT))
-        }
-        cursor.close()
-        return returnval
-    }
-
     fun setRecordingName(s: String, rec_id: Int) {
         val cv = ContentValues()
         cv.put(RECORDING_NAME, s)
         cv.put(RECORDING_ID, rec_id)
-        writableDatabase.replace(TABLE_RECORDINGS,
-                                 null, cv)
+        writableDatabase.replace(TABLE_RECORDINGS, null, cv)
     }
 
     fun getAllGeofences(): List<Pair<Int, Geofence>> {
@@ -963,7 +930,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return list
     }
 
-    fun getAllMyGeofences(): List<MyGeofence> {
+    fun getAllMyGeofencesDistinct(): List<MyGeofence> {
         val c = readableDatabase.query(true, TABLE_GEOFENCE, null, null, null, GEOFENCE_NAME,
                                        null, null, null)
         val list = mutableListOf<MyGeofence>()
@@ -1270,10 +1237,12 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return jitai
     }
 
-    fun enterUserJitaiEvent(id: Int, timestamp: Long, eventName: Int, sensorDatasetId: Long) {
+    fun enterUserJitaiEvent(id: Int, timestamp: Long, username: String, eventName: Int,
+                            sensorDatasetId: Long) {
         val cv = ContentValues()
         cv.put(JITAI_ID, id)
         cv.put(TIMESTAMP, timestamp)
+        cv.put(USERNAME, username)
         cv.put(JITAI_EVENT, eventName)
         cv.put(JITAI_EVENT_SENSORDATASET_ID, sensorDatasetId)
         writableDatabase.transaction { insert(TABLE_JITAI_EVENTS, null, cv) }
@@ -1288,9 +1257,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 val id = c.getInt(c.getColumnIndex(JITAI_ID))
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                val username = c.getString(c.getColumnIndex(USERNAME))
+                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
                 val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
-                list.add(JitaiEvent(id, timestamp, eventName, sensorDatasetId))
+                list.add(JitaiEvent(id, timestamp, username, eventType, sensorDatasetId))
             } while (c.moveToNext())
         }
         c.close()
@@ -1389,8 +1359,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             "1", null, null, null, null)
     }
 
-    fun getJitaiTriggerEvents(id: Int): MutableList<JitaiEvent> {
-        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(id
+    fun getJitaiTriggerEvents(jitaiId: Int): MutableList<JitaiEvent> {
+        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(jitaiId
                                                                                               .toString()),
                                        null, null, null)
         val list = mutableListOf<JitaiEvent>()
@@ -1398,8 +1368,9 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 val id = c.getInt(c.getColumnIndex(JITAI_ID))
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
-                list.add(JitaiEvent(id, timestamp, eventName, -1L))
+                val username = c.getString(c.getColumnIndex(USERNAME))
+                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                list.add(JitaiEvent(id, timestamp, username, eventType, -1L))
             } while (c.moveToNext())
         }
         c.close()
@@ -1420,11 +1391,12 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val list = mutableListOf<JitaiEvent>()
         if (c.moveToFirst()) {
             do {
-                val id = c.getInt(c.getColumnIndex(JITAI_ID))
+                val jitaiId = c.getInt(c.getColumnIndex(JITAI_ID))
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                val username = c.getString(c.getColumnIndex(USERNAME))
+                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
                 val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
-                list.add(JitaiEvent(id, timestamp, eventName, sensorDatasetId))
+                list.add(JitaiEvent(jitaiId, timestamp, username, eventType, sensorDatasetId))
             } while (c.moveToNext())
         }
         c.close()
@@ -1445,9 +1417,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             do {
                 val id = c.getInt(c.getColumnIndex(JITAI_ID))
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val eventName = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                val username = c.getString(c.getColumnIndex(USERNAME))
+                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
                 val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
-                list.add(JitaiEvent(id, timestamp, eventName, sensorDatasetId))
+                list.add(JitaiEvent(id, timestamp, username, eventType, sensorDatasetId))
             } while (c.moveToNext())
         }
         c.close()
@@ -1491,7 +1464,7 @@ const val GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
 const val GEOFENCE_IMAGE = "geofenceImage"
 
 //GEOFENCE
-const val TABLE_WIFI_GEOFENCE = "table_geofences"
+const val TABLE_WIFI_GEOFENCE = "table_wifi_geofences"
 const val WIFI_GEOFENCE_NAME = "geofenceName"
 const val WIFI_GEOFENCE_BSSID = "geofenceBssid"
 const val WIFI_GEOFENCE_RSSI = "geofenceRssi"
@@ -1558,11 +1531,6 @@ val REALTIME_TABLES = arrayOf(TABLE_REALTIME_LIGHT,
 const val ACCURACY = "accuracy"
 const val SCALAR = "scalar"
 
-// events
-const val TABLE_EVENTS = "events"
-const val EVENT = "event"
-const val RECOGNIZE = "recognize"
-
 //recordings
 const val TABLE_RECORDINGS = "recordings"
 const val RECORDING_ID = RECORDING
@@ -1605,18 +1573,11 @@ const val CREATE_TABLE_SENSORDATA =
         "$SCREEN_STATE int" +
         ");"
 
-const val CREATE_TABLE_EVENTS =
-    "CREATE TABLE if not exists $TABLE_EVENTS (" +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP DATE, " +
-        "$USERNAME TEXT, " +
-        "$EVENT TEXT " +
-        ");"
-
 const val CREATE_TABLE_JITAI_EVENTS =
     "CREATE TABLE if not exists $TABLE_JITAI_EVENTS (" +
         "$ID integer PRIMARY KEY, " +
         "$TIMESTAMP date, " +
+        "$USERNAME text, " +
         //see Jitai.companion for codes
         "$JITAI_EVENT INTEGER, " +
         "$JITAI_ID INTEGER, " +
@@ -1695,7 +1656,7 @@ const val CREATE_TABLE_GEOFENCE =
 
 
 const val CREATE_TABLE_WIFI_GEOFENCE =
-    "CREATE TABLE if not exists $TABLE_GEOFENCE ( " +
+    "CREATE TABLE if not exists $TABLE_WIFI_GEOFENCE ( " +
         "$ID integer PRIMARY KEY, " +
         "$WIFI_GEOFENCE_NAME text, " +
         "$WIFI_GEOFENCE_BSSID String, " +
