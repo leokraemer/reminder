@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.hardware.SensorEvent
 import android.location.Location
+import android.os.Environment
 import android.util.Log
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
@@ -33,6 +34,16 @@ import de.leo.fingerprint.datacollector.ui.activityRecording.ActivityRecord
 import de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import org.threeten.bp.LocalTime
 import java.util.*
+import android.widget.Toast
+import android.os.Environment.getDataDirectory
+import android.os.Environment.getExternalStorageDirectory
+import android.preference.PreferenceManager
+import de.leo.fingerprint.datacollector.R
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.channels.FileChannel
 
 
 /**
@@ -64,7 +75,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         private fun buildDatabase(context: Context) =
             JitaiDatabase(context)
 
-        const val NAME = "mydb"
+        const val NAME = "mydb.$DATABASE_VERSION"
 
         fun serializeDetectedActivitys(activities: List<DetectedActivity>): String {
             return activities.fold("", { r, f -> r + f.toString() })
@@ -1445,6 +1456,47 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         c.close()
         return list
     }
+
+    internal fun exportDb() {
+        val externalStorageDirectory = Environment.getExternalStorageDirectory()
+        val dataDirectory = Environment.getDataDirectory()
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val userName = sharedPreferences.getString(context.getString(R.string.user_name),
+                                                   "userName")
+
+        var source: FileChannel? = null
+        var destination: FileChannel? = null
+
+        val currentDBPath =
+            "/data/${context.applicationContext.applicationInfo.packageName}/databases/$databaseName"
+        val backupDBPath = "$databaseName.$userName.sqlite"
+        val currentDB = File(dataDirectory, currentDBPath)
+        val backupDB = File(externalStorageDirectory, backupDBPath)
+
+        try {
+            source = FileInputStream(currentDB).getChannel()
+            destination = FileOutputStream(backupDB).getChannel()
+            destination!!.transferFrom(source, 0, source!!.size())
+
+            Toast.makeText(context, "DB Exported!", Toast.LENGTH_LONG).show()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            try {
+                if (source != null) source.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+            try {
+                if (destination != null) destination.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
 }
 
 

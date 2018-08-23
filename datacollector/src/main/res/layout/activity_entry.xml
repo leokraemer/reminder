@@ -6,17 +6,6 @@
     android:gravity="center"
     android:orientation="vertical">
 
-
-<!--    <Button
-        android:id="@+id/button_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Activity"
-        android:onClick="startActivity"
-        android:layout_above="@+id/button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"/>-->
-
     <LinearLayout
         android:background="@drawable/custom_background"
         android:layout_width="match_parent"
@@ -24,13 +13,14 @@
         android:layout_margin="10dp"
         android:gravity="center"
         android:orientation="vertical">
+
         <TextView
-            android:layout_margin="5dp"
+            android:id="@+id/entry_activity_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/entry_activity_text"
             android:layout_centerHorizontal="true"
-            android:text="Background Service Control"/>
+            android:layout_margin="5dp"
+            android:text="Background Service Control" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,20 +28,30 @@
             android:gravity="center"
             android:layout_margin="10dp"
             android:orientation="horizontal">
+
             <Button
+                android:id="@+id/button_start_service"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Service"
-                android:onClick="OnClickStartService"
-                android:id="@+id/button_start_service"/>
+                android:onClick="onClickStartService"
+                android:text="Start Service" />
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Stop Service"
-                android:onClick="OnClickStopService"
+                android:onClick="onClickStopService"
                 android:id="@+id/button_stop_service"/>
         </LinearLayout>
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/save_db"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:onClick="exportDB"
+        android:text="Studiendaten exportieren" />
 
 
 </LinearLayout>
