@@ -31,9 +31,7 @@ class EntryActivity : AppCompatActivity() {
     internal var TAG = "EntryActivity"
     internal val MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0
     internal val MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION = 1
-    internal val VIEW_SENSOR_DATA = 0
     internal val START_SERVICE = 1
-    internal val START_LABEL = 2
     internal var state = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,28 +39,6 @@ class EntryActivity : AppCompatActivity() {
         setContentView(R.layout.activity_entry)
         startScheduledUpdate()
         updateUI()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle state bar item clicks here. The state bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activities in AndroidManifest.xml.
-        val id = item.itemId
-
-
-        if (id == R.id.action_settings) {
-            val intent = Intent(this, FingerPrintSettingsActivity::class.java)
-            startActivity(intent)
-            return true
-        }
-
-        return super.onOptionsItemSelected(item)
     }
 
     private val REYOUEST_PERMISSION_WRITE_EXTERNAL_STORAGE = 12312
