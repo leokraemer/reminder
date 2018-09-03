@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline4"
         app:srcCompat="@drawable/reminder_white" />
 
-    <de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager
+    <de.leo.smartTrigger.datacollector.ui.uiElements.LockableViewPager
         android:id="@+id/viewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -54,7 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/reminder_card">
 
-    </de.leo.fingerprint.datacollector.ui.uiElements.LockableViewPager>
+    </de.leo.smartTrigger.datacollector.ui.uiElements.LockableViewPager>
 
     <TextView
         android:id="@+id/previous_page"

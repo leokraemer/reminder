@@ -15,10 +15,9 @@
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="de.leo.fingerprint.datacollector.de.leo.fingerprint.datacollector.DailyRoutines.MapsActivity" />
+            android:layout_height="match_parent"/>
 
-        <de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.RadarOverlayView
+        <de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.RadarOverlayView
             android:id="@+id/radar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

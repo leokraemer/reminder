@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_span="4">
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                 android:id="@+id/button5min"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_width="48dp"
@@ -64,7 +64,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                 android:id="@+id/button15min"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_width="48dp"
@@ -81,7 +81,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                 android:id="@+id/button30min"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_width="48dp"
@@ -99,7 +99,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                 android:id="@+id/button60"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_width="48dp"
@@ -140,7 +140,7 @@
 
         <LinearLayout android:layout_span="4">
 
-            <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                 android:id="@+id/buttonCustomInterval"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_width="48dp"

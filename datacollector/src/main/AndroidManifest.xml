@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="de.leo.fingerprint.datacollector">
+    package="de.leo.smartTrigger.datacollector">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -15,41 +15,30 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
     <application
-        android:name="de.leo.fingerprint.datacollector.ui.application.DataCollectorApplication"
+        android:name="de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication"
         android:allowBackup="true"
         android:icon="@drawable/reminder_ico"
         android:label="@string/study_name"
         android:theme="@style/AppBaseTheme.Light">
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
+            android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="@string/study_name"
             android:screenOrientation="portrait" />
-        <activity android:name="de.leo.fingerprint.datacollector.ui.settings.FingerPrintSettingsActivity"></activity>
-
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.EntryActivity"
+            android:name="de.leo.smartTrigger.datacollector.ui.EntryActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.activityRecording.RecordingActivity"
+            android:name="de.leo.smartTrigger.datacollector.ui.activityRecording.RecordingActivity"
             android:label="@string/study_name"></activity>
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
+            android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
             android:label="Jitai Manager"></activity>
         <activity
-            android:name="de.leo.fingerprint.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
+            android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
             android:screenOrientation="portrait"
             android:label="Erinnerung erstellen"></activity>
 
-        <activity
-            android:name="de.leo.fingerprint.datacollector.ui.activityRecording.RecordingsListActivity"
-            android:label="Alle Aufnahmen"></activity>
-        <activity
-            android:name="de.leo.fingerprint.datacollector.ui.activityRecording.RecordViewActivity"
-            android:label="Aufnahme Anzeigen"></activity>
-        <activity
-            android:name="de.leo.fingerprint.datacollector.ui.compare.CompareActivity"
-            android:label="Compare Activity"></activity>
-        <activity android:name="de.leo.fingerprint.datacollector.ui.NavigationActivity">
+        <activity android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 
@@ -65,14 +54,14 @@
         </activity>
 
         <service
-            android:name="de.leo.fingerprint.datacollector.datacollection.services.ActivitiesIntentService"
+            android:name="de.leo.smartTrigger.datacollector.datacollection.services.ActivitiesIntentService"
             android:exported="false"></service>
         <service
-            android:name="de.leo.fingerprint.datacollector.datacollection.DataCollectorService"
+            android:name="de.leo.smartTrigger.datacollector.datacollection.DataCollectorService"
             android:enabled="true"
             android:exported="true"></service>
 
-        <service android:name="de.leo.fingerprint.datacollector.ui.notifications.NotificationService" />
+        <service android:name="de.leo.smartTrigger.datacollector.ui.notifications.NotificationService" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -85,7 +74,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_API_KEY" />
-        <service android:name="de.leo.fingerprint.datacollector.ui.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
+        <service android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
     </application>
 
 </manifest>

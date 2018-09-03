@@ -37,7 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
 
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/fiveteenminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -54,7 +54,7 @@
         app:layout_constraintTop_toTopOf="@+id/thirtyminutes"
         tools:layout_editor_absoluteX="152dp" />
 
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/moreminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -67,7 +67,7 @@
         app:layout_constraintStart_toEndOf="@+id/thirtyminutes"
         app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
 
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/thirtyminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -86,7 +86,7 @@
         app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
         app:layout_constraintTop_toBottomOf="@+id/situation" />
 
-    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/fiveminutes"
         android:layout_width="48dp"
         android:layout_height="48dp"

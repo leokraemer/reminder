@@ -58,7 +58,7 @@
 
             <TableRow android:layout_marginTop="8dp">
 
-                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
                     android:id="@+id/sitButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -70,7 +70,7 @@
                     android:padding="8dp"
                     android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
 
-                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
                     android:id="@+id/walkButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -82,7 +82,7 @@
                     android:padding="8dp"
                     android:src="@drawable/ic_directions_walk_white_48dp" />
 
-                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
                     android:id="@+id/bikeButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -94,7 +94,7 @@
                     android:padding="8dp"
                     android:src="@drawable/ic_directions_bike_white_48dp" />
 
-                <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
                     android:id="@+id/carButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
@@ -170,7 +170,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp">
 
-                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                         android:id="@+id/fiveminutes"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -193,7 +193,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp">
 
-                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                         android:id="@+id/fiveteenminutes"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -216,7 +216,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp">
 
-                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableTextView
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
                         android:id="@+id/thirtyminutes"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -237,7 +237,7 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp">
 
-                    <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
                         android:id="@+id/moreminutes"
                         android:layout_width="48dp"
                         android:layout_height="48dp"

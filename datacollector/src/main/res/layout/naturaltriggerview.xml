@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/activity1"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -34,7 +34,7 @@
             app:layout_constraintTop_toTopOf="@+id/geofenceIcon"
             tools:src="@drawable/ic_directions_walk_white_48dp" />
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/activity2"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -46,7 +46,7 @@
             app:layout_constraintTop_toTopOf="@+id/geofenceIcon"
             tools:src="@drawable/ic_directions_car_white_48dp" />
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/geofenceDirection"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -58,7 +58,7 @@
             app:layout_constraintStart_toEndOf="@+id/geofenceIcon"
             tools:src="@drawable/ic_exit_geofence_fat_arrow_white" />
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/activity3"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -81,7 +81,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="GeofenceName" />
 
-        <de.leo.fingerprint.datacollector.ui.uiElements.CheckableImageView
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
             android:id="@+id/geofenceIcon"
             android:layout_width="48dp"
             android:layout_height="48dp"
