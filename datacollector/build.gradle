@@ -69,9 +69,7 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     //anko
     implementation "org.jetbrains.anko:anko:$anko_version"

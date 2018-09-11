@@ -69,7 +69,7 @@ class EntryActivity : AppCompatActivity() {
             state = START_SERVICE
             return
         }
-        if (!CheckPermission()) {
+        if (!checkPermission()) {
             return
         }
 
@@ -172,18 +172,12 @@ class EntryActivity : AppCompatActivity() {
         return true
     }
 
-    private fun CheckPermission(): Boolean {
+    private fun checkPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(this, Manifest
-                .permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(this, Manifest.permission
-                .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                .permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                                               arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                                               MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION)
-
-            ActivityCompat.requestPermissions(this,
-                                              arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-                                              MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION)
             return false
         } else {
             return true
@@ -193,7 +187,7 @@ class EntryActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
                                             grantResults: IntArray) {
         when (requestCode) {
-            MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION   -> {
+            MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     val running = isMyServiceRunning(DataCollectorService::class.java)
@@ -205,21 +199,7 @@ class EntryActivity : AppCompatActivity() {
                 }
                 return
             }
-            MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (state == START_SERVICE) {
-                        val running = isMyServiceRunning(DataCollectorService::class.java)
-                        if (!running) {
-                            startDatacollectorService()
-                        }
-                    }
-                } else {
-                    return
-                }
-                return
-            }
-            REYOUEST_PERMISSION_WRITE_EXTERNAL_STORAGE    -> {
+            REYOUEST_PERMISSION_WRITE_EXTERNAL_STORAGE  -> {
                 // If request is cancelled, the result arrays are empty.
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     exportDB(null)
@@ -230,7 +210,7 @@ class EntryActivity : AppCompatActivity() {
                 return
             }
 
-            else                                          -> return
+            else                                        -> return
         }
     }
 

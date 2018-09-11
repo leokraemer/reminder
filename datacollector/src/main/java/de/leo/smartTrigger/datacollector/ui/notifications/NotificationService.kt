@@ -206,7 +206,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setWhen(0)
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
-                .setSmallIcon(R.drawable.fp_s)
+                .setSmallIcon(R.drawable.reminder_ico)
                 .setColor(parseColor("blue"))
                 .addAction(R.drawable.check, "Ja", PendingIntent
                     .getService(this,
@@ -279,7 +279,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setSound(alarmSound)
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
-                .setSmallIcon(R.drawable.reminder_white)
+                .setSmallIcon(R.drawable.reminder_ico)
             mNotificationManager.notify(NOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
         }
     }

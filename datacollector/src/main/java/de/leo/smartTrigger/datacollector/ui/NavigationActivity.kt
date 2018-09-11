@@ -9,11 +9,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.text.InputType
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import de.leo.smartTrigger.datacollector.R
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity
 import de.leo.smartTrigger.datacollector.ui.activityRecording.RecordingActivity
 import de.leo.smartTrigger.datacollector.ui.activityRecording.RecordingsListActivity
@@ -37,7 +41,6 @@ class NavigationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_navigation)
 
         checkPermission()
-        checkPermission()
         createNotificationChannel()
         postDailyNotifier()
         val userName = PreferenceManager.getDefaultSharedPreferences(this)
@@ -49,25 +52,39 @@ class NavigationActivity : AppCompatActivity() {
     private fun promptEnterUserName() {
         val builder = AlertDialog.Builder(this)
         val view = layoutInflater.inflate(R.layout.dialog_enter_user_name, null)
+        view.username.inputType = InputType.TYPE_TEXT_VARIATION_PERSON_NAME
+        view.username.imeOptions = EditorInfo.IME_ACTION_DONE
         builder.setView(view)
         builder.setTitle(getString(R.string.enter_user_name))
         builder.setPositiveButton("OK") { _, _ -> }
+        builder.setCancelable(false)
         val dialog = builder.create()
-        dialog.setOnShowListener(DialogInterface.OnShowListener {
+        dialog.setOnShowListener {
             val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener { _ ->
-                val name = view.username.text.toString()
-                if (name.isNotBlank()) {
-                    PreferenceManager.getDefaultSharedPreferences(this).commit {
-                        putString(getString(R.string.user_name), name)
-                    }
-                    dialog.dismiss()
-                } else {
-                    toast("Feld darf nicht leer sein.")
-                }
+                finishDialog(view, dialog)
             }
-        })
+        }
+        view.username.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                finishDialog(view, dialog)
+                true
+            }
+            false
+        }
         dialog.show()
+    }
+
+    fun finishDialog(view: View, dialog: AlertDialog) {
+        val name = view.username.text.toString()
+        if (name.isNotBlank()) {
+            PreferenceManager.getDefaultSharedPreferences(this).commit {
+                putString(getString(R.string.user_name), name)
+            }
+            dialog.dismiss()
+        } else {
+            toast("Feld darf nicht leer sein.")
+        }
     }
 
     private fun postDailyNotifier() {
@@ -107,11 +124,6 @@ class NavigationActivity : AppCompatActivity() {
 
 
     private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                                              Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            PermissionUtils.requestPermission(this, 1,
-                                              Manifest.permission.RECORD_AUDIO, true)
-        }
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission
                 .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Permission to access the location is missing.
