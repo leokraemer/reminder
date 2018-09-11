@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorprimary20"
-    android:theme="@style/AppBaseTheme.Light">
+    android:theme="@style/AppBaseTheme.Light.Fullscreen">
 
     <ImageView
         android:id="@+id/imageView5"
@@ -93,7 +93,7 @@
         android:elevation="7dp"
         android:gravity="center"
         android:text="TextView"
-        app:autoSizeTextType="uniform"
+        android:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="@+id/goalCard"
         app:layout_constraintEnd_toEndOf="@+id/goalCard"
         app:layout_constraintStart_toStartOf="@+id/goalCard"
@@ -108,7 +108,7 @@
         android:elevation="8dp"
         android:gravity="center"
         android:text="TextView"
-        app:autoSizeTextType="uniform"
+        android:autoSizeTextType="uniform"
         app:layout_constraintBottom_toBottomOf="@+id/messageCard"
         app:layout_constraintEnd_toEndOf="@+id/messageCard"
         app:layout_constraintStart_toStartOf="@+id/messageCard"

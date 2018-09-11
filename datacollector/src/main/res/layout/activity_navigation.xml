@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -80,11 +81,12 @@
         android:id="@+id/TriggerList"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:onClick="onButtonTriggerList"
-        android:text="TRigger Verwaltung"
+        android:text="Ziele"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/jitai" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView6" />
 
     <Button
         android:id="@+id/SensorFigure"
@@ -103,7 +105,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:onClick="onButtonGeofence"
-        android:text="Geofence erstellen"
+        android:text="Ort Erstellen"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/TriggerList" />
@@ -113,7 +115,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:onClick="onButtonEntry"
-        android:text="Hintergrundservice verwalten"
+        android:text="Verwaltung"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/geofence" />
@@ -196,11 +198,12 @@
         android:id="@+id/imageView6"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Entry"
+        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/header4_scaled" />
 
 </android.support.constraint.ConstraintLayout>

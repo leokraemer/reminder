@@ -135,7 +135,7 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     fun onButtonEntry(view: View) {
-        val intent = Intent(this, EntryActivity::class.java)
+        val intent = Intent(this, ServiceManagingActivity::class.java)
         startActivity(intent)
     }
 

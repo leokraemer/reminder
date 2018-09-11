@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <!--<uses-permission android:name="android.permission.RECORD_AUDIO" />-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 
@@ -17,49 +17,45 @@
         android:name="de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication"
         android:allowBackup="true"
         android:icon="@drawable/reminder_ico"
-        android:label="@string/study_name"
         android:theme="@style/AppBaseTheme.Light">
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
-            android:label="@string/study_name"
+            android:label="Ort Erstellen"
             android:screenOrientation="portrait" />
         <activity
-            android:name="de.leo.smartTrigger.datacollector.ui.EntryActivity"
-            android:label="@string/study_name"></activity>
+            android:name="de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity"
+            android:label="Verwaltung" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.activityRecording.RecordingActivity"
-            android:label="@string/study_name"></activity>
+            android:label="@string/study_name" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
-            android:label="Jitai Manager"></activity>
+            android:label="Jitai Manager" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
-            android:screenOrientation="portrait"
-            android:label="Erinnerung erstellen"></activity>
+            android:label="Ziel erstellen"
+            android:screenOrientation="portrait" />
 
-        <activity android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity">
-            <intent-filter android:label="@string/app_name">
+        <activity
+            android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity"
+            android:label="@string/study_name">
+            <intent-filter android:label="@string/study_name">
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <activity
             android:name=".ui.notifications.FullscreenJitai"
+            android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true">
-        </activity>
+            android:taskAffinity="" />
 
-        <service
-            android:name="de.leo.smartTrigger.datacollector.datacollection.services.ActivitiesIntentService"
-            android:exported="false"></service>
+        <service android:name="de.leo.smartTrigger.datacollector.datacollection.services.ActivitiesIntentService" />
         <service
             android:name="de.leo.smartTrigger.datacollector.datacollection.DataCollectorService"
-            android:enabled="true"
-            android:exported="true"></service>
-
+            android:label="Smart Trigger Studien Service" />
         <service android:name="de.leo.smartTrigger.datacollector.ui.notifications.NotificationService" />
 
         <!--

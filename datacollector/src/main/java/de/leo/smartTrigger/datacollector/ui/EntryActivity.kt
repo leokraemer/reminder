@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.activity_entry.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class EntryActivity : AppCompatActivity() {
+class ServiceManagingActivity : AppCompatActivity() {
     internal var TAG = "EntryActivity"
     internal val MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0
     internal val MY_PERMISSIONS_REQUEST_ACCESS_COURSE_LOCATION = 1

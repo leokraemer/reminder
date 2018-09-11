@@ -1,53 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:background="@drawable/custom_background"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/entry_activity_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="5dp"
-            android:text="Background Service Control" />
+        android:layout_margin="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_margin="10dp"
-            android:orientation="horizontal">
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/button_start_service"
+            <TextView
+                android:id="@+id/entry_activity_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onClickStartService"
-                android:text="Start Service" />
-            <Button
-                android:layout_width="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:text="Hintergrundservice"
+                android:textAlignment="center"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/entry_activity_text2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Stop Service"
-                android:onClick="onClickStopService"
-                android:id="@+id/button_stop_service"/>
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:text="Hier können sie die Datenaufzeichnung starten und stoppen. Dies aktiviert und deaktiviert gleichzeitig alle Erinnerungen."
+                android:textAlignment="center" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_start_service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickStartService"
+                    android:text="Start" />
+
+                <Button
+                    android:id="@+id/button_stop_service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClickStopService"
+                    android:text="Stop" />
+            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
 
     <Button
         android:id="@+id/save_db"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:onClick="exportDB"

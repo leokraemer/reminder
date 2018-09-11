@@ -11,6 +11,15 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/MyTitleTextStyle</item>
+    </style>
+
+    <style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <!-- Base application theme. -->
@@ -20,12 +29,19 @@
     </style>
 
     <!-- Base application theme. -->
-    <style name="AppBaseTheme.Light.Fullscreen" parent="AppBaseTheme">
+    <style name="AppBaseTheme.Light.Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>-->
     </style>
 
-    <style name="AppBaseTheme.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppBaseTheme.Light" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -34,6 +50,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppBaseTheme">
