@@ -9,14 +9,16 @@
     <EditText
         android:id="@+id/situation_edittext"
         android:layout_width="0dp"
-        android:layout_height="99dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/situation"
         android:imeOptions="actionNext"
-        android:inputType="textCapSentences|textAutoCorrect"
+        android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+        android:scrollHorizontally="false"
+        android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
@@ -30,5 +32,6 @@
         android:layout_marginTop="8dp"
         android:text="Was ist eine gute Situation um sie an Ihr Ziel zu erinnern?"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

@@ -21,6 +21,7 @@ import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import kotlinx.android.synthetic.main.activity_entry.*
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 

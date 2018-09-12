@@ -30,6 +30,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_span="4"
+            android:ellipsize="end"
+            android:maxLines="5"
             android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme" />
 
     </TableRow>

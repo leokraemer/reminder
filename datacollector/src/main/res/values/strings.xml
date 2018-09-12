@@ -87,8 +87,8 @@
     <string name="work_geofence_name">Arbeit</string>
     <string name="home_geofence_name">Zuhause</string>
     <string name="situation">Situation</string>
-    <string name="goal">Ziel</string>
-    <string name="message">Nachricht</string>
+    <string name="goal">Definieren sie ihr Ziel mit einigen Worten.</string>
+    <string name="message">Welche Nachricht hilft ihnen ihr Ziel zu erreichen?</string>
     <string name="user_name">userName</string>
     <string name="enter_user_name">Bitte geben sie ihre ID ein</string>
 

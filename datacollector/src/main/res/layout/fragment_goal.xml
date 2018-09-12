@@ -9,14 +9,16 @@
     <EditText
         android:id="@+id/goal_edittext"
         android:layout_width="0dp"
-        android:layout_height="103dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/goal"
         android:imeOptions="actionNext"
-        android:inputType="textCapSentences|textAutoCorrect"
+        android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+        android:singleLine="false"
+        android:scrollHorizontally="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView38" />
@@ -24,14 +26,16 @@
     <EditText
         android:id="@+id/message_edittext"
         android:layout_width="0dp"
-        android:layout_height="99dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="@string/message"
         android:imeOptions="actionNext"
-        android:inputType="textCapSentences|textAutoCorrect"
+        android:inputType="textCapSentences|textAutoCorrect|textMultiLine"
+        android:singleLine="false"
+        android:scrollHorizontally="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
@@ -42,9 +46,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Woran möchten sie erinnert werden?\nSetzen sie sich ein Ziel, das sie heute erreichen können."
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView385"

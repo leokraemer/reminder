@@ -33,6 +33,8 @@
             android:label="Jitai Manager" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
+            android:icon="@drawable/reminder_white"
+            android:windowSoftInputMode="adjustPan"
             android:label="Ziel erstellen"
             android:screenOrientation="portrait" />
 

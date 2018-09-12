@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 
 
 /**
@@ -11,7 +12,7 @@ import android.view.MotionEvent
  */
 class LockableViewPager : ViewPager {
 
-    private var isPagingEnabled = true
+    var isPagingEnabled = true
 
     constructor(context: Context) : super(context) {}
 
@@ -25,7 +26,21 @@ class LockableViewPager : ViewPager {
         return this.isPagingEnabled && super.onInterceptTouchEvent(event)
     }
 
-    fun setPagingEnabled(b: Boolean) {
-        this.isPagingEnabled = b
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var heightMeasureSpec = heightMeasureSpec
+
+        var height = 0
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            child.measure(widthMeasureSpec,
+                          View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+            val h = child.measuredHeight
+            if (h > height) height = h
+        }
+
+        if (height != 0) {
+            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+        }
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
 }

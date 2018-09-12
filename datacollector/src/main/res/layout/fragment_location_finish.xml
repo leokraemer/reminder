@@ -21,6 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="5"
         android:text="Wählen sie eine Aktion an diesem Ort:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation_text" />

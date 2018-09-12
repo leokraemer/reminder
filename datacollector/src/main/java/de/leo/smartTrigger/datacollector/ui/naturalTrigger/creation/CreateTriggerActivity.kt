@@ -28,6 +28,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import android.animation.LayoutTransition
 
 
 /**
@@ -74,7 +75,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_natural_trigger_tabs)
-        setTheme(R.style.AppBaseTheme_Fullscreen)
+        setTheme(R.style.AppBaseTheme)
         val intent = getIntent()
         val naturalTriggerId = intent.getIntExtra(NATURALTRIGGER_ID, -1)
         if (naturalTriggerId != -1) {
@@ -114,8 +115,8 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     finish()
             }
         })
-        previous_page.onClick { onBackPressed() }
-        next_page.onClick { nextButtonClick() }
+        previous_page.onClick { if (lockableViewPager?.isPagingEnabled == true) onBackPressed() }
+        next_page.onClick { if (lockableViewPager?.isPagingEnabled == true) nextButtonClick() }
         model.modelChangelListener = this
         goalSelection.model = model
         situationSelection.model = model
@@ -140,11 +141,11 @@ class CreateTriggerActivity : GeofenceDialogListener,
         //enable/disable view paging
         if (lockableViewPager!!.currentItem == 0
             && (model.goal.isEmpty() || model.message.isEmpty())) {
-            lockableViewPager?.setPagingEnabled(false)
+            lockableViewPager?.isPagingEnabled = false
         } else if (lockableViewPager!!.currentItem == 1 && model.situation.isEmpty()) {
-            lockableViewPager!!.setPagingEnabled(false)
+            lockableViewPager!!.isPagingEnabled = false
         } else {
-            lockableViewPager?.setPagingEnabled(true)
+            lockableViewPager?.isPagingEnabled = true
         }
         //update child views
         activitySelection.updateView()
@@ -171,6 +172,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     fun expand(v: View, positionOffset: Float) {
         v.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        val actualHeight = v.height
         val targetHeight = v.measuredHeight
         // Older versions of android (pre API 21) cancel animations for views with a height of 0.
         v.layoutParams.height = 1
@@ -178,7 +180,8 @@ class CreateTriggerActivity : GeofenceDialogListener,
         v.layoutParams.height = if (positionOffset >= 1f)
             LayoutParams.WRAP_CONTENT
         else
-            (targetHeight * positionOffset).toInt()
+        //do not shrink the view once it was expanded
+            Math.max(actualHeight, (targetHeight * positionOffset).toInt())
         v.requestLayout()
     }
 
