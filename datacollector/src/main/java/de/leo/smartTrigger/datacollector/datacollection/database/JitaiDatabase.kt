@@ -132,7 +132,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     /**
      * Automatically insert stuff necessary for the transaction.
      */
-    inline fun SQLiteDatabase.transaction(block: SQLiteDatabase.() -> Unit) {
+    private inline fun SQLiteDatabase.transaction(block: SQLiteDatabase.() -> Unit) {
         try {
             this.beginTransaction()
             this.block()
@@ -142,6 +142,20 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             e.printStackTrace()
         } finally {
             this.endTransaction()
+        }
+    }
+
+    private inline fun <T> getObjectListFromCursor(cursor: Cursor,
+                                                   transform: (Cursor) -> T): List<T> {
+        return cursor.run {
+            mutableListOf<T>().also { list ->
+                if (moveToFirst()) {
+                    do {
+                        list.add(transform(this))
+                    } while (moveToNext())
+                }
+                close()
+            }
         }
     }
 
@@ -1233,7 +1247,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     //cursor is already at position
-    fun getNaturalTrigger(cursor: Cursor): NaturalTriggerModel {
+    private fun getNaturalTrigger(cursor: Cursor): NaturalTriggerModel {
         val naturalTrigger = NaturalTriggerModel()
         with(cursor) {
             naturalTrigger.ID = getInt(getColumnIndex(ID))
@@ -1253,6 +1267,7 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 naturalTrigger
                     .addActivity(it)
             }
+            naturalTrigger.active = getInt(getColumnIndex(NATURAL_TRIGGER_ACTIVE)) > 0
         }
         return naturalTrigger
     }
@@ -1260,6 +1275,18 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     fun allNaturalTrigger(): Cursor {
         return readableDatabase.query(TABLE_NATURAL_TRIGGER, null, "$NATURAL_TRIGGER_DELETED < " +
             "1", null, null, null, null)
+    }
+
+    fun allNaturalTriggerModels(): List<NaturalTriggerModel> {
+        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                       null,
+                                       "$NATURAL_TRIGGER_DELETED <" +
+                                           "1",
+                                       null,
+                                       null,
+                                       null,
+                                       null)
+        return getObjectListFromCursor(c, this::getNaturalTrigger)
     }
 
     fun getJitaiTriggerEvents(jitaiId: Int): MutableList<JitaiEvent> {

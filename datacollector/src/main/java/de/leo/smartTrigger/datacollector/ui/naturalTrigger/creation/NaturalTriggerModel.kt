@@ -10,7 +10,7 @@ import org.threeten.bp.LocalTime
  * Model class containing the natural trigger during creation.
  * Created by Leo on 06.03.2018.
  */
-class NaturalTriggerModel {
+data class NaturalTriggerModel(var ID: Int = -1) {
     companion object JITAI_ACTIVITY {
         val SIT = DetectedActivity.STILL
         val WALK = DetectedActivity.ON_FOOT
@@ -19,7 +19,13 @@ class NaturalTriggerModel {
         val CAR = DetectedActivity.IN_VEHICLE
     }
 
-    var ID = -1
+    var active = true
+        set(value) {
+            if (field != value) {
+                field = value
+                modelChangelListener?.modelChangedCallback()
+            }
+        }
 
     var goal = ""
         set(value) {

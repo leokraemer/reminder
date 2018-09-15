@@ -14,7 +14,6 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/imageView2"
-    tools:layout_height="wrap_content"
     tools:showIn="@layout/activity_natural_trigger_tabs"
     android:theme="@style/AppBaseTheme">
 

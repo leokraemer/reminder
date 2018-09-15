@@ -17,7 +17,8 @@ android {
         applicationId 'de.leo.smartTrigger'
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 6
+        versionCode 7
+
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -90,6 +91,8 @@ dependencies {
     //google services
     implementation 'com.google.maps.android:android-maps-utils:0.5'
     implementation 'com.google.maps:google-maps-services:0.2.6'
+
+
     implementation 'com.google.android.gms:play-services-fitness:11.6.0'
     implementation 'com.google.android.gms:play-services-auth:11.6.0'
     implementation 'com.google.android.gms:play-services-location:11.6.0'

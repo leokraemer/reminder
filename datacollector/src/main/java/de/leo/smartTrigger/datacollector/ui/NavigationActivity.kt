@@ -75,7 +75,7 @@ class NavigationActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun finishDialog(view: View, dialog: AlertDialog) {
+    private fun finishDialog(view: View, dialog: AlertDialog) {
         val name = view.username.text.toString()
         if (name.isNotBlank()) {
             PreferenceManager.getDefaultSharedPreferences(this).commit {

@@ -8,6 +8,8 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Checkable
 import android.widget.ImageView
+import de.leo.smartTrigger.datacollector.R
+import java.util.stream.Stream
 
 /**
  * Created by Leo on 01.03.2018.
@@ -73,7 +75,7 @@ class CheckableImageView : ImageView, Checkable {
                 drawable.colorFilter = null
             else
                 //light grey filter
-                drawable.setColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN);
+                drawable.setColorFilter(resources.getColor(R.color.material_grey_800), PorterDuff.Mode.SRC_IN);
         }
         super.setEnabled(enabled)
     }

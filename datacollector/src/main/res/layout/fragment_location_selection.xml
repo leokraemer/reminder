@@ -36,15 +36,17 @@
         android:id="@+id/worldGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
+
         android:layout_marginEnd="24dp"
         android:background="@drawable/round_checkable_background"
-
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_public_white_48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/wifiGeofenceButton"
+        tools:layout_editor_absoluteY="158dp" />
 
     <TextView
         android:id="@+id/worldText"
@@ -63,16 +65,16 @@
         android:id="@+id/wifiGeofenceButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
 
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_wifi_white_48dp"
-        app:layout_constraintEnd_toEndOf="@+id/enterButton"
-        app:layout_constraintStart_toStartOf="@+id/enterButton"
-        app:layout_constraintTop_toBottomOf="@+id/enterText" />
+        app:layout_constraintEnd_toStartOf="@+id/worldGeofenceButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/workGeofenceButton"
+        tools:layout_editor_absoluteY="158dp" />
 
     <TextView
         android:id="@+id/wifiText"
@@ -103,13 +105,13 @@
         android:layout_height="48dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
-        android:focusable="true"
 
+        android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_work_white_48dp"
-        app:layout_constraintEnd_toStartOf="@+id/worldGeofenceButton"
+        app:layout_constraintEnd_toStartOf="@+id/wifiGeofenceButton"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/enterButton"
+        app:layout_constraintStart_toEndOf="@+id/homeGeofenceButton"
         app:layout_constraintTop_toTopOf="@+id/homeGeofenceButton" />
 
     <TextView
@@ -130,13 +132,16 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
 
+        android:layout_marginTop="24dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_home_white_48dp"
+        app:layout_constraintEnd_toStartOf="@+id/workGeofenceButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation" />
 
@@ -159,14 +164,16 @@
         android:layout_height="48dp"
 
         android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
         android:focusable="true"
         android:padding="8dp"
         android:src="@drawable/ic_format_list_bulleted_white_48dp"
         app:layout_constraintEnd_toEndOf="@+id/homeGeofenceButton"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/homeGeofenceButton"
-        app:layout_constraintTop_toTopOf="@+id/wifiGeofenceButton" />
+        app:layout_constraintTop_toBottomOf="@+id/homeText" />
 
     <TextView
         android:id="@+id/listText"
@@ -175,55 +182,25 @@
         android:gravity="center_horizontal"
         android:lines="2"
 
-        android:text="Liste"
+        android:text="Meine\nOrte"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/listGeofenceButton"
         app:layout_constraintStart_toStartOf="@+id/listGeofenceButton"
         app:layout_constraintTop_toBottomOf="@+id/listGeofenceButton" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/shopGeofenceButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_shopping_cart_white_48dp"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="229dp"
-        tools:layout_editor_absoluteY="420dp" />
-
-    <TextView
-        android:id="@+id/shopText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:lines="2"
-
-        android:text="Geschäft"
-        android:textColor="@color/white"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/shopGeofenceButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/shopGeofenceButton"
-        app:layout_constraintTop_toBottomOf="@+id/shopGeofenceButton" />
-
-    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/enterButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginStart="8dp"
+
         android:background="@drawable/round_checkable_background"
         android:clickable="true"
-
         android:focusable="true"
         android:padding="8dp"
         android:src="@android:drawable/ic_dialog_map"
-        app:layout_constraintEnd_toStartOf="@+id/workGeofenceButton"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/homeGeofenceButton"
-        app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
+        app:layout_constraintEnd_toEndOf="@+id/workGeofenceButton"
+        app:layout_constraintStart_toStartOf="@+id/workGeofenceButton"
+        app:layout_constraintTop_toTopOf="@+id/listGeofenceButton" />
 
     <TextView
         android:id="@+id/enterText"
@@ -232,7 +209,7 @@
         android:gravity="center_horizontal"
         android:lines="2"
 
-        android:text="Ort\nerstellen"
+        android:text="Ort\ndefinieren"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/enterButton"
         app:layout_constraintStart_toStartOf="@+id/enterButton"

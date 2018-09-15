@@ -20,7 +20,7 @@
         android:theme="@style/AppBaseTheme.Light">
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
-            android:label="Ort Erstellen"
+            android:label="Ort Definieren"
             android:screenOrientation="portrait" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity"
@@ -30,23 +30,22 @@
             android:label="@string/study_name" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
-            android:label="Jitai Manager" />
-        <activity
-            android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
-            android:icon="@drawable/reminder_white"
-            android:windowSoftInputMode="adjustPan"
-            android:label="Ziel erstellen"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity"
-            android:label="@string/study_name">
+            android:label="Smart Trigger"
+            android:theme="@style/AppBaseTheme.NoActionBar">
             <intent-filter android:label="@string/study_name">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+        <activity
+            android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
+            android:icon="@drawable/reminder_white"
+            android:label="Bewegungsziele"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity"
+            android:label="@string/study_name" />
 
         <activity
             android:name=".ui.notifications.FullscreenJitai"

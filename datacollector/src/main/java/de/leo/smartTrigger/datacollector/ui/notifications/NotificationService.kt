@@ -14,7 +14,8 @@ import android.util.Log
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
-import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerListAdapter
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerListRecyclerViewAdapter
 import de.leo.smartTrigger.datacollector.utils.TimeUtils.toEpochMillis
 import org.jetbrains.anko.intentFor
 import org.threeten.bp.*
@@ -314,7 +315,7 @@ class NotificationService : IntentService("NotificationIntentService") {
             JITAI_EVENT_SENSORDATASET_ID to sensorDataId).setAction("jitai_fail")
 
     private fun createIntent(): Intent =
-        applicationContext.intentFor<TriggerListAdapter>().setAction("create")
+        applicationContext.intentFor<CreateTriggerActivity>().setAction("create")
 
     private fun fullScreenIntent(id: Int,
                                  sensorDataId: Long,
