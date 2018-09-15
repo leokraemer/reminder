@@ -46,7 +46,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/wifiGeofenceButton"
-        tools:layout_editor_absoluteY="158dp" />
+        app:layout_constraintTop_toTopOf="@+id/wifiGeofenceButton" />
 
     <TextView
         android:id="@+id/worldText"
@@ -74,7 +74,7 @@
         app:layout_constraintEnd_toStartOf="@+id/worldGeofenceButton"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/workGeofenceButton"
-        tools:layout_editor_absoluteY="158dp" />
+        app:layout_constraintTop_toTopOf="@+id/workGeofenceButton" />
 
     <TextView
         android:id="@+id/wifiText"
@@ -214,32 +214,5 @@
         app:layout_constraintEnd_toEndOf="@+id/enterButton"
         app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterButton" />
-
-    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-        android:id="@+id/busstopGeofenceButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_bus_stop"
-        android:visibility="gone"
-        tools:layout_editor_absoluteX="92dp"
-        tools:layout_editor_absoluteY="325dp" />
-
-    <TextView
-        android:id="@+id/busStopText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:lines="2"
-
-        android:text="Bushalte-\nstelle"
-        android:textColor="@color/white"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/busstopGeofenceButton"
-        app:layout_constraintStart_toStartOf="@+id/busstopGeofenceButton"
-        app:layout_constraintTop_toBottomOf="@+id/busstopGeofenceButton" />
 
 </android.support.constraint.ConstraintLayout>

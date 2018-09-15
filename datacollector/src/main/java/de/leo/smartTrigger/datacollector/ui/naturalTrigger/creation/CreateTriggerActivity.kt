@@ -49,9 +49,9 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     private lateinit var model: NaturalTriggerModel
     /**
-     * The number of pages (wizard steps) to show in this demo.
+     * The number of pages to show.
      */
-    private var NUM_PAGES = 6
+    private var NUM_PAGES = 7
 
     /**
      * The pager widget, which handles animation and allows swiping horizontally to access previous
@@ -71,6 +71,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private val locationFinish = LocationFinish()
     private val activitySelection = ActivitySelection()
     private val timeSelection = TimeSelection()
+    private val overview = Overview()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +112,12 @@ class CreateTriggerActivity : GeofenceDialogListener,
                 if (position >= 3 && scrollState == ViewPager.SCROLL_STATE_IDLE) {
                     expand(reminder_card, 1f)
                 }
+                pagerAdapter?.let {
+                    if (position == it.count - 1)
+                        next_page.text = "Fertig"
+                    if (position < it.count - 1)
+                        next_page.text = "Weiter"
+                }
                 if (position > NUM_PAGES)
                     finish()
             }
@@ -124,6 +131,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
         locationSelection.model = model
         activitySelection.model = model
         timeSelection.model = model
+        overview.model = model
 
         //kick off view initialisation
         modelChangedCallback()
@@ -154,6 +162,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
         goalSelection.updateView()
         situationSelection.updateView()
         timeSelection.updateView()
+        overview.updateView()
     }
 
     private fun nextButtonClick() {
@@ -216,6 +225,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     3    -> locationFinish
                     4    -> activitySelection
                     5    -> timeSelection
+                    6    -> overview
                     else -> timeSelection // error
                 } else
                 when (position) {
@@ -224,6 +234,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     2    -> locationSelection
                     3    -> activitySelection
                     4    -> timeSelection
+                    5    -> overview
                     else -> timeSelection // error
                 }
 
@@ -306,7 +317,6 @@ class CreateTriggerActivity : GeofenceDialogListener,
 private const val sitIcon = R.drawable.ic_airline_seat_recline_normal_white_48dp
 private const val walkIcon = R.drawable.ic_directions_walk_white_48dp
 private const val bikeIcon = R.drawable.ic_directions_bike_white_48dp
-private const val busIcon = R.drawable.ic_directions_bus_white_48dp
 private const val carIcon = R.drawable.ic_directions_car_white_48dp
 
 fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerModel, view: View) {

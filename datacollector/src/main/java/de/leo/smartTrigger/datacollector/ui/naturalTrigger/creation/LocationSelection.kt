@@ -49,12 +49,8 @@ class LocationSelection : NaturalTriggerFragment() {
         worldText.setOnClickListener { clickWorld() }
         wifiGeofenceButton.setOnClickListener { clickWifi() }
         wifiText.setOnClickListener { clickWifi() }
-        shopGeofenceButton.setOnClickListener { clickShop() }
-        shopText.setOnClickListener { clickShop() }
         listGeofenceButton.setOnClickListener { clickList() }
         listText.setOnClickListener { clickList() }
-        busstopGeofenceButton.setOnClickListener { clickBus() }
-        busStopText.setOnClickListener { clickBus() }
         updateView()
     }
 
@@ -146,14 +142,6 @@ class LocationSelection : NaturalTriggerFragment() {
     fun clickList() {
         val dialog = GeofenceListDialogFragment()
         dialog.show(activity!!.supportFragmentManager, "GeofenceListDialogFragment")
-    }
-
-    fun clickShop() {
-        //noop
-    }
-
-    fun clickBus() {
-        //noop
     }
 
     fun clickWifi() {

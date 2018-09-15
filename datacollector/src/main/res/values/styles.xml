@@ -12,6 +12,7 @@
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="android:textColor">@color/primaryTextColorDark</item>
     </style>
 
     <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
@@ -38,7 +39,8 @@
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <!-- Customize your theme here. -->
-        <item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:textColor">@color/primaryTextColorLight</item>
     </style>
 
     <!-- Base application theme. -->

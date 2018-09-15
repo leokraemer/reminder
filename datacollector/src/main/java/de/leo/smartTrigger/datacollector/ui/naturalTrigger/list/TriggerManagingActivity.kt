@@ -209,4 +209,5 @@ class TriggerManagingActivity : AppCompatActivity(),
         }
     }
 
+    fun createDummyString(repeat : Int, alpha : Char) = alpha.toString().repeat(repeat)
 }
