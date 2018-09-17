@@ -112,8 +112,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:maxLines="5"
-        android:ellipsize="end"
         android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -124,6 +122,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="5"
         android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView385" />
