@@ -28,7 +28,6 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
-import android.animation.LayoutTransition
 
 
 /**

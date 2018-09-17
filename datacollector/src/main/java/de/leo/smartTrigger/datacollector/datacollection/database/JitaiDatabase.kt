@@ -45,7 +45,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1015
+const val DATABASE_VERSION = 1016
 
 class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
@@ -1155,12 +1155,16 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
     fun enterUserJitaiEvent(id: Int, timestamp: Long, username: String, eventName: Int,
-                            sensorDatasetId: Long) {
+                            sensorDatasetId: Long, triggerRating: Int, momentRating: Int,
+                            surveyText: String) {
         val cv = ContentValues()
         cv.put(JITAI_ID, id)
         cv.put(TIMESTAMP, timestamp)
         cv.put(USERNAME, username)
         cv.put(JITAI_EVENT, eventName)
+        cv.put(JITAI_SURVEY_TRIGGER_RATING, triggerRating)
+        cv.put(JITAI_SURVEY_MOMENT_RATING, momentRating)
+        cv.put(JITAI_SURVEY_TEXT, surveyText)
         cv.put(JITAI_EVENT_SENSORDATASET_ID, sensorDatasetId)
         writableDatabase.transaction { insert(TABLE_JITAI_EVENTS, null, cv) }
     }
@@ -1513,6 +1517,7 @@ const val JITAI_ACTIVE = "jitaiActive"
 const val JITAI_GOAL = "jitaiName"
 const val JITAI_MESSAGE = "jitaiMessage"
 const val JITAI_GEOFENCE = "jitaiGeofence"
+
 const val JITAI_WEATHER = "jitaiWeather"
 const val JITAI_TIME_TRIGGER = "jitaiTimeTrigger"
 const val JITAI_DELETED = "jitaiDeleted"
@@ -1521,6 +1526,11 @@ const val JITAI_DELETED = "jitaiDeleted"
 const val TABLE_JITAI_EVENTS = "table_jitai_events"
 const val JITAI_EVENT = "jitai_event"
 const val JITAI_ID = "jitai_id"
+//how good was the time
+const val JITAI_SURVEY_MOMENT_RATING = "jitaiMomentRating"
+//how good was the trigger with  the conditions
+const val JITAI_SURVEY_TRIGGER_RATING = "jitaiTriggerRating"
+const val JITAI_SURVEY_TEXT = "jitaiSurveyText"
 const val JITAI_EVENT_SENSORDATASET_ID = "jitai_sensorDataSet_id"
 
 //Create table statements
@@ -1546,12 +1556,15 @@ const val CREATE_TABLE_SENSORDATA =
 
 const val CREATE_TABLE_JITAI_EVENTS =
     "CREATE TABLE if not exists $TABLE_JITAI_EVENTS (" +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP date, " +
-        "$USERNAME text, " +
+        "$ID INTEGER PRIMARY KEY, " +
+        "$TIMESTAMP DATE, " +
+        "$USERNAME TEXT, " +
         //see Jitai.companion for codes
         "$JITAI_EVENT INTEGER, " +
         "$JITAI_ID INTEGER, " +
+        "$JITAI_SURVEY_MOMENT_RATING INTEGER, " +
+        "$JITAI_SURVEY_TRIGGER_RATING INTEGER, " +
+        "$JITAI_SURVEY_TEXT TEXT, " +
         "$JITAI_EVENT_SENSORDATASET_ID INTEGER " +
         ");"
 

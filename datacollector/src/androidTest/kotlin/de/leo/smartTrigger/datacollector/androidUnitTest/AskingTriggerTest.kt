@@ -25,7 +25,7 @@ class AskingTriggerTest {
     lateinit var sensorDataSet: SensorDataSet
     lateinit var db: JitaiDatabase
     val jitaiID = 0
-    val  USERNAME = "test"
+    val USERNAME = "test"
 
     @Before
     fun setup() {
@@ -38,12 +38,14 @@ class AskingTriggerTest {
     fun testBasicFunction() {
         val trigger = AskingTrigger(jitaiID, TimeUnit.MINUTES.toMillis(30))
         sensorDataSet = SensorDataSet(3,
-                                                                                             "dummy",
-                                                                                             0)
+                                      "dummy",
+                                      0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1)
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+                               -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 2,  USERNAME,Jitai.NOTIFICATION_TRIGGER_NO, -1)
+        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, Jitai.NOTIFICATION_TRIGGER_NO, -1, -1,
+                               -1, "")
         Assert.assertFalse(trigger.check(context, sensorDataSet))
     }
 
@@ -51,10 +53,11 @@ class AskingTriggerTest {
     fun testBasicTimeout() {
         val trigger = AskingTrigger(jitaiID, TimeUnit.MINUTES.toMillis(30))
         sensorDataSet = SensorDataSet(3,
-                                                                                             "dummy",
-                                                                                             0)
+                                      "dummy",
+                                      0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1,  USERNAME,Jitai.NOTIFICATION_TRIGGER_YES, -1)
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+                               -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
         //<= 30 minutes later
         sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30))
@@ -68,12 +71,14 @@ class AskingTriggerTest {
     fun testNoAndTimeout() {
         val trigger = AskingTrigger(jitaiID, TimeUnit.MINUTES.toMillis(30))
         sensorDataSet = SensorDataSet(3,
-                                                                                             "dummy",
-                                                                                             0)
+                                      "dummy",
+                                      0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1)
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+                               -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 2,  USERNAME,Jitai.NOTIFICATION_TRIGGER_NO, -1)
+        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, Jitai.NOTIFICATION_TRIGGER_NO, -1, -1,
+                               -1, "")
         Assert.assertFalse(trigger.check(context, sensorDataSet))
         sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30) + 1)
         Assert.assertFalse(trigger.check(context, sensorDataSet))

@@ -31,6 +31,7 @@ abstract class Jitai(val context: Context) {
         const val TOO_FREQUENT_NOTIFICATIONS = 6
         //when the user deletes the notification without classifying
         const val NOTIFICATION_DELETED = 7
+        const val SURVEY_ABORD = 12
         const val JITAI_POSITIVE_PREDICTION = 8
         const val JITAI_NEGATIVE_PREDICTION = 9
         const val JITAI_CLASSIFIER_UNINITIALIZED = 10
@@ -63,7 +64,10 @@ abstract class Jitai(val context: Context) {
                                                                timestamp,
                                                                userName,
                                                                NOTIFICATION_NOT_VALID_ANY_MORE,
-                                                               sensorDataId)
+                                                               sensorDataId,
+                                                               -1,
+                                                               -1,
+                                                               "")
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
                                                             JITAI_EVENT to
                                                                 NOTIFICATION_NOT_VALID_ANY_MORE,
@@ -77,7 +81,10 @@ abstract class Jitai(val context: Context) {
                                                                timestamp,
                                                                userName,
                                                                CONDITION_MET,
-                                                               sensorDataId)
+                                                               sensorDataId,
+                                                               -1,
+                                                               -1,
+                                                               "")
         val intent = context.intentFor<NotificationService>(JITAI_ID to id,
                                                             JITAI_EVENT to CONDITION_MET,
                                                             JITAI_GOAL to goal,

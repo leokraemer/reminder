@@ -158,7 +158,8 @@ class DataCollectorService : Service(),
                                                      System.currentTimeMillis(),
                                                      userName,
                                                      Jitai.NOW,
-                                                     uploadDataSet(System.currentTimeMillis()))
+                                                     uploadDataSet(System.currentTimeMillis()),
+                                                     -1, -1, "")
                             Log.d(TAG, "entered now eventType for $jitaiId")
                         }
                         longToast("Aktivität aufgezeichnet")

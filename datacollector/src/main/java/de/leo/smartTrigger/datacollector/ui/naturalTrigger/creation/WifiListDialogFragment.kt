@@ -118,6 +118,11 @@ class WifiListDialogFragment : DialogFragment() {
             }
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+        activity?.unregisterReceiver(mWifiScanReceiver)
+    }
 }
 
 

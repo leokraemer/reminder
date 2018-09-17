@@ -53,6 +53,9 @@
             android:launchMode="singleTask"
             android:taskAffinity="" />
 
+
+        <activity android:name=".ui.notifications.FullscreenJitaiSurvey"/>
+
         <service android:name="de.leo.smartTrigger.datacollector.datacollection.services.ActivitiesIntentService" />
         <service
             android:name="de.leo.smartTrigger.datacollector.datacollection.DataCollectorService"
