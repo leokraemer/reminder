@@ -50,6 +50,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
     </style>
 
     <style name="AppBaseTheme.Light" parent="Theme.AppCompat.Light">

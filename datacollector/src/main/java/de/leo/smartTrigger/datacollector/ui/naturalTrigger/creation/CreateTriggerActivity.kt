@@ -1,5 +1,6 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -28,6 +29,7 @@ import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import android.widget.ScrollView
 
 
 /**
@@ -119,9 +121,13 @@ class CreateTriggerActivity : GeofenceDialogListener,
                 }
                 if (position > NUM_PAGES)
                     finish()
+                ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.height)
+                    .setDuration(200)
+                    .start();
+                //scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
             }
         })
-        previous_page.onClick { if (lockableViewPager?.isPagingEnabled == true) onBackPressed() }
+        previous_page.onClick { onBackPressed() }
         next_page.onClick { if (lockableViewPager?.isPagingEnabled == true) nextButtonClick() }
         model.modelChangelListener = this
         goalSelection.model = model

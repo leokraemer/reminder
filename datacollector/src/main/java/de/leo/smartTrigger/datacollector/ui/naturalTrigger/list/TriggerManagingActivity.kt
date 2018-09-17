@@ -45,24 +45,6 @@ class TriggerManagingActivity : AppCompatActivity(),
     private val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(this) }
 
 
-    override fun deleteNaturalTrigger(id: Int) {
-        if (id == -2)
-            toast("Lange drücken um zu löschen.")
-        else if (id == -1)
-            toast("NaturalTrigger muss zuerst deaktiviert werden.")
-        else {
-            db.deleteNaturalTrigger(id)
-            updateDataset()
-        }
-        return
-    }
-
-    override fun updateNaturalTrigger(naturalTrigger: Int, active: Boolean) {
-        db.updateNaturalTrigger(naturalTrigger, active)
-        updateDataset()
-        updateService(naturalTrigger)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.trigger_list)
@@ -99,6 +81,24 @@ class TriggerManagingActivity : AppCompatActivity(),
             }
         }
         return true
+    }
+
+    override fun deleteNaturalTrigger(id: Int) {
+        if (id == -2)
+            toast("Lange drücken um zu löschen.")
+        else if (id == -1)
+            toast("NaturalTrigger muss zuerst deaktiviert werden.")
+        else {
+            db.deleteNaturalTrigger(id)
+            updateDataset()
+        }
+        return
+    }
+
+    override fun updateNaturalTrigger(naturalTrigger: Int, active: Boolean) {
+        db.updateNaturalTrigger(naturalTrigger, active)
+        updateDataset()
+        updateService(naturalTrigger)
     }
 
     private fun updateDataset() {
@@ -209,5 +209,5 @@ class TriggerManagingActivity : AppCompatActivity(),
         }
     }
 
-    fun createDummyString(repeat : Int, alpha : Char) = alpha.toString().repeat(repeat)
+    fun createDummyString(repeat: Int, alpha: Char) = alpha.toString().repeat(repeat)
 }

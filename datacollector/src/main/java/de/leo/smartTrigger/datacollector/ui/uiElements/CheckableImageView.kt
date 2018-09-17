@@ -75,7 +75,7 @@ class CheckableImageView : ImageView, Checkable {
                 drawable.colorFilter = null
             else
                 //light grey filter
-                drawable.setColorFilter(resources.getColor(R.color.material_grey_800), PorterDuff.Mode.SRC_IN);
+                drawable.setColorFilter(resources.getColor(R.color.white), PorterDuff.Mode.SRC_IN);
         }
         super.setEnabled(enabled)
     }

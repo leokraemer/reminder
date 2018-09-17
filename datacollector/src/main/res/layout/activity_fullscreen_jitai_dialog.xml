@@ -7,6 +7,7 @@
     android:layout_height="match_parent">
 
     <include
+        android:id="@+id/include"
         layout="@layout/naturaltriggerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,103 +27,97 @@
         android:text="Wie genau entspricht diese Erinnerung den gesetzen Bedingungen?"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reminder_card" />
+        app:layout_constraintTop_toBottomOf="@+id/include" />
+
 
     <RadioGroup
         android:id="@+id/triggerRating"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textView100"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1">
+            android:layout_gravity="center"
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="Gar nicht"
+            android:textColor="#000000" />
 
-            <TextView
-                android:id="@+id/textView100"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                android:text="Gar nicht"
-                android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="@+id/strong_disagree1"
-                app:layout_constraintStart_toStartOf="@+id/strong_disagree1"
-                app:layout_constraintTop_toTopOf="parent" />
+        <RadioButton
+            android:id="@+id/strong_disagree1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/disagree1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView100" />
 
-            <TextView
-                android:id="@+id/textView110"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                android:text="Perfekt"
-                android:textColor="#000000"
-                app:layout_constraintBottom_toTopOf="@+id/agree1"
-                app:layout_constraintEnd_toEndOf="@+id/agree1"
-                app:layout_constraintStart_toStartOf="@+id/agree1" />
+        <RadioButton
+            android:id="@+id/disagree1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/neutral1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/strong_disagree1"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
 
-            <RadioButton
-                android:id="@+id/strong_disagree1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/disagree1"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView100" />
+        <RadioButton
+            android:id="@+id/neutral1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/strong_agree1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/disagree1"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
 
-            <RadioButton
-                android:id="@+id/disagree1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/neutral1"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/strong_disagree1"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
+        <RadioButton
+            android:id="@+id/agree1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/strong_agree1"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
 
-            <RadioButton
-                android:id="@+id/neutral1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/strong_agree1"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/disagree1"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
+        <RadioButton
+            android:id="@+id/strong_agree1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/agree1"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/neutral1"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
 
-            <RadioButton
-                android:id="@+id/agree1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/strong_agree1"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
-
-            <RadioButton
-                android:id="@+id/strong_agree1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/agree1"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/neutral1"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree1" />
-        </android.support.constraint.ConstraintLayout>
-
+        <TextView
+            android:id="@+id/textView110"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:gravity="right|center"
+            android:padding="2dp"
+            android:text="Perfekt"
+            android:textColor="#000000" />
     </RadioGroup>
 
     <View
@@ -151,97 +146,93 @@
         android:id="@+id/momentRating"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
         android:layout_weight="1"
+        android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14">
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/textView10"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1">
+            android:layout_marginRight="8dp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="Gar nicht"
+            android:textColor="#000000" />
 
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                android:text="Gar nicht"
-                android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="@+id/strong_disagree"
-                app:layout_constraintStart_toStartOf="@+id/strong_disagree"
-                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textView11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                android:text="Perfekt"
-                android:textColor="#000000"
-                app:layout_constraintBottom_toTopOf="@+id/agree"
-                app:layout_constraintEnd_toEndOf="@+id/agree"
-                app:layout_constraintStart_toStartOf="@+id/agree" />
+        <RadioButton
+            android:id="@+id/strong_disagree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/disagree"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
-            <RadioButton
-                android:id="@+id/strong_disagree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/disagree"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView10" />
+        <RadioButton
+            android:id="@+id/disagree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/neutral"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/strong_disagree"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
 
-            <RadioButton
-                android:id="@+id/disagree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/neutral"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/strong_disagree"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
+        <RadioButton
+            android:id="@+id/neutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/strong_agree"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/disagree"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
 
-            <RadioButton
-                android:id="@+id/neutral"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/strong_agree"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/disagree"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
+        <RadioButton
+            android:id="@+id/agree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/strong_agree"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
 
-            <RadioButton
-                android:id="@+id/agree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/strong_agree"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
+        <RadioButton
+            android:id="@+id/strong_agree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/agree"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/neutral"
+            app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
 
-            <RadioButton
-                android:id="@+id/strong_agree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="2dp"
-                app:layout_constraintEnd_toStartOf="@+id/agree"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/neutral"
-                app:layout_constraintTop_toTopOf="@+id/strong_disagree" />
-        </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="Perfekt"
+            android:textColor="#000000"
+            app:layout_constraintBottom_toTopOf="@+id/agree"
+            app:layout_constraintEnd_toEndOf="@+id/agree"
+            app:layout_constraintStart_toStartOf="@+id/agree" />
 
     </RadioGroup>
 
