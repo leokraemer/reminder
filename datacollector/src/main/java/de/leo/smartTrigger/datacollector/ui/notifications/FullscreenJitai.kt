@@ -11,6 +11,7 @@ import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import kotlinx.android.synthetic.main.activity_full_screen_jitai.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.io.ByteArrayOutputStream
 
 class FullscreenJitai : AppCompatActivity() {
 
