@@ -31,7 +31,6 @@ import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.Constants
-import de.leo.smartTrigger.datacollector.ui.activityRecording.ActivityRecord
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import org.threeten.bp.LocalTime
 import java.io.File
@@ -109,7 +108,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         db!!.transaction {
             execSQL(CREATE_TABLE_SENSORDATA)
             execSQL(CREATE_TABLE_WEATHER)
-            execSQL(CREATE_TABLE_RECORDINGS)
             execSQL(CREATE_TABLE_ACC)
             execSQL(CREATE_TABLE_GYRO)
             execSQL(CREATE_TABLE_ROT)
@@ -164,7 +162,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         db!!.transaction {
             execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
-            execSQL("DROP TABLE IF EXISTS $TABLE_RECORDINGS")
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_WIFI_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
@@ -206,7 +203,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
             cv.apply {
                 put(TIMESTAMP, time)
                 put(USERNAME, userName)
-                put(RECORDING, recordingId)
                 put(ACTIVITY, activity.toString())
                 put(STEPS, totalStepsToday)
                 put(ABIENT_SOUND, ambientSound)
@@ -226,7 +222,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     private fun sensorDataSetFromCursor(c: Cursor): SensorDataSet {
         val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
         val user = c.getString(c.getColumnIndex(USERNAME))
-        val recording = c.getInt(c.getColumnIndex(RECORDING_ID))
         val id = c.getLong(c.getColumnIndex(ID))
         //TODO fix hack
         val activity = c.getString(c.getColumnIndex(ACTIVITY))
@@ -244,7 +239,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         val screenState = c.getInt(c.getColumnIndex(SCREEN_STATE)) > 0
         val s = SensorDataSet(timestamp,
                               user,
-                              recording,
                               id,
                               deSerializeActivitys(activity),
                               totalStepsToday,
@@ -259,43 +253,40 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
     }
 
 
-    fun enterSingleDimensionData(rec_id: Int, table: String, value: SensorEvent) {
+    fun enterSingleDimensionData(table: String, value: SensorEvent) {
         val cv = ContentValues()
         cv.put(X, value.values[0])
         cv.put(TIMESTAMP, value.timestamp)
-        cv.put(RECORDING_ID, rec_id)
         cv.put(ACCURACY, value.accuracy)
         writableDatabase.insert(table, null, cv)
     }
 
-    fun enterSingleDimensionDataBatch(rec_id: Int,
-                                      table: String,
+    fun enterSingleDimensionDataBatch(table: String,
                                       values: Iterable<Pair<Long, Float>>) {
         writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
                 cv.put(X, entry.second)
                 cv.put(TIMESTAMP, entry.first)
-                cv.put(RECORDING_ID, rec_id)
                 //cv.put(ACCURACY, entry.accuracy)
                 insert(table, null, cv)
             }
         }
     }
 
-    fun enterAccDataBatch(rec_id: Int, values: Iterable<Pair<Long, FloatArray>>) {
-        insert3DSensorValues(TABLE_REAL_TIME_ACC, values, rec_id)
+    fun enterAccDataBatch(values: Iterable<Pair<Long, FloatArray>>) {
+        insert3DSensorValues(TABLE_REAL_TIME_ACC, values)
     }
 
-    fun enterMagDataBatch(rec_id: Int, values: Iterable<Pair<Long, FloatArray>>) {
-        insert3DSensorValues(TABLE_REAL_TIME_MAG, values, rec_id)
+    fun enterMagDataBatch(values: Iterable<Pair<Long, FloatArray>>) {
+        insert3DSensorValues(TABLE_REAL_TIME_MAG, values)
     }
 
-    fun enterGyroDataBatch(rec_id: Int, values: Iterable<Pair<Long, FloatArray>>) {
-        insert3DSensorValues(TABLE_REAL_TIME_GYRO, values, rec_id)
+    fun enterGyroDataBatch(values: Iterable<Pair<Long, FloatArray>>) {
+        insert3DSensorValues(TABLE_REAL_TIME_GYRO, values)
     }
 
-    fun enterRotDataBatch(rec_id: Int, values: ArrayDeque<Pair<Long, FloatArray>>) {
+    fun enterRotDataBatch(values: ArrayDeque<Pair<Long, FloatArray>>) {
         writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
@@ -303,15 +294,13 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 cv.put(X, entry.second[0])
                 cv.put(Y, entry.second[1])
                 cv.put(Z, entry.second[2])
-                cv.put(RECORDING_ID, rec_id)
                 cv.put(SCALAR, entry.second[4])
                 insert(TABLE_REAL_TIME_ROT, null, cv)
             }
         }
     }
 
-    private fun insert3DSensorValues(table: String, values: Iterable<Pair<Long, FloatArray>>,
-                                     rec_id: Int) {
+    private fun insert3DSensorValues(table: String, values: Iterable<Pair<Long, FloatArray>>) {
         writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
@@ -319,59 +308,10 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 cv.put(X, entry.second[0])
                 cv.put(Y, entry.second[1])
                 cv.put(Z, entry.second[2])
-                cv.put(RECORDING_ID, rec_id)
                 insert(table, null, cv)
             }
         }
     }
-
-    fun get3DSensorValues(rec_id: Int, table: String): MutableList<Pair<Long, FloatArray>> {
-        val c = readableDatabase.query(table, arrayOf(X,
-                                                      Y,
-                                                      Z,
-                                                      TIMESTAMP), "$RECORDING_ID = ?",
-                                       arrayOf(rec_id.toString()), null, null, null, null)
-        val list = mutableListOf<Pair<Long, FloatArray>>()
-        if (c.count > 0) {
-            c.moveToFirst()
-            do {
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val array = FloatArray(3)
-                array[0] = c.getFloat(c.getColumnIndex(X))
-                array[1] = c.getFloat(c.getColumnIndex(Y))
-                array[2] = c.getFloat(c.getColumnIndex(Z))
-                val pair = Pair<Long, FloatArray>(timestamp, array)
-                list.add(pair)
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-    fun getALL3DSensorValues(rec_id: Int, table: String): MutableList<Pair<Long, FloatArray>> {
-        val c = readableDatabase.query(table, arrayOf(X,
-                                                      Y,
-                                                      Z,
-                                                      TIMESTAMP), "$RECORDING_ID != ?",
-                                       arrayOf(rec_id.toString()), null,
-                                       null, null, null)
-        val list = mutableListOf<Pair<Long, FloatArray>>()
-        if (c.count > 0) {
-            c.moveToFirst()
-            do {
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val array = FloatArray(3)
-                array[0] = c.getFloat(c.getColumnIndex(X))
-                array[1] = c.getFloat(c.getColumnIndex(Y))
-                array[2] = c.getFloat(c.getColumnIndex(Z))
-                val pair = Pair<Long, FloatArray>(timestamp, array)
-                list.add(pair)
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
 
     fun getALL3DSensorValues(start: Long, end: Long, table: String): MutableList<Pair<Long,
         FloatArray>> {
@@ -428,24 +368,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
                 array[1] = c.getDouble(YcolumnIndex)
                 array[2] = c.getDouble(ZcolumnIndex)
                 list.add(array)
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-    fun getSensorValues(rec_id: Int, table: String): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(table, arrayOf(X,
-                                                      TIMESTAMP), "$RECORDING_ID = ?",
-                                       arrayOf(rec_id.toString()), null, null, null, null)
-
-        val list = mutableListOf<Pair<Long, Double>>()
-        if (c.count > 0) {
-            c.moveToFirst()
-            do {
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val pair = Pair<Long, Double>(timestamp, c.getDouble(c.getColumnIndex(X)))
-                list.add(pair)
             } while (c.moveToNext())
         }
         c.close()
@@ -596,27 +518,11 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return list
     }
 
-
-    fun getRecordingIds(): List<Int> {
-        val list = mutableListOf<Int>()
-        val c = getRecordings()
-        if (c.count > 0) {
-            c.moveToFirst()
-            do {
-                list.add(c.getInt(c.getColumnIndex(ID)))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-
     fun createSingleDimensionRealtimeTables(db: SQLiteDatabase) {
         for (i in 0 until REALTIME_TABLES.size) {
             val table = REALTIME_TABLES[i]
             db.execSQL("CREATE TABLE $table ( " +
                            "$ID integer PRIMARY KEY, " +
-                           "$RECORDING_ID INTEGER, " +
                            "$TIMESTAMP date, " +
                            "$X real ," +
                            "$ACCURACY real )")
@@ -708,48 +614,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return returnvalue
     }
 
-    fun getRecordings(): Cursor {
-        return readableDatabase.rawQuery("SELECT DISTINCT $TABLE_SENSORDATA.$RECORDING AS '_id'," +
-                                             " $RECORDING_NAME " +
-                                             " FROM $TABLE_RECORDINGS " +
-                                             " LEFT JOIN $TABLE_SENSORDATA " +
-                                             " ON $TABLE_SENSORDATA.$RECORDING " +
-                                             "= $TABLE_RECORDINGS.$RECORDING_ID",
-                                         null)
-    }
-
-    fun getRecording(rec_id: Int): ActivityRecord {
-        val c = readableDatabase.rawQuery(
-            "SELECT * FROM $TABLE_SENSORDATA " +
-                "LEFT JOIN $TABLE_WEATHER " +
-                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE_SENSORDATA.$WEATHER " +
-                "WHERE $RECORDING = ? " +
-                "ORDER BY $TIMESTAMP"
-            , arrayOf("" + rec_id))
-
-        val name = getRecordingName(rec_id)
-        val record = ActivityRecord(name, c)
-        c.close()
-        record.accelerometerData = getALL3DSensorValues(record.beginTime, record.endTime,
-                                                        TABLE_REAL_TIME_ACC)
-        record.magnetData = getALL3DSensorValues(record.beginTime,
-                                                 record.endTime,
-                                                 TABLE_REAL_TIME_MAG)
-        record.gyroscopData = getALL3DSensorValues(record.beginTime,
-                                                   record.endTime,
-                                                   TABLE_REAL_TIME_GYRO)
-        record.proximity = getSensorValues(record.beginTime,
-                                           record.endTime,
-                                           TABLE_REALTIME_PROXIMITY)
-        record.orientationData = getOrientationSensorValues(record.beginTime, record.endTime)
-        record.ambientLight = getSensorValues(record.beginTime,
-                                              record.endTime,
-                                              TABLE_REALTIME_LIGHT)
-        record.pressure = getSensorValues(record.beginTime, record.endTime,
-                                          TABLE_REALTIME_AIR)
-        return record
-    }
-
     private fun getOrientationSensorValues(begin: Long,
                                            end: Long): MutableList<Pair<Long, FloatArray>> {
         val c = readableDatabase.query(TABLE_REAL_TIME_ROT,
@@ -780,58 +644,6 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         }
         c.close()
         return list
-    }
-
-    private fun getRecordingName(rec_id: Int): String {
-        val d = readableDatabase.query(TABLE_RECORDINGS,
-                                       null,
-                                       "$RECORDING_ID = ?",
-                                       arrayOf(rec_id.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
-        d.moveToFirst()
-        val name = d.getString(d.getColumnIndex(RECORDING_NAME))
-        d.close()
-        return name
-    }
-
-    fun getReferenceRecording(rec_id: Int, limit: Int): ActivityRecord {
-        val c = readableDatabase.rawQuery(
-            "SELECT * FROM ( " +
-                "SELECT * FROM $TABLE_SENSORDATA " +
-                "LEFT JOIN $TABLE_WEATHER " +
-                "ON $TABLE_WEATHER.$WEATHER_ID = $TABLE_SENSORDATA.$WEATHER " +
-                "WHERE $RECORDING = ? " +
-                "ORDER BY $TIMESTAMP DESC " +
-                "LIMIT '$limit' ) " +
-                "ORDER BY $TIMESTAMP"
-            , arrayOf("" + rec_id))
-        val name = getRecordingName(rec_id)
-        val record = ActivityRecord(name, c)
-        record.accelerometerData = get3DSensorValues(rec_id,
-                                                     TABLE_REAL_TIME_ACC)
-        record.magnetData = get3DSensorValues(rec_id,
-                                              TABLE_REAL_TIME_MAG)
-        record.gyroscopData = get3DSensorValues(rec_id,
-                                                TABLE_REAL_TIME_GYRO)
-        record.proximity = getSensorValues(rec_id,
-                                           TABLE_REALTIME_PROXIMITY)
-        record.orientationData = getOrientationSensorValues(record.beginTime, record.endTime)
-        record.ambientLight = getSensorValues(rec_id,
-                                              TABLE_REALTIME_LIGHT)
-        record.pressure = getSensorValues(rec_id,
-                                          TABLE_REALTIME_AIR)
-        c.close()
-        return record
-    }
-
-    fun setRecordingName(s: String, rec_id: Int) {
-        val cv = ContentValues()
-        cv.put(RECORDING_NAME, s)
-        cv.put(RECORDING_ID, rec_id)
-        writableDatabase.replace(TABLE_RECORDINGS, null, cv)
     }
 
     fun getAllGeofences(): List<Pair<Int, Geofence>> {
@@ -1506,11 +1318,6 @@ val REALTIME_TABLES = arrayOf(TABLE_REALTIME_LIGHT,
 const val ACCURACY = "accuracy"
 const val SCALAR = "scalar"
 
-//recordings
-const val TABLE_RECORDINGS = "recordings"
-const val RECORDING_ID = RECORDING
-const val RECORDING_NAME = "recording_name"
-
 //jitai
 const val TABLE_JITAI = "tableJitai"
 const val JITAI_ACTIVE = "jitaiActive"
@@ -1538,7 +1345,6 @@ const val CREATE_TABLE_SENSORDATA =
     "CREATE TABLE if not exists $TABLE_SENSORDATA (" +
         "$ID integer PRIMARY KEY, " +
         "$SESSION integer, " +
-        "$RECORDING integer, " +
         "$TIMESTAMP date, " +
         "$USERNAME text, " +
         "$ACTIVITY string, " +
@@ -1576,16 +1382,9 @@ const val CREATE_TABLE_WEATHER =
         "$WEATHER_TIMESTAMP INTEGER" +
         ");"
 
-const val CREATE_TABLE_RECORDINGS =
-    "CREATE TABLE if not exists $TABLE_RECORDINGS ( " +
-        "$RECORDING_ID INTEGER PRIMARY KEY, " +
-        "$RECORDING_NAME text " +
-        ");"
-
 const val CREATE_TABLE_ACC =
     "CREATE TABLE if not exists $TABLE_REAL_TIME_ACC ( " +
         "$ID integer PRIMARY KEY, " +
-        "$RECORDING_ID INTEGER, " +
         "$TIMESTAMP date, " +
         "$X real , " +
         "$Y real , " +
@@ -1595,7 +1394,6 @@ const val CREATE_TABLE_ACC =
 const val CREATE_TABLE_MAG =
     "CREATE TABLE if not exists $TABLE_REAL_TIME_MAG ( " +
         "$ID integer PRIMARY KEY, " +
-        "$RECORDING_ID INTEGER, " +
         "$TIMESTAMP date, " +
         "$X real , " +
         "$Y real , " +
@@ -1605,7 +1403,6 @@ const val CREATE_TABLE_MAG =
 const val CREATE_TABLE_GYRO =
     "CREATE TABLE if not exists $TABLE_REAL_TIME_GYRO ( " +
         "$ID integer PRIMARY KEY, " +
-        "$RECORDING_ID INTEGER, " +
         "$TIMESTAMP date, " +
         "$X real , " +
         "$Y real , " +
@@ -1615,7 +1412,6 @@ const val CREATE_TABLE_GYRO =
 const val CREATE_TABLE_ROT =
     "CREATE TABLE if not exists $TABLE_REAL_TIME_ROT ( " +
         "$ID integer PRIMARY KEY, " +
-        "$RECORDING_ID INTEGER, " +
         "$TIMESTAMP date, " +
         "$X real , " +
         "$Y real , " +

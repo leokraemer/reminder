@@ -26,7 +26,6 @@ import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.*
 import de.leo.smartTrigger.datacollector.jitai.activityDetection.ActivityRecognizer
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
-import de.leo.smartTrigger.datacollector.ui.activityRecording.RECORDING_ID
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
@@ -95,7 +94,6 @@ class DataCollectorService : Service(),
             .getString(getString(R.string.user_name), null)
     }
     private var db: JitaiDatabase? = null
-    private var recordingId = -1
     private lateinit var activityRecognizer: ActivityRecognizer
     private var wifiScanner: WifiScanner? = null
     private var currentWifiInfo: List<WifiInfo>? = null
@@ -126,46 +124,12 @@ class DataCollectorService : Service(),
         }
         if (intent != null && intent.action != null)
             when (intent.action) {
-                UPDATE_JITAI            -> {
+                UPDATE_JITAI -> {
                     val id = intent.getIntExtra(JITAI_ID, -1)
                     if (id != -1)
                         activityRecognizer.updateNaturalTrigger(id)
                     else
                         activityRecognizer = ActivityRecognizer(baseContext)
-                }
-                START_RECORDING         -> {
-                    recordingId = intent.getIntExtra(RECORDING_ID, -1)
-                    val answer = Intent(START_RECORDING)
-                    answer.putExtra(RECORDING_ID, recordingId)
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer)
-                }
-                STOP_RECORDING          -> {
-                    recordingId = -1
-                    val answer = Intent(STOP_RECORDING)
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer)
-                }
-                IS_RECORDING            -> {
-                    val answer = Intent(IS_RECORDING)
-                    answer.putExtra(RECORDING_ID, recordingId)
-                    answer.putExtra(IS_RECORDING, isRunning)
-                    LocalBroadcastManager.getInstance(this).sendBroadcast(answer)
-                }
-                USER_CLASSIFICATION_NOW -> {
-                    val jitaiId = intent.getIntExtra(JITAI_ID, -1)
-                    if (jitaiId > -1) {
-                        doAsync {
-                            db!!.enterUserJitaiEvent(jitaiId,
-                                                     System.currentTimeMillis(),
-                                                     userName,
-                                                     Jitai.NOW,
-                                                     uploadDataSet(System.currentTimeMillis()),
-                                                     -1, -1, "")
-                            Log.d(TAG, "entered now eventType for $jitaiId")
-                        }
-                        longToast("Aktivität aufgezeichnet")
-                    } else
-                        baseContext.startActivity(baseContext.intentFor<TriggerManagingActivity>()
-                                                      .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         return Service.START_STICKY
@@ -333,7 +297,6 @@ class DataCollectorService : Service(),
 
     private fun uploadDataSet(currentTime: Long): Long {
         val sensorDataSet = SensorDataSet(currentTime, userName!!)
-        sensorDataSet.recordingId = recordingId
         if (DataCollectorApplication.ACTIVITY_ENABLED) {
             sensorDataSet.activity = currentActivities
         }
@@ -371,20 +334,15 @@ class DataCollectorService : Service(),
     private fun uploadEnvironmentData() {
         if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
             doAsync {
-                db!!.enterSingleDimensionDataBatch(recordingId,
-                                                   TABLE_REALTIME_AIR,
+                db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_AIR,
                                                    myEnvironmentSensor.readPressureData())
-                db!!.enterSingleDimensionDataBatch(recordingId,
-                                                   TABLE_REALTIME_TEMPERATURE,
+                db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_TEMPERATURE,
                                                    myEnvironmentSensor.readTemperatureData())
-                db!!.enterSingleDimensionDataBatch(recordingId,
-                                                   TABLE_REALTIME_LIGHT,
+                db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_LIGHT,
                                                    myEnvironmentSensor.readLightData())
-                db!!.enterSingleDimensionDataBatch(recordingId,
-                                                   TABLE_REALTIME_HUMIDITY,
+                db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_HUMIDITY,
                                                    myEnvironmentSensor.readHumidityData())
-                db!!.enterSingleDimensionDataBatch(recordingId,
-                                                   TABLE_REALTIME_PROXIMITY,
+                db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_PROXIMITY,
                                                    myEnvironmentSensor.readProximityData())
             }
         }
@@ -397,10 +355,10 @@ class DataCollectorService : Service(),
             val magData = myMotion.readMagData()
             val gyroData = myMotion.readGyroData()
             doAsync {
-                db!!.enterAccDataBatch(recordingId, accData)
-                db!!.enterGyroDataBatch(recordingId, gyroData)
-                db!!.enterMagDataBatch(recordingId, magData)
-                db!!.enterRotDataBatch(recordingId, rotData)
+                db!!.enterAccDataBatch(accData)
+                db!!.enterGyroDataBatch(gyroData)
+                db!!.enterMagDataBatch(magData)
+                db!!.enterRotDataBatch(rotData)
             }
         }
     }

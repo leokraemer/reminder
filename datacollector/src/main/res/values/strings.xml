@@ -91,5 +91,8 @@
     <string name="message">Welche Nachricht hilft ihnen ihr Ziel zu erreichen?</string>
     <string name="user_name">userName</string>
     <string name="enter_user_name">Bitte geben sie ihre ID ein</string>
+    <string name="copy">Kopieren</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="delete">Löschen</string>
 
 </resources>

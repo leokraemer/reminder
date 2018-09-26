@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppBaseTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="NaturalTriggerViewTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -11,22 +11,35 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
-        <item name="android:textColor">@color/primaryTextColorDark</item>
+        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
+        <item name="android:textColor">@color/primaryTextColorLight</item>
     </style>
 
-    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
-        <item name="titleTextStyle">@style/MyTitleTextStyle</item>
-    </style>
+    <style name="GalaxyZooThemeToolbarDarkOverflow" parent="Theme.AppCompat.NoActionBar">
+        <!-- android:textColorPrimary is the  color of the title text
+             in the Toolbar, in the Theme.AppCompat theme:  -->
+        <item name="android:textColorPrimary">@color/abc_primary_text_material_light</item>
 
-    <style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/white</item>
-    </style>
+        <!-- android:textColorPrimaryInverse is the  color of the title
+             text in the Toolbar, in the Theme.AppCompat.Light theme:  -->
+        <!-- <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_light</item> -->
 
-    <!-- Base application theme. -->
-    <style name="AppBaseTheme.Fullscreen" parent="AppBaseTheme">
-        <!-- Customize your theme here. -->
-        <item name="android:windowTranslucentStatus">true</item>-->
+        <!-- android:actionMenuTextColor is the color of the text of
+              action (menu) items in the Toolbar, at least in the
+              Theme.AppCompat theme.
+              For some reason, they already get the textColorPrimary
+              when running on API 21, but not on older versions of
+              Android, so this is only necessary to support older
+              Android versions.-->
+        <item name="actionMenuTextColor">@color/abc_primary_text_material_light</item>
+        <!-- android:textColorSecondary is the color of the menu
+             overflow icon (three vertical dots) -->
+        <item name="android:textColorSecondary">@color/white</item>
+
+        <!-- This would set the toolbar's background color,
+              but setting this also changes the popup menu's background,
+              even if we define popupTheme for our <Toolbar> -->
+        <!-- <item name="android:background">@color/color_primary</item> -->
     </style>
 
     <!-- Base application theme. -->
@@ -38,6 +51,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:textColor">@color/primaryTextColorLight</item>
@@ -50,7 +64,19 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
+    </style>
+
+
+    <!-- Base application theme. -->
+    <style name="AppBaseTheme.Light.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
+        <item name="android:textColor">@color/primaryTextColorLight</item>
     </style>
 
     <style name="AppBaseTheme.Light" parent="Theme.AppCompat.Light">
@@ -62,24 +88,48 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="android:textColor">@color/primaryTextColorLight</item>
+        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
     </style>
-
-    <style name="AppTheme.NoActionBar" parent="AppBaseTheme">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat" />
 
     <style name="Widget.MultiSlider" parent="android:Widget"></style>
 
-    <style name="AppTheme.Picker" parent="AppBaseTheme" >
+    <style name="AppTheme.Picker" parent="NaturalTriggerViewTheme">
         <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="CheckableImageViewStyle">
+        <item name="android:elevation">3dp</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:tint">@color/green_800</item>
+        <item name="android:background">@drawable/round_checkable_background</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="CheckableTextViewStyle">
+        <item name="android:elevation">3dp</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:background">@drawable/round_checkable_background</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat</item>
+        <item name="android:textColor">@color/green_800</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textIsSelectable">false</item>
     </style>
 
 </resources>

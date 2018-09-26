@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -13,13 +12,11 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.CursorAdapter
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
@@ -30,7 +27,7 @@ import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
 import de.leo.smartTrigger.datacollector.utils.PermissionUtils
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
-import kotlinx.android.synthetic.main.trigger_list.*
+import kotlinx.android.synthetic.main.activity_trigger_list.*
 import org.jetbrains.anko.commit
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
@@ -47,7 +44,7 @@ class TriggerManagingActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.trigger_list)
+        setContentView(R.layout.activity_trigger_list)
         setSupportActionBar(findViewById(R.id.trigger_list_toolbar))
 
         val models = db.allNaturalTriggerModels()
@@ -55,9 +52,6 @@ class TriggerManagingActivity : AppCompatActivity(),
         triggerListView.adapter = TriggerListRecyclerViewAdapter(this,
                                                                  models,
                                                                  this)
-        val dividerItemDecoration = DividerItemDecoration(triggerListView.getContext(),
-                                                          (triggerListView.layoutManager as LinearLayoutManager).getOrientation())
-        triggerListView.addItemDecoration(dividerItemDecoration)
         floatingActionButton2.setOnClickListener { addTrigger() }
         checkPermission()
         createNotificationChannel()

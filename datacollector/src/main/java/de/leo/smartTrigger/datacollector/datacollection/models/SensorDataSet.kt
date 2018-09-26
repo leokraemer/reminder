@@ -7,7 +7,6 @@ data class SensorDataSet @JvmOverloads constructor(
     //timestamp and user
     val time: Long,
     val userName: String,
-    var recordingId: Int = -1,
     var id: Long = -1L,
     //google fit data
     var activity: List<DetectedActivity> = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0)),

@@ -77,7 +77,6 @@ class CreateTriggerActivity : GeofenceDialogListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_natural_trigger_tabs)
-        setTheme(R.style.AppBaseTheme)
         val intent = getIntent()
         val naturalTriggerId = intent.getIntExtra(NATURALTRIGGER_ID, -1)
         if (naturalTriggerId != -1) {

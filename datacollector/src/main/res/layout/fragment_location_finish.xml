@@ -41,126 +41,71 @@
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/enterButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="8dp"
+        style="@style/CheckableImageViewStyle"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/round_checkable_background"
-        android:checked="true"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:scrollbarAlwaysDrawHorizontalTrack="false"
-        android:scrollbarAlwaysDrawVerticalTrack="false"
         android:src="@drawable/ic_enter_geofence_fat_arrow_white2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/exitButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+
+        style="@style/CheckableImageViewStyle"
         android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
         android:src="@drawable/ic_exit_geofence_fat_arrow_white"
         app:layout_constraintStart_toEndOf="@+id/enterButton"
         app:layout_constraintTop_toTopOf="@+id/enterButton" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/outside"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+
+        style="@style/CheckableImageViewStyle"
         android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
         android:src="@drawable/ic_outside10_white"
         app:layout_constraintStart_toEndOf="@+id/inside"
         app:layout_constraintTop_toTopOf="@+id/exitButton" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/inside"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/CheckableImageViewStyle"
         android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
         android:src="@drawable/ic_inside3_white"
         app:layout_constraintStart_toEndOf="@+id/exitButton"
         app:layout_constraintTop_toTopOf="@+id/exitButton" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/fiveteenminutes"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
+        style="@style/CheckableTextViewStyle"
         android:text="15"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textIsSelectable="false"
-        android:textSize="24sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/inside"
         app:layout_constraintStart_toStartOf="@+id/inside"
         app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/moreminutes"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        style="@style/CheckableImageViewStyle"
         android:layout_marginStart="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/baseline_more_horiz_white_48dp"
+        android:src="@drawable/baseline_more_horiz_white_48"
         app:layout_constraintStart_toEndOf="@+id/thirtyminutes"
         app:layout_constraintTop_toTopOf="@+id/thirtyminutes" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/thirtyminutes"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+
+        style="@style/CheckableTextViewStyle"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:padding="8dp"
         android:text="30"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="24sp"
-        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
         app:layout_constraintTop_toBottomOf="@+id/insidetv" />
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/fiveminutes"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginRight="24dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:padding="8dp"
+
+        style="@style/CheckableTextViewStyle"
+        android:layout_marginEnd="24dp"
         android:text="5"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textIsSelectable="false"
-        android:textSize="24sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/fiveteenminutes"
         app:layout_constraintTop_toTopOf="@+id/fiveteenminutes" />
 
@@ -171,7 +116,6 @@
         android:gravity="center_horizontal"
         android:lines="2"
         android:text="Ort\nbetreten"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/enterButton"
         app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterButton" />
@@ -183,7 +127,6 @@
         android:gravity="center_horizontal"
         android:lines="2"
         android:text="Ort\nverlassen"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/exitButton"
         app:layout_constraintStart_toStartOf="@+id/exitButton"
         app:layout_constraintTop_toBottomOf="@+id/exitButton" />
@@ -195,7 +138,6 @@
         android:gravity="center_horizontal"
         android:lines="3"
         android:text="Außerhalb\nZeit\nverbringen"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/outside"
         app:layout_constraintStart_toStartOf="@+id/outside"
         app:layout_constraintTop_toBottomOf="@+id/outside" />
@@ -207,7 +149,6 @@
         android:gravity="center_horizontal"
         android:lines="3"
         android:text="Innerhalb\nZeit\nverbringen"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/inside"
         app:layout_constraintStart_toStartOf="@+id/inside"
         app:layout_constraintTop_toBottomOf="@+id/inside" />

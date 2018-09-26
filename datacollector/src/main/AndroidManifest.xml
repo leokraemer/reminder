@@ -21,17 +21,15 @@
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="Ort Definieren"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppBaseTheme.Light.NoActionBar" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity"
             android:label="Verwaltung" />
         <activity
-            android:name="de.leo.smartTrigger.datacollector.ui.activityRecording.RecordingActivity"
-            android:label="@string/study_name" />
-        <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity"
             android:label="Smart Trigger"
-            android:theme="@style/AppBaseTheme.NoActionBar">
+            android:theme="@style/AppBaseTheme.Light.NoActionBar">
             <intent-filter android:label="@string/study_name">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -40,19 +38,14 @@
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity"
             android:icon="@drawable/reminder_white"
-            android:label="Bewegungsziele"
+            android:label="Bewegungsziel definieren"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name="de.leo.smartTrigger.datacollector.ui.NavigationActivity"
-            android:label="@string/study_name" />
-
         <activity
             android:name=".ui.notifications.FullscreenJitai"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:taskAffinity="" />
-
+            android:taskAffinity=""/>
 
         <activity android:name=".ui.notifications.FullscreenJitaiSurvey"/>
 

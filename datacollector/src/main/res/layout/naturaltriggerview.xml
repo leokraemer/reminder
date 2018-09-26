@@ -10,11 +10,14 @@
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
-    android:theme="@style/AppBaseTheme"
+    android:theme="@style/NaturalTriggerViewTheme"
     android:visibility="visible"
+    app:cardBackgroundColor="@color/green_800"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/imageView2"
+    tools:layout_height="wrap_content"
+    tools:layout_width="match_parent"
     tools:showIn="@layout/activity_natural_trigger_tabs">
 
     <android.support.constraint.ConstraintLayout
@@ -100,6 +103,7 @@
             android:layout_height="0dp"
             android:layout_marginEnd="16dp"
             android:gravity="left|center_vertical"
+            android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/geofenceIcon"
             app:layout_constraintEnd_toEndOf="parent"

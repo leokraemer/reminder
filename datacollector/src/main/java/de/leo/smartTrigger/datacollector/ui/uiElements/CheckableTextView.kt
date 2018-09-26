@@ -6,6 +6,12 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Checkable
 import android.widget.TextView
+import android.content.res.TypedArray
+import android.graphics.PorterDuff
+import de.leo.smartTrigger.datacollector.R
+import kotlinx.android.synthetic.main.activity_trigger_list.view.*
+import org.jetbrains.anko.attr
+
 
 /**
  * Created by Leo on 01.03.2018.
@@ -31,8 +37,7 @@ class CheckableTextView : TextView, Checkable {
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState = super.onCreateDrawableState(extraSpace + 1)
         if (isChecked)
-            View.mergeDrawableStates(drawableState,
-                                     CHECKED_STATE_SET)
+            View.mergeDrawableStates(drawableState, CHECKED_STATE_SET)
         return drawableState
     }
 
@@ -43,8 +48,14 @@ class CheckableTextView : TextView, Checkable {
         }
     }
 
-    override fun isChecked(): Boolean {
-        return mChecked
+    override fun isChecked(): Boolean = mChecked
+
+    //store the elevation set in the xml
+    private var defaultElevation = elevation
+
+    override fun setEnabled(enabled: Boolean) {
+        elevation = if (enabled) defaultElevation else 0F
+        super.setEnabled(enabled)
     }
 
     override fun toggle() {

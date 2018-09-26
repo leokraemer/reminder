@@ -9,6 +9,7 @@ import android.view.View.OnClickListener
 import android.widget.Checkable
 import android.widget.ImageView
 import de.leo.smartTrigger.datacollector.R
+import java.util.*
 import java.util.stream.Stream
 
 /**
@@ -35,8 +36,7 @@ class CheckableImageView : ImageView, Checkable {
     override fun onCreateDrawableState(extraSpace: Int): IntArray {
         val drawableState = super.onCreateDrawableState(extraSpace + 1)
         if (isChecked)
-            View.mergeDrawableStates(drawableState,
-                                     CHECKED_STATE_SET)
+            View.mergeDrawableStates(drawableState, CHECKED_STATE_SET)
         return drawableState
     }
 
@@ -67,16 +67,10 @@ class CheckableImageView : ImageView, Checkable {
         private val CHECKED_STATE_SET = intArrayOf(android.R.attr.state_checked)
     }
 
+    private var defaultElevation = elevation
+
     override fun setEnabled(enabled: Boolean) {
-        if (enabled != isEnabled) {
-            if (enabled)
-                //set no filter
-                //HACK better use state list with nice color in xml
-                drawable.colorFilter = null
-            else
-                //light grey filter
-                drawable.setColorFilter(resources.getColor(R.color.white), PorterDuff.Mode.SRC_IN);
-        }
+        elevation = if (enabled) defaultElevation else 0F
         super.setEnabled(enabled)
     }
 }

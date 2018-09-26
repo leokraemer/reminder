@@ -1,55 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp">
-
+    android:layout_margin="4dp"
+    android:elevation="1dp"
+    android:padding="4dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:theme="@style/AppBaseTheme">
+        android:background="#ebf0ea">
 
+        <include
+            android:id="@+id/reminder_card"
+            layout="@layout/naturaltriggerview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ToggleButton
             android:id="@+id/active_toggle_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="ToggleButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_edit_white_24"
             app:layout_constraintEnd_toStartOf="@+id/delete"
-            app:layout_constraintTop_toTopOf="@+id/delete" />
-
-        <ImageButton
-            android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/baseline_delete_forever_white_24"
-            android:text="Löschen"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/active_toggle_button" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/situation" />
 
         <TextView
             android:id="@+id/textView42"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="Ziel:"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/goal" />
+            app:layout_constraintTop_toBottomOf="@+id/reminder_card" />
 
         <TextView
             android:id="@+id/textView46"
@@ -77,11 +74,13 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:maxLines="5"
+            android:minLines="1"
             android:text="TextView"
-            app:layout_constraintEnd_toStartOf="@+id/active_toggle_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView46"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/reminder_card" />
 
         <TextView
             android:id="@+id/messageCard"
@@ -90,8 +89,10 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:maxLines="5"
+            android:minLines="1"
             android:text="TextView"
-            app:layout_constraintEnd_toStartOf="@+id/active_toggle_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView46"
             app:layout_constraintTop_toBottomOf="@+id/goal" />
@@ -103,32 +104,73 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:maxLines="5"
+            android:minLines="1"
             android:text="TextView"
-            app:layout_constraintEnd_toStartOf="@+id/active_toggle_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/textView46"
             app:layout_constraintTop_toBottomOf="@+id/messageCard" />
 
-        <android.support.constraint.Barrier
-            android:id="@+id/barrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="situation,delete,edit" />
-
-        <include
-            android:id="@+id/reminder_card"
-            layout="@layout/naturaltriggerview"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+        <ImageButton
+            android:id="@+id/imageButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:padding="4dp"
+            android:src="@drawable/outline_expand_more_white_36"
+            android:tint="@color/green_800"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier"
-            app:layout_constraintTop_toTopOf="@+id/barrier" />
+            app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
+
+        <ImageButton
+            android:id="@+id/copy"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="8dp"
+            android:background="@null"
+            android:padding="4dp"
+            android:src="@drawable/outline_file_copy_white_36"
+            android:tint="@color/green_800"
+            app:layout_constraintEnd_toStartOf="@+id/edit"
+            app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
+
+        <ImageButton
+            android:id="@+id/delete"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="8dp"
+            android:background="@android:drawable/list_selector_background"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_delete_outline_white_36"
+            android:tint="@color/green_800"
+            app:layout_constraintEnd_toStartOf="@+id/copy"
+            app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
+
+        <ImageButton
+            android:id="@+id/edit"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginEnd="8dp"
+            android:background="@null"
+            android:padding="4dp"
+            android:src="@drawable/baseline_edit_white_36"
+            android:tint="@color/green_800"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton"
+            app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
