@@ -3,17 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:background="@color/colorPrimary">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/nightButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
+        style="@style/CheckableImageViewStyle"
         android:src="@drawable/ic_moon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -26,7 +20,6 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Nachts"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/nightButton"
         app:layout_constraintStart_toStartOf="@+id/nightButton"
         app:layout_constraintTop_toBottomOf="@+id/nightButton" />
@@ -37,19 +30,13 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Abends"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/eveningButton"
         app:layout_constraintStart_toStartOf="@+id/eveningButton"
         app:layout_constraintTop_toBottomOf="@+id/eveningButton" />
 
     <ImageView
         android:id="@+id/eveningButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
+        style="@style/CheckableImageViewStyle"
         android:src="@drawable/ic_sundown"
         app:layout_constraintEnd_toStartOf="@+id/nightButton"
         app:layout_constraintHorizontal_bias="0.5"
@@ -62,19 +49,13 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Mittags"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/middayButton"
         app:layout_constraintStart_toStartOf="@+id/middayButton"
         app:layout_constraintTop_toBottomOf="@+id/middayButton" />
 
     <ImageView
         android:id="@+id/middayButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
+        style="@style/CheckableImageViewStyle"
         android:src="@drawable/ic_sun"
         app:layout_constraintEnd_toStartOf="@+id/eveningButton"
         app:layout_constraintHorizontal_bias="0.5"
@@ -83,13 +64,7 @@
 
     <ImageView
         android:id="@+id/morningButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/round_checkable_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="8dp"
+        style="@style/CheckableImageViewStyle"
         android:src="@drawable/ic_sunrise"
         app:layout_constraintEnd_toStartOf="@+id/middayButton"
         app:layout_constraintHorizontal_bias="0.5"
@@ -102,7 +77,6 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Morgens"
-        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/morningButton"
         app:layout_constraintStart_toStartOf="@+id/morningButton"
         app:layout_constraintTop_toBottomOf="@+id/morningButton" />
@@ -141,10 +115,10 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/middayText"
-        app:rangeColor="@color/green_300"
+        app:rangeColor="@color/colorAccent"
         app:scaleStep="5"
         app:stepsThumbsApart="5"
-        app:thumbColor="@color/white"
+        app:thumbColor="@color/green_800"
         app:thumbNumber="2" />
 
     <TextView

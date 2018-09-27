@@ -85,11 +85,18 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="multiSliderStyle">@style/Widget.MultiSlider</item>
-        <item name="android:windowNoTitle">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <item name="android:textColor">@color/primaryTextColorLight</item>
-        <item name="actionBarStyle">@style/GalaxyZooThemeToolbarDarkOverflow</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+    </style>
+
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/MyTitleTextStyle</item>
+    </style>
+
+    <style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="Widget.MultiSlider" parent="android:Widget"></style>
@@ -102,7 +109,7 @@
         <item name="android:elevation">3dp</item>
         <item name="android:clipToPadding">false</item>
         <item name="android:tint">@color/green_800</item>
-        <item name="android:background">@drawable/round_checkable_background</item>
+        <item name="android:background">@drawable/ckeckable_ripple</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:padding">8dp</item>
@@ -115,7 +122,7 @@
     <style name="CheckableTextViewStyle">
         <item name="android:elevation">3dp</item>
         <item name="android:clipToPadding">false</item>
-        <item name="android:background">@drawable/round_checkable_background</item>
+        <item name="android:background">@drawable/ckeckable_ripple</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:gravity">center</item>

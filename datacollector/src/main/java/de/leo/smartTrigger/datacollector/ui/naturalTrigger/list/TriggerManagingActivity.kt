@@ -10,26 +10,27 @@ import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
 import de.leo.smartTrigger.datacollector.R
-import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
-import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
 import de.leo.smartTrigger.datacollector.utils.PermissionUtils
-import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
-import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
+import jp.wasabeef.recyclerview.animators.FadeInAnimator
+import jp.wasabeef.recyclerview.animators.FadeInDownAnimator
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_trigger_list.*
+import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
 import org.jetbrains.anko.commit
-import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
 
 
@@ -37,21 +38,22 @@ import org.jetbrains.anko.toast
  * Created by Leo on 15.11.2017.
  */
 
-class TriggerManagingActivity : AppCompatActivity(),
-                                TriggerUpdater {
+class TriggerManagingActivity : AppCompatActivity() {
+
     private val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(this) }
 
+    private lateinit var dataset: MutableList<NaturalTriggerModel>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trigger_list)
         setSupportActionBar(findViewById(R.id.trigger_list_toolbar))
 
-        val models = db.allNaturalTriggerModels()
+        dataset = db.allNaturalTriggerModels().toMutableList()
+
         triggerListView.layoutManager = LinearLayoutManager(this)
-        triggerListView.adapter = TriggerListRecyclerViewAdapter(this,
-                                                                 models,
-                                                                 this)
+        triggerListView.adapter = TriggerListRecyclerViewAdapter(this, dataset)
+        triggerListView.itemAnimator = SlideInLeftAnimator(OvershootInterpolator())
         floatingActionButton2.setOnClickListener { addTrigger() }
         checkPermission()
         createNotificationChannel()
@@ -77,28 +79,9 @@ class TriggerManagingActivity : AppCompatActivity(),
         return true
     }
 
-    override fun deleteNaturalTrigger(id: Int) {
-        if (id == -2)
-            toast("Lange drücken um zu löschen.")
-        else if (id == -1)
-            toast("NaturalTrigger muss zuerst deaktiviert werden.")
-        else {
-            db.deleteNaturalTrigger(id)
-            updateDataset()
-        }
-        return
-    }
-
-    override fun updateNaturalTrigger(naturalTrigger: Int, active: Boolean) {
-        db.updateNaturalTrigger(naturalTrigger, active)
-        updateDataset()
-        updateService(naturalTrigger)
-    }
-
     private fun updateDataset() {
-        triggerListView.swapAdapter(TriggerListRecyclerViewAdapter(this,
-                                                                   db.allNaturalTriggerModels(),
-                                                                   this), false)
+        dataset = db.allNaturalTriggerModels().toMutableList()
+        triggerListView.adapter = TriggerListRecyclerViewAdapter(this, dataset)
     }
 
     private fun addTrigger() {
@@ -106,17 +89,12 @@ class TriggerManagingActivity : AppCompatActivity(),
         startActivity(intent)
     }
 
-    private fun updateService(trigger: Int) {
-        startService(intentFor<DataCollectorService>()
-                         .setAction(UPDATE_JITAI)
-                         .putExtra(JITAI_ID, trigger)
-                    )
-    }
-
     override fun onResume() {
         super.onResume()
         updateDataset()
     }
+
+    ////////////////////////////// app start handling
 
     private fun promptEnterUserName() {
         val builder = AlertDialog.Builder(this)
@@ -191,7 +169,6 @@ class TriggerManagingActivity : AppCompatActivity(),
         }
     }
 
-
     private fun checkPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission
                 .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -202,6 +179,4 @@ class TriggerManagingActivity : AppCompatActivity(),
                                               true)
         }
     }
-
-    fun createDummyString(repeat: Int, alpha: Char) = alpha.toString().repeat(repeat)
 }

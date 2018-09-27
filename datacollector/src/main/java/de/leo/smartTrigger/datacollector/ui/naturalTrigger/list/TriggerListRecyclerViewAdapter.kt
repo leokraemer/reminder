@@ -1,37 +1,34 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
 import android.content.Context
-import android.database.Cursor
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CursorAdapter
 import de.leo.smartTrigger.datacollector.R
-import de.leo.smartTrigger.datacollector.datacollection.database.ID
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
+import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
-import de.leo.smartTrigger.datacollector.datacollection.database.NATURAL_TRIGGER_ACTIVE
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.EDIT
-import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.EDIT_COPY
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity.Companion.NATURALTRIGGER_ID
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
+import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.trigger_list_element.view.*
-import org.jetbrains.anko.alert
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.sdk25.coroutines.onClick
-import org.jetbrains.anko.sdk25.coroutines.onLongClick
-
-interface TriggerUpdater {
-    fun updateNaturalTrigger(naturalTrigger: Int, active: Boolean)
-    fun deleteNaturalTrigger(id: Int)
-}
+import org.jetbrains.anko.toast
 
 class TriggerListRecyclerViewAdapter(private val context: Context,
-                                     private val myDataset: List<NaturalTriggerModel>,
-                                     val triggerUpdater: TriggerUpdater) :
-    RecyclerView.Adapter<TriggerViewHolder>() {
+                                     private val myDataset: MutableList<NaturalTriggerModel>) :
+    RecyclerView.Adapter<TriggerListRecyclerViewAdapter.TriggerViewHolder>() {
+
+    private val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
+
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TriggerViewHolder {
         val triggerListElement = LayoutInflater.from(parent.context)
@@ -41,49 +38,79 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(holder: TriggerViewHolder, position: Int) {
-        val model = myDataset[position]
-        holder.itemView?.apply {
-            updateNaturalTriggerReminderCardView(model, this)
-            goal.text = model.goal
-            situation.text = model.situation
-            messageCard.text = model.message
-            val jitaiId = model.ID
-            active_toggle_button.isChecked = model.active
-            //hook to update the jitai when the toggle button is pressed
-            active_toggle_button.onClick {
-                triggerUpdater.updateNaturalTrigger(jitaiId,
-                                                    active_toggle_button.isChecked)
-            }
-            this.delete.onLongClick {
-                if (!active_toggle_button.isChecked)
-                    triggerUpdater.deleteNaturalTrigger(jitaiId)
-                else
-                    triggerUpdater.deleteNaturalTrigger(-1)
-            }
-            this.delete.onClick {
-                triggerUpdater.deleteNaturalTrigger(-2)
-            }
-            this.edit.onClick {
-                val context = this@TriggerListRecyclerViewAdapter.context
-                context.alert("Möchten sie diesen Trigger bearbeiten oder eine Kopie?",
-                              "Trigger bearbeiten") {
-                    positiveButton("Bearbeiten") {
-                        context.startActivity(context.intentFor<CreateTriggerActivity>(
-                            NATURALTRIGGER_ID to model.ID).setAction(EDIT))
-                    }
-                    negativeButton("Kopie bearbeiten") {
-                        context.startActivity(context.intentFor<CreateTriggerActivity>(
-                            NATURALTRIGGER_ID to model.ID).setAction(EDIT_COPY))
-                    }
-                }.show()
-            }
-        }
+        holder.bind(myDataset[position])
     }
 
+    override fun getItemId(position: Int): Long = myDataset.get(position).ID.toLong()
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
+
+    private fun updateService(trigger: Int) {
+        context.startService(context.intentFor<DataCollectorService>()
+                                 .setAction(UPDATE_JITAI)
+                                 .putExtra(JITAI_ID, trigger)
+                            )
+    }
+
+    inner class TriggerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(model: NaturalTriggerModel) {
+            with(itemView) {
+                updateNaturalTriggerReminderCardView(model, this)
+                goal.text = model.goal
+                situation.text = model.situation
+                messageCard.text = model.message
+                active_toggle_button.isChecked = model.active
+            }
+        }
+
+        init {
+            with(itemView) {
+                active_toggle_button.setOnClickListener {
+                    adapterPosition.let { position ->
+                        db.updateNaturalTrigger(myDataset[position].ID,
+                                                active_toggle_button.isChecked)
+                        myDataset[position].active = active_toggle_button.isChecked
+                        updateService(myDataset[position].ID)
+                    }
+                }
+                delete.setOnLongClickListener {
+                    if (!active_toggle_button.isChecked) {
+                        adapterPosition.let { position ->
+                            db.deleteNaturalTrigger(myDataset[position].ID)
+                            updateService(myDataset[position].ID)
+                            myDataset.removeAt(position)
+                            notifyItemRemoved(position)
+                            Log.d("delete", myDataset.toString())
+                            getContext().toast("Gelöscht.")
+                            true
+                        }
+                    } else
+                        getContext().toast("Muss zuerst deaktiviert werden.")
+                    true
+                }
+                delete.setOnClickListener {
+                    getContext().toast("Lange drücken um zu löschen.")
+                }
+                edit.setOnClickListener {
+                    getContext().startActivity(getContext().intentFor<CreateTriggerActivity>(
+                        NATURALTRIGGER_ID to myDataset[adapterPosition].ID).setAction(EDIT))
+                }
+                copy.setOnClickListener { copy() }
+            }
+        }
+
+        fun copy() {
+            val model = db.getNaturalTrigger(myDataset[adapterPosition].ID)
+            //id to -1 to copy
+            model.ID = -1
+            //get new ID
+            model.ID = db.enterNaturalTrigger(model)
+            myDataset.add(model)
+            Log.d("copy", myDataset.toString())
+            notifyItemInserted(itemCount - 1)
+            updateService(model.ID)
+            context.toast("Kopiert.")
+        }
+    }
 }
-
-
-class TriggerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

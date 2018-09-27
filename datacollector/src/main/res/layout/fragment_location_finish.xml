@@ -50,7 +50,6 @@
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/exitButton"
-
         style="@style/CheckableImageViewStyle"
         android:layout_marginStart="24dp"
         android:src="@drawable/ic_exit_geofence_fat_arrow_white"
@@ -92,7 +91,6 @@
 
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/thirtyminutes"
-
         style="@style/CheckableTextViewStyle"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
