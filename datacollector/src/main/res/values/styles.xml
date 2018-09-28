@@ -101,8 +101,9 @@
 
     <style name="Widget.MultiSlider" parent="android:Widget"></style>
 
-    <style name="AppTheme.Picker" parent="NaturalTriggerViewTheme">
+    <style name="AppTheme.Picker" parent="AppBaseTheme.Light.NoActionBar">
         <item name="android:textSize">18sp</item>
+        <item name="android:textColorPrimary">@color/primaryTextColorLight</item>
     </style>
 
     <style name="CheckableImageViewStyle">

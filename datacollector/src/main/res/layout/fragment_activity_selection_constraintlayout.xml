@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingBottom="4dp">
+
+
+    <TextView
+        android:id="@+id/textView385"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Welches Ereignis verbinden sie mit der vorher beschriebenen Situation?"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/situation_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_span="4"
+        android:maxLines="5"
+        android:minLines="1"
+        android:scrollHorizontally="true"
+        android:scrollbars="vertical"
+        android:text="Beschriebene Situation. zum Beispiel: Wenn ich von der Arbeit nach Hause komme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView385" />
+
+
+    <TextView
+        android:id="@+id/situation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_span="4"
+        android:text="Wählen sie zwischen Unbewegt, oder bis zu 3 bewegten Aktivitäten"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/situation_text" />
+
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/sitButton"
+        style="@style/CheckableImageViewStyle"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_airline_seat_recline_normal_white_48dp"
+        app:layout_constraintEnd_toEndOf="@+id/fiveminutes"
+        app:layout_constraintStart_toStartOf="@+id/fiveminutes"
+        app:layout_constraintTop_toBottomOf="@+id/situation" />
+
+    <TextView
+        android:id="@+id/sitText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Unbewegt"
+        app:layout_constraintEnd_toEndOf="@+id/sitButton"
+        app:layout_constraintStart_toStartOf="@+id/sitButton"
+        app:layout_constraintTop_toBottomOf="@+id/sitButton" />
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/border_drawable"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/moreminutes"
+        app:layout_constraintStart_toStartOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toBottomOf="@+id/situation">
+
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/walkButton"
+            style="@style/CheckableImageViewStyle"
+            android:src="@drawable/ic_directions_walk_white_48dp"
+            app:layout_constraintEnd_toStartOf="@+id/bikeButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/bikeButton"
+            style="@style/CheckableImageViewStyle"
+            android:src="@drawable/ic_directions_bike_white_48dp"
+            app:layout_constraintEnd_toStartOf="@+id/carButton"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/walkButton"
+            app:layout_constraintTop_toTopOf="@+id/walkButton" />
+
+        <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+            android:id="@+id/carButton"
+            style="@style/CheckableImageViewStyle"
+            android:src="@drawable/ic_directions_car_white_48dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bikeButton"
+            app:layout_constraintTop_toTopOf="@+id/walkButton" />
+
+        <TextView
+            android:id="@+id/walkText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Zu Fuss"
+            app:layout_constraintEnd_toEndOf="@+id/walkButton"
+            app:layout_constraintStart_toStartOf="@+id/walkButton"
+            app:layout_constraintTop_toBottomOf="@+id/walkButton" />
+
+        <TextView
+            android:id="@+id/bikeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Fahrrad\nfahren"
+            app:layout_constraintEnd_toEndOf="@+id/bikeButton"
+            app:layout_constraintStart_toStartOf="@+id/bikeButton"
+            app:layout_constraintTop_toBottomOf="@+id/bikeButton" />
+
+        <TextView
+            android:id="@+id/carText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:lines="2"
+            android:text="Auto\nfahren"
+            app:layout_constraintEnd_toEndOf="@+id/carButton"
+            app:layout_constraintStart_toStartOf="@+id/carButton"
+            app:layout_constraintTop_toBottomOf="@+id/carButton" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView54"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_span="4"
+        android:text="Mindestdauer der Aktivität"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sitText" />
+
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveminutes"
+        style="@style/CheckableTextViewStyle"
+        android:layout_marginTop="8dp"
+        android:text="5"
+        app:layout_constraintEnd_toStartOf="@+id/fiveteenminutes"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView54" />
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/fiveteenminutes"
+        style="@style/CheckableTextViewStyle"
+        android:text="15"
+        app:layout_constraintEnd_toStartOf="@+id/thirtyminutes"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fiveminutes"
+        app:layout_constraintTop_toTopOf="@+id/fiveminutes" />
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
+        android:id="@+id/thirtyminutes"
+        style="@style/CheckableTextViewStyle"
+        android:text="30"
+        app:layout_constraintEnd_toStartOf="@+id/moreminutes"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/fiveteenminutes"
+        app:layout_constraintTop_toTopOf="@+id/fiveminutes" />
+
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/moreminutes"
+        style="@style/CheckableImageViewStyle"
+        android:src="@drawable/baseline_more_horiz_white_48"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/thirtyminutes"
+        app:layout_constraintTop_toTopOf="@+id/fiveminutes" />
+
+
+</android.support.constraint.ConstraintLayout>

@@ -34,7 +34,6 @@
         android:layout_marginStart="32dp"
         android:layout_toEndOf="@+id/icon"
         android:text="Zuhause"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/white" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 </RelativeLayout>

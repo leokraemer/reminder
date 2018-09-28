@@ -63,33 +63,33 @@
             android:clipChildren="false"
             android:clipToPadding="false">
 
-            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-                android:id="@+id/sitButton"
-                style="@style/CheckableImageViewStyle"
-                android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
+                <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+                    android:id="@+id/sitButton"
+                    style="@style/CheckableImageViewStyle"
+                    android:src="@drawable/ic_airline_seat_recline_normal_white_48dp" />
 
-            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-                android:id="@+id/walkButton"
-                style="@style/CheckableImageViewStyle"
-                android:src="@drawable/ic_directions_walk_white_48dp" />
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+                        android:id="@+id/walkButton"
+                        style="@style/CheckableImageViewStyle"
+                        android:src="@drawable/ic_directions_walk_white_48dp" />
 
-            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-                android:id="@+id/bikeButton"
-                style="@style/CheckableImageViewStyle"
-                android:src="@drawable/ic_directions_bike_white_48dp" />
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+                        android:id="@+id/bikeButton"
+                        style="@style/CheckableImageViewStyle"
+                        android:src="@drawable/ic_directions_bike_white_48dp" />
 
-            <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
-                android:id="@+id/carButton"
-                style="@style/CheckableImageViewStyle"
-                android:src="@drawable/ic_directions_car_white_48dp" />
+                    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+                        android:id="@+id/carButton"
+                        style="@style/CheckableImageViewStyle"
+                        android:src="@drawable/ic_directions_car_white_48dp" />
 
-        </TableRow>
+                </TableRow>
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clipChildren="false"
-            android:clipToPadding="false">
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
 
             <TextView
                 android:id="@+id/sitText"
@@ -99,31 +99,31 @@
                 android:lines="2"
                 android:text="Unbewegt" />
 
-            <TextView
-                android:id="@+id/walkText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="2"
-                android:text="Zu Fuss" />
+                    <TextView
+                        android:id="@+id/walkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:lines="2"
+                        android:text="Zu Fuss" />
 
-            <TextView
-                android:id="@+id/bikeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="2"
-                android:text="Fahrrad\nfahren" />
+                    <TextView
+                        android:id="@+id/bikeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:lines="2"
+                        android:text="Fahrrad\nfahren" />
 
-            <TextView
-                android:id="@+id/carText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lines="2"
-                android:text="Auto" />
+                    <TextView
+                        android:id="@+id/carText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:lines="2"
+                        android:text="Auto" />
 
-        </TableRow>
+                </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
