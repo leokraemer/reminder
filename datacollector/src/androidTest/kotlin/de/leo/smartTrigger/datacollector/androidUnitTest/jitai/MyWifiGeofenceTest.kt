@@ -7,7 +7,7 @@ import android.support.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.androidUnitTest.checkGeofenceState
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
-import de.leo.smartTrigger.datacollector.ui.EntryActivity
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -23,7 +23,7 @@ class MyWifiGeofenceTest() {
 
     @Rule
     @JvmField
-    var activityRule = ActivityTestRule<EntryActivity>(EntryActivity::class.java)
+    var activityRule = ActivityTestRule<TriggerManagingActivity>(TriggerManagingActivity::class.java)
 
     lateinit var db: JitaiDatabase
     lateinit var context: Context

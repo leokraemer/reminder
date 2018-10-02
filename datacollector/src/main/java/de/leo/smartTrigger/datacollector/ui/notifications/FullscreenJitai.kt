@@ -3,7 +3,11 @@ package de.leo.smartTrigger.datacollector.ui.notifications
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioAttributes
 import android.os.Bundle
+import android.os.PowerManager
 import android.os.Vibrator
 import android.support.v7.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
@@ -12,14 +16,6 @@ import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import kotlinx.android.synthetic.main.activity_full_screen_jitai.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import android.content.Intent
-import android.media.AudioAttributes
-import android.os.VibrationEffect
-import android.content.IntentFilter
-import android.os.PowerManager
-import android.view.Display
-import android.hardware.display.DisplayManager
-import android.os.Build
 
 
 class FullscreenJitai : AppCompatActivity() {

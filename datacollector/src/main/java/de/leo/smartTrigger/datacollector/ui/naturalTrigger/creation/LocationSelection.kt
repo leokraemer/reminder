@@ -89,10 +89,11 @@ class LocationSelection : NaturalTriggerFragment() {
                 workGeofenceButton?.isChecked = false
                 homeGeofenceButton?.isChecked = false
                 wifiGeofenceButton?.isChecked = false
+                listGeofenceButton?.isChecked = false
                 if (geofence != null) {
-                    if (geofence?.id == homeGeofence?.id) {
+                    if (geofence?.imageResId == HOME_CODE) {
                         homeGeofenceButton?.isChecked = true
-                    } else if (geofence?.id == workGeofence?.id) {
+                    } else if (geofence?.imageResId == WORK_CODE) {
                         workGeofenceButton?.isChecked = true
                     } else if (geofence?.name == EVERYWHERE) {
                         worldGeofenceButton?.isChecked = true
@@ -172,6 +173,7 @@ class LocationSelection : NaturalTriggerFragment() {
 interface GeofenceDialogListener {
     fun onGeofenceSelected(geofence: MyGeofence)
     fun onNoGeofenceSelected()
+    fun onCreateGeofence()
 }
 
 interface WifiDialogListener {

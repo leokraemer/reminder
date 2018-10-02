@@ -19,17 +19,15 @@ import de.leo.smartTrigger.datacollector.jitai.MyAbstractGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
-import de.leo.smartTrigger.datacollector.ui.uiElements.LockableViewPager
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.activity_natural_trigger_tabs.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
 import kotlinx.android.synthetic.main.naturaltriggerview.view.*
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
-import android.widget.ScrollView
 
 
 /**
@@ -39,10 +37,8 @@ class CreateTriggerActivity : GeofenceDialogListener,
                               WifiDialogListener,
                               NaturalTriggerModel.ModelChangedListener,
                               AppCompatActivity() {
-
     companion object {
         const val EDIT = "edit"
-        const val EDIT_COPY = "edit_copy"
         const val NATURALTRIGGER_ID = "natural_trigger_id"
     }
 
@@ -54,16 +50,6 @@ class CreateTriggerActivity : GeofenceDialogListener,
      */
     private var NUM_PAGES = 7
 
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
-    private var lockableViewPager: LockableViewPager? = null
-
-    /**
-     * The pager adapter, which provides the pages to the view pager widget.
-     */
-    private var pagerAdapter: PagerAdapter? = null
 
     //Fragments
     private val goalSelection = GoalSelection()
@@ -77,57 +63,19 @@ class CreateTriggerActivity : GeofenceDialogListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_natural_trigger_tabs)
-        val intent = getIntent()
         val naturalTriggerId = intent.getIntExtra(NATURALTRIGGER_ID, -1)
         if (naturalTriggerId != -1) {
             model = db.getNaturalTrigger(naturalTriggerId)
-            if (intent.action == EDIT_COPY) {
-                model.ID = -1
-            }
         } else {
             model = NaturalTriggerModel()
         }
-        // Instantiate a ViewPager and a PagerAdapter.
-        lockableViewPager = viewPager
-        pagerAdapter = ScreenSlidePagerAdapter(supportFragmentManager)
-        lockableViewPager!!.adapter = pagerAdapter
-        lockableViewPager!!.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            var scrollState = ViewPager.SCROLL_STATE_IDLE
-            override fun onPageScrollStateChanged(state: Int) {
-                scrollState = state
-            }
-
-            override fun onPageScrolled(position: Int,
-                                        positionOffset: Float,
-                                        positionOffsetPixels: Int) {
-                if (position == 2) {
-                    expand(reminder_card, positionOffset)
-                } else if (position >= 3) {
-                    expand(reminder_card, 1f)
-                }
-            }
-
-            override fun onPageSelected(position: Int) {
-                //for onResume
-                if (position >= 3 && scrollState == ViewPager.SCROLL_STATE_IDLE) {
-                    expand(reminder_card, 1f)
-                }
-                pagerAdapter?.let {
-                    if (position == it.count - 1)
-                        next_page.text = "Fertig"
-                    if (position < it.count - 1)
-                        next_page.text = "Weiter"
-                }
-                if (position > NUM_PAGES)
-                    finish()
-                ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.height)
-                    .setDuration(200)
-                    .start();
-                //scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
-            }
-        })
-        previous_page.onClick { onBackPressed() }
-        next_page.onClick { if (lockableViewPager?.isPagingEnabled == true) nextButtonClick() }
+        viewPager.adapter = ScreenSlidePagerAdapter(supportFragmentManager)
+        viewPager.addOnPageChangeListener(MyOnPageChangeListener())
+        previous_page.setOnClickListener{ onBackPressed() }
+        next_page.setOnClickListener { if (viewPager.isPagingEnabled == true) nextButtonClick() }
+        if (intent.action == EDIT) {
+            expand(reminder_card, 1F)
+        }
         model.modelChangelListener = this
         goalSelection.model = model
         situationSelection.model = model
@@ -145,19 +93,19 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     override fun modelChangedCallback() {
         //notifyDatasetChanged only when the geofence changed fron defined to undefined or otherwise
-        if (geofenceUndefinedBefore != pagerAdapter?.count) {
-            pagerAdapter?.notifyDataSetChanged()
-            geofenceUndefinedBefore = pagerAdapter?.count ?: NUM_PAGES
+        if (geofenceUndefinedBefore != viewPager.adapter?.count) {
+            viewPager.adapter?.notifyDataSetChanged()
+            geofenceUndefinedBefore = viewPager.adapter?.count ?: NUM_PAGES
         }
         updateNaturalTriggerReminderCardView(model, reminder_card)
         //enable/disable view paging
-        if (lockableViewPager!!.currentItem == 0
+        if (viewPager!!.currentItem == 0
             && (model.goal.isEmpty() || model.message.isEmpty())) {
-            lockableViewPager?.isPagingEnabled = false
-        } else if (lockableViewPager!!.currentItem == 1 && model.situation.isEmpty()) {
-            lockableViewPager!!.isPagingEnabled = false
+            viewPager?.isPagingEnabled = false
+        } else if (viewPager!!.currentItem == 1 && model.situation.isEmpty()) {
+            viewPager!!.isPagingEnabled = false
         } else {
-            lockableViewPager?.isPagingEnabled = true
+            viewPager?.isPagingEnabled = true
         }
         //update child views
         activitySelection.updateView()
@@ -171,7 +119,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
 
     private fun nextButtonClick() {
         //last page
-        if (lockableViewPager!!.currentItem == lockableViewPager!!.adapter!!.count - 1) {
+        if (viewPager!!.currentItem == viewPager!!.adapter!!.count - 1) {
             model.ID = db.enterNaturalTrigger(model)
             toast("Erinnerung erfolgreich erstellt")
             startService(intentFor<DataCollectorService>()
@@ -180,7 +128,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                         )
             super.onBackPressed()
         }
-        lockableViewPager!!.currentItem++
+        viewPager!!.currentItem++
     }
 
     fun expand(v: View, positionOffset: Float) {
@@ -199,21 +147,53 @@ class CreateTriggerActivity : GeofenceDialogListener,
     }
 
     override fun onBackPressed() {
-        if (lockableViewPager!!.currentItem == 0) {
+        if (viewPager!!.currentItem == 0) {
             // If the user is currently looking at the first step, allow the system to handle the
             // Back button. This calls finish() on this activities and pops the back stack.
             super.onBackPressed()
         } else {
             // Otherwise, select the previous step.
-            lockableViewPager!!.currentItem = lockableViewPager!!.currentItem - 1
+            viewPager!!.currentItem = viewPager!!.currentItem - 1
         }
     }
 
 
-    /**
-     * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
-     * sequence.
-     */
+    private inner class MyOnPageChangeListener : ViewPager.OnPageChangeListener {
+        var scrollState = ViewPager.SCROLL_STATE_IDLE
+        override fun onPageScrollStateChanged(state: Int) {
+            scrollState = state
+        }
+
+        override fun onPageScrolled(position: Int,
+                                    positionOffset: Float,
+                                    positionOffsetPixels: Int) {
+            if (position == 2) {
+                expand(reminder_card, positionOffset)
+            } else if (position >= 3) {
+                expand(reminder_card, 1f)
+            }
+        }
+
+        override fun onPageSelected(position: Int) {
+            //for onResume
+            if (position >= 3 && scrollState == ViewPager.SCROLL_STATE_IDLE) {
+                expand(reminder_card, 1f)
+            }
+            viewPager.adapter?.let {
+                if (position == it.count - 1)
+                    next_page.text = "Fertig"
+                if (position < it.count - 1)
+                    next_page.text = "Weiter"
+            }
+            if (position > NUM_PAGES)
+                finish()
+            ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.height)
+                .setDuration(200)
+                .start();
+            //scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
+        }
+    }
+
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) :
         FragmentStatePagerAdapter(fm) {
         private fun showGeofenceDwellTimeSelection(): Boolean {
@@ -272,8 +252,12 @@ class CreateTriggerActivity : GeofenceDialogListener,
             }*/
     }
 
+    override fun onCreateGeofence() {
+        locationSelection.clickMap()
+    }
+
     override fun onNoGeofenceSelected() {
-        model.geofence = null
+        locationSelection.updateView()
     }
 
     override fun onGeofenceSelected(geofence: MyGeofence) {
@@ -305,16 +289,16 @@ class CreateTriggerActivity : GeofenceDialogListener,
                                     dwellOutside = model.geofence?.dwellOutside == true,
                                     dwellInside = model.geofence?.dwellInside == true,
                                     loiteringDelay = model.geofence?.loiteringDelay ?: 0)
-        model.geofence = null
+        model.geofence = everywhere_geofence()
     }
 
     override fun onNoWifiSelected() {
-        model.wifi = null
+        locationSelection.updateView()
     }
 
     override fun onStart() {
         super.onStart()
-        pagerAdapter?.notifyDataSetChanged()
+        viewPager.adapter?.notifyDataSetChanged()
     }
 }
 

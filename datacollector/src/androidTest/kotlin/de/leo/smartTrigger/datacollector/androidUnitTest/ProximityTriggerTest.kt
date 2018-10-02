@@ -37,8 +37,7 @@ class ProximityTriggerTest {
         for (i in 0..fiveMinInMillis step 5000) {
             data.add(Pair<Long, Float>(i, getProximity(i)))
         }
-        db.enterSingleDimensionDataBatch(0,
-                                         TABLE_REALTIME_PROXIMITY, data)
+        db.enterSingleDimensionDataBatch(TABLE_REALTIME_PROXIMITY, data)
     }
 
     private fun getProximity(i: Long): Float {

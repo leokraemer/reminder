@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class LightTriggerTest {
 
-    lateinit var context : Context
+    lateinit var context: Context
     lateinit var sensorDataSet: SensorDataSet
     lateinit var db: JitaiDatabase
     val fiveMinInMillis = TimeUnit.MINUTES.toMillis(5)
@@ -34,8 +34,7 @@ class LightTriggerTest {
         for (i in 0..fiveMinInMillis step 5000) {
             data.add(Pair<Long, Float>(i, getBrightness(i)))
         }
-        db.enterSingleDimensionDataBatch(0,
-                                         TABLE_REALTIME_LIGHT, data)
+        db.enterSingleDimensionDataBatch(TABLE_REALTIME_LIGHT, data)
     }
 
     private fun getBrightness(i: Long): Float {
@@ -53,7 +52,7 @@ class LightTriggerTest {
     @Test
     fun LightTriggerTest() {
         val lightTrigger = BrighterThanTrigger(600.0, TimeUnit.SECONDS
-                .toMillis(20))
+            .toMillis(20))
         sensorDataSet = SensorDataSet(
             TimeUnit.MINUTES.toMillis(2),
             "lightTest")
@@ -68,7 +67,7 @@ class LightTriggerTest {
     @Test
     fun DimmerLightTriggerTest() {
         val lightTrigger = DimmerThanTrigger(600.0, TimeUnit.SECONDS
-                .toMillis(20))
+            .toMillis(20))
         sensorDataSet = SensorDataSet(
             TimeUnit.MINUTES.toMillis(2),
             "lightTest")

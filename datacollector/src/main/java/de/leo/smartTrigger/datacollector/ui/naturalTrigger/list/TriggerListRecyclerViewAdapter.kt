@@ -1,7 +1,11 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
 import android.content.Context
+import android.support.constraint.ConstraintSet
+import android.support.constraint.ConstraintSet.BOTTOM
+import android.support.constraint.ConstraintSet.TOP
 import android.support.v7.widget.RecyclerView
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,8 +30,18 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
 
     private val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 
+    private var expandedPosition = -1
+
     init {
         setHasStableIds(true)
+
+    }
+
+    private var recyclerView: RecyclerView? = null
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TriggerViewHolder {
@@ -41,7 +55,7 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
         holder.bind(myDataset[position])
     }
 
-    override fun getItemId(position: Int): Long = myDataset.get(position).ID.toLong()
+    override fun getItemId(position: Int): Long = myDataset[position].ID.toLong()
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = myDataset.size
@@ -54,13 +68,51 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
     }
 
     inner class TriggerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         fun bind(model: NaturalTriggerModel) {
+            if (adapterPosition == expandedPosition) expand() else collapse()
             with(itemView) {
                 updateNaturalTriggerReminderCardView(model, this)
                 goal.text = model.goal
                 situation.text = model.situation
-                messageCard.text = model.message
+                message.text = model.message
                 active_toggle_button.isChecked = model.active
+            }
+        }
+
+        private fun expand() {
+            with(itemView) {
+                situation.visibility = View.VISIBLE
+                situationDescription.visibility = View.VISIBLE
+                message.visibility = View.VISIBLE
+                messageDescription.visibility = View.VISIBLE
+                copy.visibility = View.VISIBLE
+                delete.visibility = View.VISIBLE
+                edit.visibility = View.VISIBLE
+                ConstraintSet().apply {
+                    clone(cardLayout)
+                    connect(R.id.active_toggle_button, TOP, R.id.situation, BOTTOM)
+                    applyTo(cardLayout)
+                }
+                expandButton.setImageResource(R.drawable.baseline_expand_less_black_36)
+            }
+        }
+
+        private fun collapse() {
+            with(itemView) {
+                situation.visibility = View.INVISIBLE
+                situationDescription.visibility = View.INVISIBLE
+                message.visibility = View.INVISIBLE
+                messageDescription.visibility = View.INVISIBLE
+                copy.visibility = View.INVISIBLE
+                delete.visibility = View.INVISIBLE
+                edit.visibility = View.INVISIBLE
+                ConstraintSet().apply {
+                    clone(cardLayout)
+                    connect(R.id.active_toggle_button, TOP, R.id.goal, BOTTOM)
+                    applyTo(cardLayout)
+                }
+                expandButton.setImageResource(R.drawable.outline_expand_more_white_36)
             }
         }
 
@@ -97,6 +149,14 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
                         NATURALTRIGGER_ID to myDataset[adapterPosition].ID).setAction(EDIT))
                 }
                 copy.setOnClickListener { copy() }
+                expandButton.setOnClickListener {
+                    if (expandedPosition == adapterPosition)
+                        expandedPosition = -1
+                    else
+                        expandedPosition = adapterPosition
+                    recyclerView?.let { rv -> TransitionManager.beginDelayedTransition(rv) }
+                    notifyDataSetChanged()
+                }
             }
         }
 

@@ -128,6 +128,7 @@
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/listGeofenceButton"
         style="@style/CheckableImageViewStyle"
+        android:layout_marginTop="8dp"
         android:src="@drawable/ic_format_list_bulleted_white_48dp"
         app:layout_constraintEnd_toEndOf="@+id/homeGeofenceButton"
         app:layout_constraintHorizontal_bias="1.0"
@@ -163,5 +164,4 @@
         app:layout_constraintEnd_toEndOf="@+id/enterButton"
         app:layout_constraintStart_toStartOf="@+id/enterButton"
         app:layout_constraintTop_toBottomOf="@+id/enterButton" />
-
 </android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
+import android.animation.LayoutTransition.CHANGING
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
@@ -17,6 +18,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
+import android.widget.ArrayAdapter
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity
@@ -53,7 +55,7 @@ class TriggerManagingActivity : AppCompatActivity() {
 
         triggerListView.layoutManager = LinearLayoutManager(this)
         triggerListView.adapter = TriggerListRecyclerViewAdapter(this, dataset)
-        triggerListView.itemAnimator = SlideInLeftAnimator(OvershootInterpolator())
+        //triggerListView.itemAnimator = SlideInLeftAnimator(OvershootInterpolator())
         floatingActionButton2.setOnClickListener { addTrigger() }
         checkPermission()
         createNotificationChannel()
@@ -80,8 +82,11 @@ class TriggerManagingActivity : AppCompatActivity() {
     }
 
     private fun updateDataset() {
-        dataset = db.allNaturalTriggerModels().toMutableList()
-        triggerListView.adapter = TriggerListRecyclerViewAdapter(this, dataset)
+        val newDataset = db.allNaturalTriggerModels().toMutableList()
+        if (newDataset != dataset) {
+            dataset = newDataset
+            triggerListView.adapter = TriggerListRecyclerViewAdapter(this, dataset)
+        }
     }
 
     private fun addTrigger() {

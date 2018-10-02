@@ -40,8 +40,9 @@ class GeofenceListDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        getDialog().getWindow().setTitle("Ihre Orte")
+        dialog.window.setTitle("Ihre Orte")
         val view = inflater.inflate(R.layout.geofence_list_dialog, container, false)
+        view.add_geofences_button.setOnClickListener { mListener.onCreateGeofence(); dialog.cancel() }
         val list = JitaiDatabase.getInstance(context!!).getAllMyGeofencesDistinct()
         val empty = view.empty
         if (list.isEmpty()) {
@@ -60,11 +61,7 @@ class GeofenceListDialogFragment : DialogFragment() {
 
 
     inner class GeofenceListAdapter(context: Context, list: List<MyGeofence>) :
-        ArrayAdapter<MyGeofence>
-        (context,
-         R.layout.geofence_dialog_list_item,
-         list
-        ) {
+        ArrayAdapter<MyGeofence>(context, R.layout.geofence_dialog_list_item, list) {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val view = convertView ?: LayoutInflater.from(context!!)
                 .inflate(R.layout.geofence_dialog_list_item, parent, false)
@@ -77,7 +74,7 @@ class GeofenceListDialogFragment : DialogFragment() {
     }
 
     override fun onCancel(dialog: DialogInterface?) {
-        super.onCancel(dialog)
         mListener.onNoGeofenceSelected()
+        super.onCancel(dialog)
     }
 }

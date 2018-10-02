@@ -31,6 +31,7 @@ import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.Constants
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import org.threeten.bp.LocalTime
 import java.io.File
@@ -788,14 +789,14 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return geofece
     }
 
-    fun getMyGeofence(id: Int): MyGeofence? {
+    fun getMyGeofence(id: Int): MyGeofence {
         val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
                                        null, null, null)
         var geofece: MyGeofence? = null
         if (c.moveToFirst())
             geofece = extractMyGeofenceFromCursor(c)
         c.close()
-        return geofece
+        return geofece ?: everywhere_geofence()
     }
 
     fun getMyWifiGeofence(id: Int): MyWifiGeofence? {

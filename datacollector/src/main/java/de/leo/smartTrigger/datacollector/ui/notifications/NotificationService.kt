@@ -358,4 +358,3 @@ class NotificationService : IntentService("NotificationIntentService") {
         mNotificationManager.cancel(NOTIFICATIONIDMODIFYER + id)
     }
 }
-

@@ -10,7 +10,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
-import de.leo.smartTrigger.datacollector.ui.EntryActivity
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
@@ -23,7 +23,7 @@ class ServiceTest {
 
     @Rule
     @JvmField
-    val mActivityRule: ActivityTestRule<EntryActivity> = ActivityTestRule(EntryActivity::class.java)
+    val mActivityRule: ActivityTestRule<TriggerManagingActivity> = ActivityTestRule(TriggerManagingActivity::class.java)
 
     lateinit var db : JitaiDatabase
 

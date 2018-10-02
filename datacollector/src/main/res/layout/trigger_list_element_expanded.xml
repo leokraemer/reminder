@@ -9,7 +9,6 @@
     android:padding="4dp">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/cardLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ebf0ea">
@@ -37,7 +36,7 @@
             app:layout_constraintEnd_toStartOf="@+id/delete"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/goal" />
+            app:layout_constraintTop_toBottomOf="@+id/situationDescription" />
 
         <TextView
             android:id="@+id/textView42"
@@ -56,7 +55,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:text="Nachricht:"
-            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/goal" />
 
@@ -66,7 +64,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Situation:"
-            android:visibility="invisible"
             app:layout_constraintStart_toStartOf="@+id/messageDescription"
             app:layout_constraintTop_toBottomOf="@+id/message" />
 
@@ -95,7 +92,6 @@
             android:maxLines="5"
             android:minLines="1"
             android:text="TextView"
-            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/messageDescription"
@@ -111,7 +107,6 @@
             android:maxLines="5"
             android:minLines="1"
             android:text="TextView"
-            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/messageDescription"
@@ -127,7 +122,7 @@
             android:layout_marginEnd="16dp"
             android:background="@drawable/ripple_background"
             android:padding="4dp"
-            android:src="@drawable/outline_expand_more_white_36"
+            android:src="@drawable/baseline_expand_less_black_36"
             android:tint="@color/green_800"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -144,7 +139,6 @@
             android:padding="4dp"
             android:src="@drawable/outline_file_copy_white_36"
             android:tint="@color/green_800"
-            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/edit"
             app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
 
@@ -160,7 +154,6 @@
             android:scaleType="fitCenter"
             android:src="@drawable/baseline_delete_outline_white_36"
             android:tint="@color/green_800"
-            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/copy"
             app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
 
@@ -175,7 +168,6 @@
             android:padding="4dp"
             android:src="@drawable/baseline_edit_white_36"
             android:tint="@color/green_800"
-            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/expandButton"
             app:layout_constraintTop_toTopOf="@+id/active_toggle_button" />
 

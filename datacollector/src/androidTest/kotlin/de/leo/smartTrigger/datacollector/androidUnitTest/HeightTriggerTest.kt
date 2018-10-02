@@ -34,7 +34,7 @@ class HeightTriggerTest {
         for (i in 0..fiveMinInMillis step 5000) {
             data.add(Pair(i, getBrightness(i)))
         }
-        db.enterSingleDimensionDataBatch(0, TABLE_REALTIME_AIR, data)
+        db.enterSingleDimensionDataBatch(TABLE_REALTIME_AIR, data)
     }
 
     private fun getBrightness(i: Long): Float {
