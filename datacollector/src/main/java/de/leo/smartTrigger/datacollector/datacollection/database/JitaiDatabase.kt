@@ -45,16 +45,20 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1016
+const val DATABASE_VERSION = 1017
 
 class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
-                                                                                 NAME,
-                                                                                 null,
-                                                                                 DATABASE_VERSION,
-                                                                                 null) {
+                                                                                         NAME,
+                                                                                         null,
+                                                                                         DATABASE_VERSION,
+                                                                                         null) {
 
     val TAG: String = JitaiDatabase.javaClass.canonicalName
     val gson = Converters.registerAll(GsonBuilder()).create()
+    val userName: String by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(context.getString(R.string.user_name), "userName")
+    }
 
     companion object {
         @Volatile
@@ -117,6 +121,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             execSQL(CREATE_TABLE_WIFI_GEOFENCE)
             execSQL(CREATE_TABLE_JITAI_EVENTS)
             execSQL(CREATE_TABLE_NATURAL_TRIGGER)
+            execSQL(CREATE_GEOFENCE_EVENT_TABLE)
             createSingleDimensionRealtimeTables(db)
             execSQL("CREATE INDEX acc_timestamp_index ON $TABLE_REAL_TIME_ACC ($TIMESTAMP)")
             execSQL("CREATE INDEX mag_timestamp_index ON $TABLE_REAL_TIME_MAG ($TIMESTAMP)")
@@ -168,6 +173,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
             execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
             execSQL("DROP TABLE IF EXISTS $TABLE_NATURAL_TRIGGER")
+            execSQL("DROP TABLE IF EXISTS $CREATE_GEOFENCE_EVENT_TABLE")
             execSQL("DROP INDEX IF EXISTS acc_timestamp_index")
             execSQL("DROP INDEX IF EXISTS mag_timestamp_index")
             execSQL("DROP INDEX IF EXISTS gyro_timestamp_index")
@@ -398,30 +404,6 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         c.close()
         return list
     }
-
-    /*fun getStepData(begin: Long, end: Long): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(TABLE,
-                                       arrayOf(STEPS, TIMESTAMP),
-                                       "$TIMESTAMP > ? AND $TIMESTAMP < ?",
-                                       arrayOf(begin.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       "$TIMESTAMP ASC",
-                                       null)
-
-        val list = mutableListOf<Pair<Long, Double>>()
-        if (c.count > 0) {
-            c.moveToFirst()
-            do {
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val pair = Pair<Long, Double>(timestamp, c.getDouble(c.getColumnIndex(STEPS)))
-                list.add(pair)
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }*/
-
 
     fun getSoundData(begin: Long, end: Long): MutableList<Pair<Long, Double>> {
         val c = readableDatabase.query(TABLE_SENSORDATA,
@@ -1194,12 +1176,30 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         return list
     }
 
+    /**
+     *         "$ID INTEGER PRIMARY KEY, " +
+    "$TIMESTAMP DATE, " +
+    "$USERNAME TEXT, " +
+    "$GEOFENCE_ID INTEGER, " +
+    "$GEOFENCE_NAME TEXT, " +
+    "$GEOFENCE_EVENT TEXT )"
+     */
+    fun enterGeofenceEvent(timestamp: Long, geofenceId: Int, geofenceName: String,
+                           geofenceEvent: String) {
+        val cv = ContentValues()
+        cv.put(TIMESTAMP, timestamp)
+        cv.put(GEOFENCE_ID, geofenceId)
+        cv.put(GEOFENCE_NAME, geofenceName)
+        cv.put(GEOFENCE_EVENT, geofenceEvent)
+        cv.put(USERNAME, userName)
+        writableDatabase.transaction {
+            insert(TABLE_GEOFENCE_EVENT, null, cv)
+        }
+    }
+
     internal fun exportDb() {
         val externalStorageDirectory = Environment.getExternalStorageDirectory()
         val dataDirectory = Environment.getDataDirectory()
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        val userName = sharedPreferences.getString(context.getString(R.string.user_name),
-                                                   "userName")
 
         var source: FileChannel? = null
         var destination: FileChannel? = null
@@ -1462,7 +1462,6 @@ const val NATURAL_TRIGGER_ACTIVE = "natural_trigger_active"
 const val NATURAL_TRIGGER_ACTIVITY = "natural_trigger_activity"
 const val NATURAL_TRIGGER_ACTIVITY_DURATION = "natural_trigger_activity_duration"
 
-
 const val CREATE_TABLE_NATURAL_TRIGGER =
     "CREATE TABLE if not exists $TABLE_NATURAL_TRIGGER ( " +
         "$ID INTEGER PRIMARY KEY, " +
@@ -1477,3 +1476,17 @@ const val CREATE_TABLE_NATURAL_TRIGGER =
         "$NATURAL_TRIGGER_ACTIVE BOOLEAN DEFAULT 1, " +  //true
         "$NATURAL_TRIGGER_ACTIVITY TEXT, " +
         "$NATURAL_TRIGGER_ACTIVITY_DURATION INTEGER )"
+
+//table to store enter/exit/dwell events of a geofence or wifi
+const val TABLE_GEOFENCE_EVENT = "table_geofence_event"
+const val GEOFENCE_EVENT = "geofence_event"
+const val GEOFENCE_ID = "geofence_id"
+
+const val CREATE_GEOFENCE_EVENT_TABLE =
+    "CREATE TABLE if not exists $TABLE_GEOFENCE_EVENT ( " +
+        "$ID INTEGER PRIMARY KEY, " +
+        "$TIMESTAMP DATE, " +
+        "$USERNAME TEXT, " +
+        "$GEOFENCE_ID INTEGER, " +
+        "$GEOFENCE_NAME TEXT, " +
+        "$GEOFENCE_EVENT TEXT )"

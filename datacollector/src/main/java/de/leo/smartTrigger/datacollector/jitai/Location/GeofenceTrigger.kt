@@ -1,6 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai.Location
 
 import android.content.Context
+import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.Trigger
@@ -18,6 +19,7 @@ open class GeofenceTrigger() : Trigger {
     private var state: Int = -1
     private var lastTime: Long = 0
     private val TIMEOUT = TimeUnit.MINUTES.toMillis(30)
+    private var db: JitaiDatabase? = null
 
     constructor(locations: List<MyGeofence>) : this() {
         this.locations = locations
@@ -26,7 +28,14 @@ open class GeofenceTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         //only one location -> no state checks necessary
         if (locations.size == 1) {
-            return locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
+            val returnval = locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
+            if (db == null) db = JitaiDatabase.getInstance(context)
+            db?.enterGeofenceEvent(sensorData.time, locations[0].id, locations[0].name,
+                                   "${locations[0].entered}," +
+                                       "${locations[0].exited}," +
+                                       "${locations[0].dwellInside}," +
+                                       "${locations[0].dwellOutside}")
+            return returnval
         }
 
         //########################currently unused code, because paths are not enabled in the

@@ -1,5 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai
 
+import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
+
 /**
  * Created by Leo on 17.11.2017.
  * @param latLng midpoint of the geofence
@@ -61,8 +63,9 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
         var stateChanged = false
         if (checkInside(*args)) {
             //inside
-            if (!entered)
+            if (!entered) {
                 stateChanged = true
+            }
             entered = true
             exitedTimestamp = Long.MAX_VALUE
             loiteringOutside = false
