@@ -52,6 +52,8 @@ class MyGeofenceTest() {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getTargetContext()
+        db = JitaiDatabase.getInstance(context)
+        db.close()
         context.deleteDatabase(JitaiDatabase.NAME)
         db = JitaiDatabase.getInstance(context)
     }
@@ -63,12 +65,13 @@ class MyGeofenceTest() {
 
     @Test
     fun testDatabase() {
-        val id = db.enterGeofence(Auberge_du_coq)
+        var id = db.enterGeofence(Auberge_du_coq)
+         id = db.enterGeofence(Auberge_du_coq)
         //test that we actually entered it
         Assert.assertNotSame(-1, id)
         val retrieved = db.getMyGeofence(id)
         Assert.assertNotNull(retrieved)
-        Assert.assertEquals(Auberge_du_coq.copy(id = id), retrieved!!)
+        Assert.assertEquals(Auberge_du_coq.copy(id = id), retrieved)
     }
 
     @Test

@@ -38,6 +38,8 @@ class MyWifiGeofenceTest() {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getTargetContext()
+        db = JitaiDatabase.getInstance(context)
+        db.close()
         context.deleteDatabase(JitaiDatabase.NAME)
         db = JitaiDatabase.getInstance(context)
     }

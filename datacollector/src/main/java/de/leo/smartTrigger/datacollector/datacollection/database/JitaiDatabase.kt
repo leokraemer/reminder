@@ -47,7 +47,7 @@ import java.util.*
  */
 const val DATABASE_VERSION = 1016
 
-class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper(context,
+class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
                                                                                  NAME,
                                                                                  null,
                                                                                  DATABASE_VERSION,
@@ -647,13 +647,13 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return list
     }
 
-    fun getAllGeofences(): List<Pair<Int, Geofence>> {
+    fun getAllGeofences(): List<Pair<Int, MyGeofence>> {
         val c = readableDatabase.query(TABLE_GEOFENCE, null, null, null,
                                        null, null, null)
-        val list = mutableListOf<Pair<Int, Geofence>>()
+        val list = mutableListOf<Pair<Int, MyGeofence>>()
         if (c.moveToFirst()) {
             do {
-                list.add(Pair(c.getInt(c.getColumnIndex(ID)), extractGeofenceFromCursor(c)))
+                list.add(Pair(c.getInt(c.getColumnIndex(ID)), extractMyGeofenceFromCursor(c)))
             } while (c.moveToNext())
         }
         c.close()
@@ -738,7 +738,8 @@ class JitaiDatabase private constructor(val context: Context) : SQLiteOpenHelper
         return returnval.toInt()
     }
 
-    fun enterGeofence(name: String,
+    fun
+        enterGeofence(name: String,
                       latitude: Double,
                       longitude: Double,
                       radius: Float,
