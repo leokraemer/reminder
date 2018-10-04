@@ -26,7 +26,9 @@ class SoundTriggerTest {
     @Before
     fun setup() {
         context = InstrumentationRegistry.getTargetContext()
-        getContext().deleteDatabase(JitaiDatabase.NAME)
+        db = JitaiDatabase.getInstance(context)
+        db.close()
+        context.deleteDatabase(JitaiDatabase.NAME)
         db = JitaiDatabase.getInstance(context)
         val data = mutableListOf<SensorDataSet>()
         //create and enter 5 minutes of step data

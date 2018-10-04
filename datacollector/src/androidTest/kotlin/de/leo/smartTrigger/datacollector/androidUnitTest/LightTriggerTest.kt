@@ -29,6 +29,9 @@ class LightTriggerTest {
         getContext().deleteDatabase(JitaiDatabase.NAME)
         context = InstrumentationRegistry.getTargetContext()
         db = JitaiDatabase.getInstance(context)
+        db.close()
+        context.deleteDatabase(JitaiDatabase.NAME)
+        db = JitaiDatabase.getInstance(context)
         val data = mutableListOf<Pair<Long, Float>>()
         //create and enter 5 minutes of step data
         for (i in 0..fiveMinInMillis step 5000) {
