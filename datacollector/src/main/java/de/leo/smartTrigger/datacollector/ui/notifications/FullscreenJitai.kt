@@ -14,6 +14,7 @@ import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import kotlinx.android.synthetic.main.activity_full_screen_jitai.*
+import kotlinx.android.synthetic.main.activity_fullscreen_jitai_dialog.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.sdk25.coroutines.onClick
 

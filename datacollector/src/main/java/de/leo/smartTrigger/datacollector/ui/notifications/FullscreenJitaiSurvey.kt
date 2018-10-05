@@ -44,6 +44,7 @@ class FullscreenJitaiSurvey : AppCompatActivity() {
         jitaiId = intent?.getIntExtra(JITAI_ID, -1) ?: -1
         sensorDataId = intent?.getLongExtra(JITAI_EVENT_SENSORDATASET_ID, -1) ?: -1L
         val model = db.getNaturalTrigger(jitaiId)
+        situation.text = model.situation
         updateNaturalTriggerReminderCardView(model, reminder_card)
         submit_survey.onClick {
             db.enterUserJitaiEvent(jitaiId, System.currentTimeMillis(),

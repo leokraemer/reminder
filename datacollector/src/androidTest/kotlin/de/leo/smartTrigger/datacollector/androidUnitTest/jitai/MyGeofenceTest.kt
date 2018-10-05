@@ -76,7 +76,7 @@ class MyGeofenceTest() {
 
     @Test
     fun testSymmetryOfGeofences() {
-        //location distance must be direction independent
+        //locationName distance must be direction independent
         Assert.assertEquals(Buynormand.location.distanceTo(Auberge_du_coq.location),
                             Auberge_du_coq.location.distanceTo(Buynormand.location))
     }

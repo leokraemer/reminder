@@ -26,7 +26,7 @@ open class GeofenceTrigger() : Trigger {
     }
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
-        //only one location -> no state checks necessary
+        //only one locationName -> no state checks necessary
         if (locations.size == 1) {
             val returnval = locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
             if (db == null) db = JitaiDatabase.getInstance(context)

@@ -31,7 +31,7 @@ public class AmbientSound {
     private void checkPermission(Context context) {
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
+            // Permission to access the locationName is missing.
             Log.e(TAG, "Permission needed!!!");
         }
     }

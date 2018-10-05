@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService.Companion.UPDATE_DELAY
 import java.util.concurrent.Executor
 
 
@@ -27,18 +28,18 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
         val mLocationRequest = LocationRequest()
-        mLocationRequest.interval = 5000
-        mLocationRequest.fastestInterval = 5000
+        mLocationRequest.interval = UPDATE_DELAY
+        mLocationRequest.fastestInterval = UPDATE_DELAY
         mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(mLocationRequest)
         val client = LocationServices.getSettingsClient(context)
         val task = client.checkLocationSettings(builder.build())
         task.addOnSuccessListener(UiThreadExecutor(), OnSuccessListener<LocationSettingsResponse> {
-            // All location settings are satisfied. The client can initialize
-            // location requests here.
+            // All locationName settings are satisfied. The client can initialize
+            // locationName requests here.
             // ...
-            Log.i("location service", "success")
+            Log.i("locationName service", "success")
         })
 
         task.addOnFailureListener(UiThreadExecutor(), OnFailureListener { e ->
@@ -48,8 +49,8 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    Log.e("location service", "fail")
-                    Log.e("location service", "$e")
+                    Log.e("locationName service", "fail")
+                    Log.e("locationName service", "$e")
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
@@ -77,7 +78,7 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
     fun stopLocationUpdates() {
         val mLocationRequest = LocationRequest()
         mLocationRequest.interval = 1800000
-        mLocationRequest.fastestInterval = 5000
+        mLocationRequest.fastestInterval = UPDATE_DELAY
         mLocationRequest.priority = LocationRequest.PRIORITY_NO_POWER
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(mLocationRequest)
@@ -85,10 +86,10 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
         val task = client.checkLocationSettings(builder.build())
         task.addOnSuccessListener(UiThreadExecutor(),
                                   OnSuccessListener<LocationSettingsResponse> {
-                                      // All location settings are satisfied. The client can initialize
-                                      // location requests here.
+                                      // All locationName settings are satisfied. The client can initialize
+                                      // locationName requests here.
                                       // ...
-                                      Log.i("location service", "success")
+                                      Log.i("locationName service", "success")
                                   })
 
         task.addOnFailureListener(UiThreadExecutor(), OnFailureListener { e ->
@@ -98,8 +99,8 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
                 try {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
-                    Log.e("location service", "fail")
-                    Log.e("location service", "$e")
+                    Log.e("locationName service", "fail")
+                    Log.e("locationName service", "$e")
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }

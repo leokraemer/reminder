@@ -115,7 +115,7 @@ class GeofenceTriggerTest {
         Assert.assertFalse(trigger.check(context, sensorData))
         //break chain by going to end instead of 2 -> reset
         sensorData.gps = Catimini_Location
-        //must hit location 1 first
+        //must hit locationName 1 first
         Assert.assertFalse(trigger.check(context, sensorData))
         sensorData.gps = Buynormand_Location
         Assert.assertFalse(trigger.check(context, sensorData))

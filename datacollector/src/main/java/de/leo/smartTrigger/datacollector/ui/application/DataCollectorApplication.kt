@@ -19,12 +19,14 @@ class DataCollectorApplication : Application() {
 
         var WIFI_NAME_ENABLED = true
         var LOCATION_ENABLED = true
+        var LOCATION_NAME_ENABLED = false
         var ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED = false
         var ACTIVITY_ENABLED = true
         var ENVIRONMENT_SENSOR_ENABLED = false
-        var GOOGLE_FITNESS_ENABLED = true
+        var GOOGLE_FITNESS_ENABLED = false
+        var SCREEN_ON_ENABLED = false
         var AMBIENT_SOUND_ENABLED = false
-        var WEATHER_ENABLED = true
+        var WEATHER_ENABLED = false
         var BROADCAST_EVENT = "com.example.leo.datacollector"
     }
 }

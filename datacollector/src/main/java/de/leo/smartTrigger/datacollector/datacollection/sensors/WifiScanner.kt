@@ -4,6 +4,7 @@ import android.content.*
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Handler
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 
 /**
  * Created by Leo on 24.03.2018.
@@ -19,8 +20,8 @@ class WifiScanner(val wifiUpdateListener: WifiUpdateListener, val activity: Cont
                 scanResults.sortByDescending { it.level }
                 wifiUpdateListener.wifiUpdated(scanResults)
             }
-            //initiate re-scan in 5 seconds
-            handler.postDelayed({ mWifiManager.startScan() }, 5000)
+            //initiate re-scan in UPDATE_DELAY seconds
+            handler.postDelayed({ mWifiManager.startScan() }, DataCollectorService.UPDATE_DELAY)
         }
     }
 

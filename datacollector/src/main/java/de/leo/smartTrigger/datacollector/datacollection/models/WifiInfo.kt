@@ -6,7 +6,9 @@ import android.util.Log
 /**
  * @return List<bssid, rssi, ssid, ip, networkId>
  */
-fun deSerializeWifi(wifiNames: String): List<WifiInfo> {
+fun deSerializeWifi(wifiNames: String?): List<WifiInfo> {
+    if (wifiNames == null)
+        return emptyList()
     val wifis = wifiNames.replace("[", "", false).replace("]", "", false).split(",").toMutableList()
     wifis.remove("null")
     return wifis.map {

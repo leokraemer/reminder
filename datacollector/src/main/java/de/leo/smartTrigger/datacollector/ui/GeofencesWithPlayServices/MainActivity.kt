@@ -120,7 +120,7 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
     }
 
     /**
-     * Removes geofences. This method should be called after the user has granted the location
+     * Removes geofences. This method should be called after the user has granted the locationName
      * permission.
      */
     private fun removeGeofences() {

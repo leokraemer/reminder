@@ -155,46 +155,46 @@ public class FoursquareCaller {
 
                                 // We will get only those locations which has
                                 // address
-                                if (jsonArray.getJSONObject(i).has("location")) {
+                                if (jsonArray.getJSONObject(i).has("locationName")) {
                                     if (jsonArray.getJSONObject(i)
-                                            .getJSONObject("location")
+                                            .getJSONObject("locationName")
                                             .has("address")) {
                                         poi.setAddress(jsonArray
                                                 .getJSONObject(i)
-                                                .getJSONObject("location")
+                                                .getJSONObject("locationName")
                                                 .getString("address"));
 
                                         if (jsonArray.getJSONObject(i)
-                                                .getJSONObject("location")
+                                                .getJSONObject("locationName")
                                                 .has("lat")) {
                                             poi.setLatitude(jsonArray
                                                     .getJSONObject(i)
-                                                    .getJSONObject("location")
+                                                    .getJSONObject("locationName")
                                                     .getString("lat"));
                                         }
                                         if (jsonArray.getJSONObject(i)
-                                                .getJSONObject("location")
+                                                .getJSONObject("locationName")
                                                 .has("lng")) {
                                             poi.setLongtitude(jsonArray
                                                     .getJSONObject(i)
-                                                    .getJSONObject("location")
+                                                    .getJSONObject("locationName")
                                                     .getString("lng"));
                                         }
 
                                         if (jsonArray.getJSONObject(i)
-                                                .getJSONObject("location")
+                                                .getJSONObject("locationName")
                                                 .has("city")) {
                                             poi.setCity(jsonArray
                                                     .getJSONObject(i)
-                                                    .getJSONObject("location")
+                                                    .getJSONObject("locationName")
                                                     .getString("city"));
                                         }
                                         if (jsonArray.getJSONObject(i)
-                                                .getJSONObject("location")
+                                                .getJSONObject("locationName")
                                                 .has("country")) {
                                             poi.setCountry(jsonArray
                                                     .getJSONObject(i)
-                                                    .getJSONObject("location")
+                                                    .getJSONObject("locationName")
                                                     .getString("country"));
                                         }
                                         if (jsonArray.getJSONObject(i).has(

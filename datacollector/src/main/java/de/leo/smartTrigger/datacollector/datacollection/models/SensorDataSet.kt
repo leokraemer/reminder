@@ -16,7 +16,7 @@ data class SensorDataSet @JvmOverloads constructor(
     var ambientSound: Double? = null,
 
     //every phone has these
-    var location: String? = null,
+    var locationName: String? = null,
     var gps: android.location.Location? = null,
     var wifiInformation: List<WifiInfo>? = null,
     var bluetoothDevices: List<String>? = null,

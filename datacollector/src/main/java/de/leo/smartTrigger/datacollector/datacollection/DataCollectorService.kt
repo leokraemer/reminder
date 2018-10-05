@@ -25,14 +25,19 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.*
 import de.leo.smartTrigger.datacollector.jitai.activityDetection.ActivityRecognizer
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
-import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACTIVITY_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.AMBIENT_SOUND_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ENVIRONMENT_SENSOR_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.GOOGLE_FITNESS_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.LOCATION_NAME_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.SCREEN_ON_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WEATHER_ENABLED
+import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WIFI_NAME_ENABLED
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
 import de.leo.smartTrigger.datacollector.utils.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.longToast
 import java.util.*
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -61,34 +66,30 @@ class DataCollectorService : Service(),
         private val useGooglePlaces = false
     }
 
-    private val sample = 0
-
     private var weatherUpdateCnt = 0L
 
-    internal lateinit var myMotion: MotionSensors
-    //internal lateinit var myLocation: MyLocation
-    internal var fusedLocationProviderClient: FusedLocationProvider? = null
-    internal lateinit var myActivity: MyActivity
-    //internal lateinit var foursquareCaller: FoursquareCaller
-    internal lateinit var googlePlacesCaller: GooglePlacesCaller
-    internal lateinit var currentLocation: Location
-    internal lateinit var myEnvironmentSensor: MyEnvironmentSensor
-    internal var ambientSound: AmbientSound? = null
-    internal lateinit var googleFitness: GoogleFitness
-    internal lateinit var weatherCaller: WeatherCaller
+    private lateinit var myMotion: MotionSensors
 
-    internal var currentLatitude: Double = 0.0
-    internal var currentLongitude: Double = 0.0
-    internal var currentAccurate: Double = 0.0
-    internal var currentAmbientSound: Double = 0.0
-    internal var ifLocationChanged: Boolean = false
-    internal var isRunning: Boolean = false
-    internal var isCurrentScreenOn: Boolean = false
-    internal lateinit var currentPlaceName: String
-    internal lateinit var currentLabel: String
+    private var fusedLocationProviderClient: FusedLocationProvider? = null
+
+    private lateinit var myActivity: MyActivity
+
+    private lateinit var googlePlacesCaller: GooglePlacesCaller
+    private lateinit var currentLocation: Location
+
+    private lateinit var myEnvironmentSensor: MyEnvironmentSensor
+
+    private var ambientSound: AmbientSound? = null
+    private lateinit var googleFitness: GoogleFitness
+    private lateinit var weatherCaller: WeatherCaller
+
+    private var currentAmbientSound: Double = 0.0
+    private var isRunning: Boolean = false
+    private lateinit var currentPlaceName: String
+    private lateinit var currentLabel: String
     private var currentActivities = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0))
     private var currentWeatherId: Long = -1
-    internal var currentSteps: Long = 0
+    private var currentSteps: Long = 0
     private val userName: String by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
             .getString(getString(R.string.user_name), null)
@@ -99,8 +100,7 @@ class DataCollectorService : Service(),
     private var currentWifiInfo: List<WifiInfo>? = null
     private var currentWifis: List<ScanResult> = listOf()
 
-    private lateinit var pm: PowerManager
-    private lateinit var dm: DisplayManager
+    private val pm: PowerManager by lazy { applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager }
 
     private val mMessageReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -114,8 +114,6 @@ class DataCollectorService : Service(),
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        pm = applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-        dm = applicationContext.getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
         db = JitaiDatabase.getInstance(applicationContext)
         currentWeatherId = db!!.getLatestWeather()!!.id.toLong()
         Log.d(TAG, "service recieved ${intent?.action ?: "unknown signal"}")
@@ -143,30 +141,29 @@ class DataCollectorService : Service(),
             if (fusedLocationProviderClient == null)
                 fusedLocationProviderClient = FusedLocationProvider(this, this)
             fusedLocationProviderClient!!.startLocationUpdates()
-            //foursquareCaller = FoursquareCaller(this, currentLocation)
-            googlePlacesCaller = GooglePlacesCaller(this)
-            currentPlaceName = "null"
-            ifLocationChanged = true
         }
-        if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
+        if (LOCATION_NAME_ENABLED) {
+            googlePlacesCaller = GooglePlacesCaller(this)
+        }
+        if (ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
             myMotion = MotionSensors(this)
         }
-        if (DataCollectorApplication.ACTIVITY_ENABLED) {
+        if (ACTIVITY_ENABLED) {
             myActivity = MyActivity(this)
             currentActivities = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0))
         }
-        if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
+        if (ENVIRONMENT_SENSOR_ENABLED) {
             myEnvironmentSensor = MyEnvironmentSensor(this)
         }
-        if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
+        if (GOOGLE_FITNESS_ENABLED) {
             googleFitness = GoogleFitness(this)
             currentSteps = 0
         }
-        if (DataCollectorApplication.AMBIENT_SOUND_ENABLED) {
+        if (AMBIENT_SOUND_ENABLED) {
             ambientSound = AmbientSound(this)
             currentAmbientSound = 0.0
         }
-        if (DataCollectorApplication.WEATHER_ENABLED) {
+        if (WEATHER_ENABLED) {
             weatherCaller = WeatherCaller(this)
         }
         wifiScanner = WifiScanner(this, this)
@@ -223,12 +220,6 @@ class DataCollectorService : Service(),
                 //we assume that the operation finishes before it must be called again
                 handler.postDelayed(this, UPDATE_DELAY)
                 if (isRunning) {
-                    if (weatherUpdateCnt == WEATHER_UPDATE_DELAY) {
-                        weatherCaller.getCurrentWeather()
-                        weatherUpdateCnt = 0
-                    }
-                    weatherUpdateCnt++
-                    updateUnAutomaticData()
                     uploadDataSet(currentTime)
                 }
             }
@@ -246,13 +237,6 @@ class DataCollectorService : Service(),
             Log.d(TAG, "getPlaces Exception")
         }
 
-    }
-
-    private fun updateUnAutomaticData() {
-        getWiFiName()
-        checkScreenOn()
-        ambientSound?.getAmbientSound()
-        googleFitness.readData()
     }
 
     val wifiMgr by lazy { applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager }
@@ -282,37 +266,30 @@ class DataCollectorService : Service(),
     }
 
 
-    fun checkScreenOn() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
-            for (display in dm.displays) {
-                isCurrentScreenOn = false
-                if (display.state != Display.STATE_OFF) {
-                    isCurrentScreenOn = true
-                }
-            }
-        } else {
-            isCurrentScreenOn = pm.isInteractive
-        }
-    }
+    fun checkScreenOn(): Boolean = pm.isInteractive
 
     private fun uploadDataSet(currentTime: Long): Long {
+        //triger asynchronus processes
+        if (WEATHER_ENABLED) {
+            if (weatherUpdateCnt == WEATHER_UPDATE_DELAY) {
+                weatherCaller.getCurrentWeather()
+                weatherUpdateCnt = 0
+            }
+            weatherUpdateCnt++
+        }
+        if (WIFI_NAME_ENABLED) getWiFiName()
+        if (AMBIENT_SOUND_ENABLED) ambientSound?.getAmbientSound()
+        if (GOOGLE_FITNESS_ENABLED) googleFitness.readData()
+        //retrieve most recent data and store
         val sensorDataSet = SensorDataSet(currentTime, userName!!)
-        if (DataCollectorApplication.ACTIVITY_ENABLED) {
-            sensorDataSet.activity = currentActivities
-        }
-        if (DataCollectorApplication.WIFI_NAME_ENABLED) {
-            sensorDataSet.wifiInformation = currentWifiInfo
-        }
+        if (DataCollectorApplication.ACTIVITY_ENABLED) sensorDataSet.activity = currentActivities
+        if (DataCollectorApplication.WIFI_NAME_ENABLED) sensorDataSet.wifiInformation = currentWifiInfo
         if (DataCollectorApplication.LOCATION_ENABLED) {
-            Log.d(TAG, "lat: ${currentLatitude}")
-            Log.d(TAG, "long: $currentLongitude")
-            Log.d(TAG, "accuracy $currentAccurate")
-            val location = Location("gps")
-            location.latitude = currentLatitude
-            location.longitude = currentLongitude
-            location.accuracy = currentAccurate.toFloat()
-            sensorDataSet.gps = location
-            sensorDataSet.location = currentPlaceName
+            Log.d(TAG, "lat: ${currentLocation.latitude}")
+            Log.d(TAG, "long: ${currentLocation.longitude}")
+            Log.d(TAG, "accuracy ${currentLocation.accuracy}")
+            sensorDataSet.gps = currentLocation
+            sensorDataSet.locationName = currentPlaceName
         }
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
             sensorDataSet.totalStepsToday = currentSteps
@@ -323,7 +300,7 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.WEATHER_ENABLED) {
             sensorDataSet.weather = currentWeatherId
         }
-        sensorDataSet.screenState = isCurrentScreenOn
+        if (SCREEN_ON_ENABLED) sensorDataSet.screenState = checkScreenOn()
         sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
         uploadMotionData()
         uploadEnvironmentData()
@@ -376,10 +353,7 @@ class DataCollectorService : Service(),
     override fun locationChanged(location: Location?) {
         if (location != null) {
             currentLocation = location
-            currentLatitude = location.latitude
-            currentLongitude = location.longitude
-            currentAccurate = location.accuracy.toDouble()
-            getPlaces()
+            if (LOCATION_NAME_ENABLED) getPlaces()
         }
     }
 

@@ -160,8 +160,9 @@ class NaturalTriggerJitaiTest {
         negative.gps = Buynormand_Location
         setupDB(positive, negative)
         val activityGeofenceTimeNaturalTriggerModel = testNaturalTriggerModel()
-        activityGeofenceTimeNaturalTriggerModel.beginTime = LocalTime.of(0, 10)
-        activityGeofenceTimeNaturalTriggerModel.endTime = LocalTime.of(0, 40)
+        //because of local time
+        activityGeofenceTimeNaturalTriggerModel.beginTime = LocalTime.of(1, 0)
+        activityGeofenceTimeNaturalTriggerModel.endTime = LocalTime.of(1, 50)
         val geofence = MyGeofence(name = "test",
                                   enter = true,
                                   exit = false,
@@ -180,12 +181,12 @@ class NaturalTriggerJitaiTest {
                                             activityGeofenceTimeNaturalTriggerModel)
         for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
-            //match only every 5 minutes between 10 and 40 minutes
-            if (i < MINUTES.toMillis(10) || i > MINUTES.toMillis(40) || i % FIVE_MINUTES != 0L)
-                Assert.assertFalse("Expected false at $i seconds",
+            //match every 5 minutes
+            if (sensorDataSet.time == 0L || sensorDataSet.time % FIVE_MINUTES != 0L)
+                Assert.assertFalse("Expected false at ${sensorDataSet.time} seconds",
                                    jitai.check(sensorDataSet))
             else
-                Assert.assertTrue("Expected true at $i seconds",
+                Assert.assertTrue("Expected true at ${sensorDataSet.time} seconds",
                                   jitai.check(sensorDataSet))
             Log.d(TAG, "$i ${jitai.check(sensorDataSet)}")
         }

@@ -177,7 +177,7 @@ class TriggerManagingActivity : AppCompatActivity() {
     private fun checkPermission() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission
                 .ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Permission to access the location is missing.
+            // Permission to access the locationName is missing.
             PermissionUtils.requestPermission(this,
                                               2,
                                               android.Manifest.permission.ACCESS_FINE_LOCATION,

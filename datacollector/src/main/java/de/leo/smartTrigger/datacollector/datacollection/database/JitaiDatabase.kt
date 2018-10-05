@@ -45,7 +45,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1017
+const val DATABASE_VERSION = 1018
 
 class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
                                                                                          NAME,
@@ -83,14 +83,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
         fun deSerializeActivitys(list: String): List<DetectedActivity> {
             //split into list and split entries into parts
-            val activities = list.split(']', '[').map { it.split(',', '=') } as ArrayList
             //remove elements that do not represent detected activities
-            activities.removeAll { it.size != 4 }
             //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
-            return activities.map {
-                DetectedActivity(mapActivities(
-                    it[1]), it[3].toInt())
+            val activities = list.split(']', '[').asSequence().map {
+                it.split(',', '=')
+            }.filter { it.size == 4 }.map {
+                DetectedActivity(mapActivities(it[1]), it[3].toInt())
             }
+            return activities.toList()
         }
 
         fun mapActivities(value: String): Int {
@@ -213,7 +213,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
                 put(ACTIVITY, activity.toString())
                 put(STEPS, totalStepsToday)
                 put(ABIENT_SOUND, ambientSound)
-                put(LOCATION, location)
+                put(LOCATION, locationName)
                 put(GPS, gps.toString())
                 put(GPSlat, gps?.latitude)
                 put(GPSlng, gps?.longitude)
@@ -1279,7 +1279,7 @@ const val USERNAME = "username"
 const val ACTIVITY = "detectedActivity"
 const val STEPS = "totalStepsToday"
 const val ABIENT_SOUND = "ambientSound"
-const val LOCATION = "location"
+const val LOCATION = "locationName"
 const val GPS = "gps"
 const val GPSlat = "gps_lat"
 const val GPSlng = "gps_lng"

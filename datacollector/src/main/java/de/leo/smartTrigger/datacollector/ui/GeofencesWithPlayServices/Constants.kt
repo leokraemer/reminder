@@ -25,7 +25,7 @@ import java.util.*
 
 object Constants {
 
-    private val PACKAGE_NAME = "com.google.android.gms.location.Geofence"
+    private val PACKAGE_NAME = "com.google.android.gms.locationName.Geofence"
 
     internal val GEOFENCES_ADDED_KEY = PACKAGE_NAME + ".GEOFENCES_ADDED_KEY"
 

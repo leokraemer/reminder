@@ -35,7 +35,7 @@ import de.leo.smartTrigger.datacollector.R;
 public abstract class PermissionUtils {
 
     /**
-     * Requests the fine location permission. If a rationale with an additional explanation should
+     * Requests the fine locationName permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
      */
     public static void requestPermission(AppCompatActivity activity, int requestId,
@@ -111,7 +111,7 @@ public abstract class PermissionUtils {
     }
 
     /**
-     * A dialog that explains the use of the location permission and requests the necessary
+     * A dialog that explains the use of the locationName permission and requests the necessary
      * permission.
      * <p>
      * The activities should implement
@@ -127,7 +127,7 @@ public abstract class PermissionUtils {
         private boolean mFinishActivity = false;
 
         /**
-         * Creates a new instance of a dialog displaying the rationale for the use of the location
+         * Creates a new instance of a dialog displaying the rationale for the use of the locationName
          * permission.
          * <p>
          * The permission is requested after clicking 'ok'.
