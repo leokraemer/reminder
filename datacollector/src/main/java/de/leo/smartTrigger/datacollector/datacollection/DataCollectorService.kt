@@ -74,10 +74,10 @@ class DataCollectorService : Service(),
 
     private lateinit var myActivity: MyActivity
 
-    private lateinit var googlePlacesCaller: GooglePlacesCaller
-    private lateinit var currentLocation: Location
+    private var googlePlacesCaller: GooglePlacesCaller? = null
+    private var currentLocation: Location = Location("init")
 
-    private lateinit var myEnvironmentSensor: MyEnvironmentSensor
+    private var myEnvironmentSensor: MyEnvironmentSensor? = null
 
     private var ambientSound: AmbientSound? = null
     private lateinit var googleFitness: GoogleFitness
@@ -85,8 +85,7 @@ class DataCollectorService : Service(),
 
     private var currentAmbientSound: Double = 0.0
     private var isRunning: Boolean = false
-    private lateinit var currentPlaceName: String
-    private lateinit var currentLabel: String
+    private var currentPlaceName: String = ""
     private var currentActivities = listOf(DetectedActivity(DetectedActivity.UNKNOWN, 0))
     private var currentWeatherId: Long = -1
     private var currentSteps: Long = 0
@@ -101,13 +100,6 @@ class DataCollectorService : Service(),
     private var currentWifis: List<ScanResult> = listOf()
 
     private val pm: PowerManager by lazy { applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager }
-
-    private val mMessageReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            currentLabel = intent.getStringExtra("label")
-            //Log.d("receiver", "Got message: " + message);
-        }
-    }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -167,13 +159,6 @@ class DataCollectorService : Service(),
             weatherCaller = WeatherCaller(this)
         }
         wifiScanner = WifiScanner(this, this)
-        currentLabel = "null"
-
-
-
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                                                                 IntentFilter(
-                                                                     DataCollectorApplication.BROADCAST_EVENT))
 
         startScheduledUpdate()
     }
@@ -188,7 +173,6 @@ class DataCollectorService : Service(),
         super.onDestroy()
         isRunning = false
         cancelNotification()
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver)
 
         if (DataCollectorApplication.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED) {
             myMotion.stopMotionSensor()
@@ -200,7 +184,7 @@ class DataCollectorService : Service(),
             stopActivityDetection()
         }
         if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
-            myEnvironmentSensor.stopEnvironmentSensor()
+            myEnvironmentSensor?.stopEnvironmentSensor()
         }
         if (DataCollectorApplication.GOOGLE_FITNESS_ENABLED) {
             stopGoogleFitness()
@@ -229,7 +213,7 @@ class DataCollectorService : Service(),
     private fun getPlaces() {
         try {
             if (useGooglePlaces) {
-                googlePlacesCaller.getCurrentPlace()
+                googlePlacesCaller?.getCurrentPlace()
             } else {
                 //foursquareCaller.findPlaces()
             }
@@ -312,15 +296,15 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.ENVIRONMENT_SENSOR_ENABLED) {
             doAsync {
                 db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_AIR,
-                                                   myEnvironmentSensor.readPressureData())
+                                                   myEnvironmentSensor!!.readPressureData())
                 db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_TEMPERATURE,
-                                                   myEnvironmentSensor.readTemperatureData())
+                                                   myEnvironmentSensor!!.readTemperatureData())
                 db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_LIGHT,
-                                                   myEnvironmentSensor.readLightData())
+                                                   myEnvironmentSensor!!.readLightData())
                 db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_HUMIDITY,
-                                                   myEnvironmentSensor.readHumidityData())
+                                                   myEnvironmentSensor!!.readHumidityData())
                 db!!.enterSingleDimensionDataBatch(TABLE_REALTIME_PROXIMITY,
-                                                   myEnvironmentSensor.readProximityData())
+                                                   myEnvironmentSensor!!.readProximityData())
             }
         }
     }
@@ -374,27 +358,6 @@ class DataCollectorService : Service(),
         } else {
             currentPlaceName = placeName + ":" + probability
         }
-
-        //get all potential places
-        /*        Iterator it = places.entrySet().iterator();
-        String placeName  = "";
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            if((float)pair.getValue()>0) {
-                placeName += pair.getKey() + " : " + pair.getValue() + ";";
-            }
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-        if(placeName.isEmpty()) {
-            if(places.entrySet().size()>0){
-                placeName = "Unknown Places";
-            }else {
-                placeName = "null";
-            }
-        }else {
-            currentPlaceName = placeName;
-        }*/
-
     }
 
     //foursquare place handler
@@ -410,7 +373,7 @@ class DataCollectorService : Service(),
     override fun stopLocationUpdate() {
         //myLocation.stopLocationUpdate()
         fusedLocationProviderClient?.stopLocationUpdates()
-        googlePlacesCaller.disconnect()
+        googlePlacesCaller?.disconnect()
     }
 
     fun stopGoogleFitness() {

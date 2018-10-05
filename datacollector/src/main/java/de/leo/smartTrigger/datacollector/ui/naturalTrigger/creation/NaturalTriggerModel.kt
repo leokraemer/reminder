@@ -64,14 +64,14 @@ class NaturalTriggerModel(var ID: Int = -1) {
                 modelChangelListener?.modelChangedCallback()
             }
         }
-    var beginTime = LocalTime.of(8, 0)
+    var beginTime : LocalTime? = null
         set(value) {
             if (field != value) {
                 field = value
                 modelChangelListener?.modelChangedCallback()
             }
         }
-    var endTime = LocalTime.of(20, 0)
+    var endTime : LocalTime? = null
         set(value) {
             if (field != value) {
                 field = value

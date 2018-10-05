@@ -9,6 +9,7 @@ import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.view.ViewGroup.GONE
 import android.view.ViewGroup.LayoutParams
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
@@ -26,6 +27,7 @@ import kotlinx.android.synthetic.main.naturaltriggerview.*
 import kotlinx.android.synthetic.main.naturaltriggerview.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.toast
+import org.threeten.bp.LocalTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -71,7 +73,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
         }
         viewPager.adapter = ScreenSlidePagerAdapter(supportFragmentManager)
         viewPager.addOnPageChangeListener(MyOnPageChangeListener())
-        previous_page.setOnClickListener{ onBackPressed() }
+        previous_page.setOnClickListener { onBackPressed() }
         next_page.setOnClickListener { if (viewPager.isPagingEnabled == true) nextButtonClick() }
         if (intent.action == EDIT) {
             expand(reminder_card, 1F)
@@ -184,13 +186,20 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     next_page.text = "Fertig"
                 if (position < it.count - 1)
                     next_page.text = "Weiter"
+                //second to last page is the time page
+                if (position == it.count - 2) {
+                    if (model.beginTime == null) {
+                        model.beginTime = LocalTime.of(8, 0)
+                        model.endTime = LocalTime.of(20, 0)
+                    }
+                }
+                if (position > NUM_PAGES)
+                    finish()
+                ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.height)
+                    .setDuration(200)
+                    .start();
+                //scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
             }
-            if (position > NUM_PAGES)
-                finish()
-            ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.height)
-                .setDuration(200)
-                .start();
-            //scrollView.post { scrollView.fullScroll(ScrollView.FOCUS_DOWN) }
         }
     }
 
@@ -210,7 +219,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     4    -> activitySelection
                     5    -> timeSelection
                     6    -> overview
-                    else -> timeSelection // error
+                    else -> overview // error
                 } else
                 when (position) {
                     0    -> goalSelection
@@ -219,7 +228,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
                     3    -> activitySelection
                     4    -> timeSelection
                     5    -> overview
-                    else -> timeSelection // error
+                    else -> overview // error
                 }
 
         override fun getCount(): Int =
@@ -358,11 +367,12 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
             }
 
             //TimeSelection
-            val beginTime = beginTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-            val endTime = endTime.format(DateTimeFormatter.ofPattern("HH:mm"))
-            timeView.setText(beginTime + "-\n" + endTime)
-
-
+            if (beginTime != null && endTime != null) {
+                val beginTime = beginTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                val endTime = endTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+                timeView.visibility = View.VISIBLE
+                timeView.setText(beginTime + "-\n" + endTime)
+            } else timeView.visibility = View.INVISIBLE
         }
     }
 }

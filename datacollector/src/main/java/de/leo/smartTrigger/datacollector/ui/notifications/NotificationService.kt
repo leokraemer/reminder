@@ -293,22 +293,24 @@ class NotificationService : IntentService("NotificationIntentService") {
     }
 
     fun dailyReminderNotification() {
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        //notification on default channel to get the priority_max for the heads up notification
-        val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
-            .setContentTitle("Morgentliche Erinnerung")
-            .setAutoCancel(true)
-            .setOngoing(false)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setWhen(0)
-            .setContentText("Setzen sie sich ihr Ziel für heute")
-            .setSmallIcon(R.drawable.reminder_white)
-            .setContentIntent(PendingIntent.getActivity(this,
-                                                        DAILY_REMINDER_REQUEST_CODE,
-                                                        createIntent(),
-                                                        PendingIntent.FLAG_UPDATE_CURRENT))
-        mNotificationManager.notify(NOTIFICATIONIDMODIFYER + DAILY_REMINDER_REQUEST_CODE,
-                                    mNotifyBuilder.build())
+        if (db.getAllActiveNaturalTriggerJitai().size < 4) {
+            val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            //notification on default channel to get the priority_max for the heads up notification
+            val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
+                .setContentTitle("Morgentliche Erinnerung")
+                .setAutoCancel(true)
+                .setOngoing(false)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setWhen(0)
+                .setContentText("Setzen sie sich ihr Ziel für heute")
+                .setSmallIcon(R.drawable.reminder_white)
+                .setContentIntent(PendingIntent.getActivity(this,
+                                                            DAILY_REMINDER_REQUEST_CODE,
+                                                            createIntent(),
+                                                            PendingIntent.FLAG_UPDATE_CURRENT))
+            mNotificationManager.notify(NOTIFICATIONIDMODIFYER + DAILY_REMINDER_REQUEST_CODE,
+                                        mNotifyBuilder.build())
+        }
     }
 
     fun cancelTriggerNotification(id: Int) {

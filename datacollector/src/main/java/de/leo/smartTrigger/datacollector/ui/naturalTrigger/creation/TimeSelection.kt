@@ -65,10 +65,14 @@ class TimeSelection : NaturalTriggerFragment() {
 
     override fun updateView() {
         if (model != null) {
-            time_range_slider?.getThumb(0)?.setValue(model!!.beginTime.toSecondOfDay().div(60),
-                                                     true)
-            time_range_slider?.getThumb(1)?.setValue(model!!.endTime.toSecondOfDay().div(60),
-                                                     true)
+            model!!.beginTime?.let {
+                time_range_slider?.getThumb(0)?.setValue(
+                    it.toSecondOfDay().div(60), true)
+            }
+            model!!.endTime?.let {
+                time_range_slider?.getThumb(1)?.setValue(
+                    it.toSecondOfDay().div(60), true)
+            }
         }
         situation_text?.setText(model?.situation)
     }

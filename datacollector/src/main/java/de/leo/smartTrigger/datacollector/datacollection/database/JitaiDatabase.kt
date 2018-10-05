@@ -991,8 +991,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(NATURAL_TRIGGER_GOAL, naturalTrigger.goal)
         cv.put(NATURAL_TRIGGER_MESSAGE, naturalTrigger.message)
         cv.put(NATURAL_TRIGGER_SITUATION, naturalTrigger.situation)
-        cv.put(NATURAL_TRIGGER_BEGIN_TIME, naturalTrigger.beginTime.toSecondOfDay())
-        cv.put(NATURAL_TRIGGER_END_TIME, naturalTrigger.endTime.toSecondOfDay())
+        cv.put(NATURAL_TRIGGER_BEGIN_TIME, naturalTrigger.beginTime!!.toSecondOfDay())
+        cv.put(NATURAL_TRIGGER_END_TIME, naturalTrigger.endTime!!.toSecondOfDay())
         cv.put(NATURAL_TRIGGER_ACTIVITY, gson.toJson(naturalTrigger.activity))
         cv.put(NATURAL_TRIGGER_ACTIVITY_DURATION, naturalTrigger.timeInActivity)
         naturalTrigger.wifi?.let {

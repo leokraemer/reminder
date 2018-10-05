@@ -8,6 +8,7 @@ import de.leo.smartTrigger.datacollector.jitai.*
 import de.leo.smartTrigger.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import java.time.LocalTime
 
 open class NaturalTriggerJitai(override var id: Int,
                                context: Context,
@@ -27,7 +28,8 @@ open class NaturalTriggerJitai(override var id: Int,
     init {
         goal = naturalTriggerModel.goal
         message = naturalTriggerModel.message
-        timeTrigger = TimeTrigger(naturalTriggerModel.beginTime.rangeTo(naturalTriggerModel.endTime),
+        timeTrigger = TimeTrigger(naturalTriggerModel.beginTime!!.rangeTo(naturalTriggerModel
+                                                                             .endTime!!),
                                   TimeTrigger.ALL_DAYS)
         geofenceTrigger = naturalTriggerModel.geofence?.let {
             if (it.name != EVERYWHERE)
@@ -41,7 +43,6 @@ open class NaturalTriggerJitai(override var id: Int,
             }, naturalTriggerModel.timeInActivity)
         } else null
     }
-
 
     override fun check(sensorData: SensorDataSet): Boolean {
         Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")

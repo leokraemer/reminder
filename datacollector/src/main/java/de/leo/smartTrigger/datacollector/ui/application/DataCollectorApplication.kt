@@ -27,7 +27,6 @@ class DataCollectorApplication : Application() {
         var SCREEN_ON_ENABLED = false
         var AMBIENT_SOUND_ENABLED = false
         var WEATHER_ENABLED = false
-        var BROADCAST_EVENT = "com.example.leo.datacollector"
     }
 }
 
