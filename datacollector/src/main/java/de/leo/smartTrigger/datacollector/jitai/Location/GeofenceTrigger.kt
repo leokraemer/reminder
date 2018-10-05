@@ -30,11 +30,11 @@ open class GeofenceTrigger() : Trigger {
         if (locations.size == 1) {
             val returnval = locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
             if (db == null) db = JitaiDatabase.getInstance(context)
-            db?.enterGeofenceEvent(sensorData.time, locations[0].id, locations[0].name,
+            db!!.enterGeofenceEvent(sensorData.time, locations[0].id, locations[0].name,
                                    "${locations[0].entered}," +
                                        "${locations[0].exited}," +
-                                       "${locations[0].dwellInside}," +
-                                       "${locations[0].dwellOutside}")
+                                       "${locations[0].loiteringInside}," +
+                                       "${locations[0].loiteringOutside}")
             return returnval
         }
 
