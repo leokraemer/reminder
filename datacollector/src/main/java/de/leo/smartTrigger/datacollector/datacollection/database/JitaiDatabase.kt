@@ -214,11 +214,12 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
                 put(STEPS, totalStepsToday)
                 put(ABIENT_SOUND, ambientSound)
                 put(LOCATION, locationName)
-                put(GPS, gps.toString())
+                //it is never deserialized -> not needed
+                //put(GPS, gps.toString())
                 put(GPSlat, gps?.latitude)
                 put(GPSlng, gps?.longitude)
-                put(WIFI_NAME, wifiInformation?.let { serializeWifi(it) } ?: "null")
-                put(BLUETOOTH, bluetoothDevices.toString())
+                put(WIFI_NAME, wifiInformation?.let { serializeWifi(it) } ?: "")
+                put(BLUETOOTH, bluetoothDevices?.let { it.toString() } ?: "")
                 put(WEATHER, weather)
                 put(SCREEN_STATE, screenState)
             }
