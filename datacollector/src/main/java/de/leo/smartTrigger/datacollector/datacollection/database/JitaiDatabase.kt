@@ -45,7 +45,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1018
+const val DATABASE_VERSION = 1017
 
 class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
                                                                                          NAME,
@@ -166,7 +166,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
         db!!.transaction {
-            execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
+            /*execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
             execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
             execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
             execSQL("DROP TABLE IF EXISTS $TABLE_WIFI_GEOFENCE")
@@ -180,7 +180,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             execSQL("DROP INDEX IF EXISTS air_timestamp_index")
             execSQL("DROP INDEX IF EXISTS prox_timestamp_index")
             execSQL("DROP INDEX IF EXISTS light_timestamp_index")
-            deleteRealtimeTables(db)
+            deleteRealtimeTables(db)*/
         }
         Log.d(TAG, "onUpgrade deleting finished")
         onCreate(db)
@@ -505,7 +505,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     fun createSingleDimensionRealtimeTables(db: SQLiteDatabase) {
         for (i in 0 until REALTIME_TABLES.size) {
             val table = REALTIME_TABLES[i]
-            db.execSQL("CREATE TABLE $table ( " +
+            db.execSQL("CREATE TABLE  IF NOT EXISTS $table ( " +
                            "$ID integer PRIMARY KEY, " +
                            "$TIMESTAMP date, " +
                            "$X real ," +
@@ -1280,7 +1280,7 @@ const val USERNAME = "username"
 const val ACTIVITY = "detectedActivity"
 const val STEPS = "totalStepsToday"
 const val ABIENT_SOUND = "ambientSound"
-const val LOCATION = "locationName"
+const val LOCATION = "location"
 const val GPS = "gps"
 const val GPSlat = "gps_lat"
 const val GPSlng = "gps_lng"
