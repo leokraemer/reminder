@@ -4,8 +4,11 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,6 +28,13 @@ import org.jetbrains.anko.toast
 
 class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
+    private var mapType: Int = GoogleMap.MAP_TYPE_NORMAL
+        set(value) {
+            if (value != field) {
+                field = value
+                if (::mMap.isInitialized) mMap.mapType = field
+            }
+        }
     lateinit var db: JitaiDatabase
     var geofenceID: Int = -1
 
@@ -50,11 +60,10 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
             }
         }
 
-    val GEOFENCEID = "geofenceId"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.geofence_activity_main)
+
         geofenceIcon = intent.getIntExtra(GEOFENCE_IMAGE, 2)
         db = JitaiDatabase.getInstance(this)
         val intent = getIntent()
@@ -101,6 +110,21 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
         geofenceoptions.nameField.setText(intent.getStringExtra(GEOFENCE_NAME) ?: "")
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_create_geofence, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.getItemId()) {
+            R.id.action_layer -> showMapTypeSelectorDialog()
+            else              -> {
+            }
+        }
+        return true
+    }
+
     private fun commitGeofence() {
         if (latLng != null && geofenceName.isNotBlank()) {
             //addGeofence(geofenceName, latLng!!, geofencesize.toFloat(), enter, exit, dwell)
@@ -136,6 +160,7 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
     @SuppressWarnings("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.mapType = mapType
         mMap.uiSettings.isTiltGesturesEnabled = false
         mMap.isMyLocationEnabled = true
         geofencesize = 100
@@ -190,5 +215,39 @@ class GeofenceMapActivity : MainActivity(), OnMapReadyCallback {
         //        .fillColor(Color.BLUE));
 
         //Toast.makeText(this, "Area: $geoArea", Toast.LENGTH_SHORT).show()
+    }
+
+    private val MAP_TYPE_ITEMS = arrayOf<CharSequence>("Karte", "Satellit", "Gelände", "Hybrid")
+
+    private fun showMapTypeSelectorDialog() {
+        // Prepare the dialog by setting up a Builder.
+        val fDialogTitle = "Wähle Karten Typ"
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(fDialogTitle)
+
+        // Find the current map type to pre-check the item representing the current state.
+        val checkItem = mMap.mapType - 1
+
+        // Add an OnClickListener to the dialog, so that the selection will be handled.
+        builder.setSingleChoiceItems(
+            MAP_TYPE_ITEMS,
+            checkItem
+                                    ) { dialog, item ->
+            // Locally create a finalised object.
+
+            // Perform an action depending on which item was selected.
+            when (item) {
+                1    -> mapType = GoogleMap.MAP_TYPE_SATELLITE
+                2    -> mapType = GoogleMap.MAP_TYPE_TERRAIN
+                3    -> mapType = GoogleMap.MAP_TYPE_HYBRID
+                else -> mapType = GoogleMap.MAP_TYPE_NORMAL
+            }
+            dialog.dismiss()
+        }
+
+        // Build the dialog and show it.
+        val fMapTypeDialog = builder.create()
+        fMapTypeDialog.setCanceledOnTouchOutside(true)
+        fMapTypeDialog.show()
     }
 }

@@ -22,7 +22,7 @@
             android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceMapActivity"
             android:label="Ort Definieren"
             android:screenOrientation="portrait"
-            android:theme="@style/AppBaseTheme.Light.NoActionBar" />
+            android:theme="@style/AppBaseTheme.Light" />
         <activity
             android:name="de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity"
             android:label="Verwaltung" />
