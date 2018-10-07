@@ -22,6 +22,7 @@ import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNatura
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.trigger_list_element.view.*
 import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.toast
 
 class TriggerListRecyclerViewAdapter(private val context: Context,
@@ -85,6 +86,9 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
                 situation.visibility = View.VISIBLE
                 situationDescription.visibility = View.VISIBLE
                 message.visibility = View.VISIBLE
+                message.maxLines = Integer.MAX_VALUE
+                situation.maxLines = Integer.MAX_VALUE
+                goal.maxLines = Integer.MAX_VALUE
                 messageDescription.visibility = View.VISIBLE
                 copy.visibility = View.VISIBLE
                 delete.visibility = View.VISIBLE
@@ -104,6 +108,9 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
                 situationDescription.visibility = View.INVISIBLE
                 message.visibility = View.INVISIBLE
                 messageDescription.visibility = View.INVISIBLE
+                message.maxLines = 1
+                situation.maxLines = 1
+                goal.maxLines = 5
                 copy.visibility = View.INVISIBLE
                 delete.visibility = View.INVISIBLE
                 edit.visibility = View.INVISIBLE
@@ -154,7 +161,6 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
                         expandedPosition = -1
                     else
                         expandedPosition = adapterPosition
-                    recyclerView?.let { rv -> TransitionManager.beginDelayedTransition(rv) }
                     notifyDataSetChanged()
                 }
             }

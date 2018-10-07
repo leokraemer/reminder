@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.ActivityRecognition
 import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.R
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService.Companion.UPDATE_DELAY
 import de.leo.smartTrigger.datacollector.datacollection.services.ActivitiesIntentService
 import de.leo.smartTrigger.datacollector.utils.Constants
 
@@ -76,7 +77,7 @@ class MyActivity(private val context: Context) : GoogleApiClient.ConnectionCallb
             //Toast.makeText(context, "GoogleApiClient not yet connected", Toast.LENGTH_SHORT).show();
         } else {
             ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(mGoogleApiClient,
-                                                                              5000,
+                                                                              UPDATE_DELAY,
                                                                               activityDetectionPendingIntent)
                 .setResultCallback(this)
         }

@@ -1,5 +1,6 @@
 package de.leo.smartTrigger.datacollector.datacollection
 
+import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -18,6 +19,7 @@ import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import android.view.Display
+import android.view.ViewDebug
 import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
@@ -25,6 +27,7 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.*
 import de.leo.smartTrigger.datacollector.jitai.activityDetection.ActivityRecognizer
+import de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACTIVITY_ENABLED
@@ -35,9 +38,12 @@ import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.SCREEN_ON_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WEATHER_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WIFI_NAME_ENABLED
+import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
+import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
 import de.leo.smartTrigger.datacollector.utils.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.intentFor
 import java.util.*
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
@@ -394,7 +400,12 @@ class DataCollectorService : Service(),
     }
 
     fun startNotification() {
+        val contentIntent = intentFor<TriggerManagingActivity>().setAction("OPEN_TRIGGER_LIST")
         val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
+            .setContentIntent(PendingIntent.getActivity(this,
+                                                        6874,
+                                                        contentIntent,
+                                                        PendingIntent.FLAG_UPDATE_CURRENT))
             .setContentTitle("Smart Reminder")
             .setAutoCancel(false)
             .setOngoing(true)
