@@ -45,7 +45,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1017
+const val DATABASE_VERSION = 1023
 
 class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
                                                                                          NAME,
@@ -75,7 +75,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         private fun buildDatabase(context: Context) =
             JitaiDatabase(context)
 
-        const val NAME = "mydb.$DATABASE_VERSION"
+        const val NAME = "mydb.1017"
 
         fun serializeDetectedActivitys(activities: List<DetectedActivity>): String {
             return activities.fold("", { r, f -> r + f.toString() })
@@ -1207,7 +1207,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
         val currentDBPath =
             "/data/${context.applicationContext.applicationInfo.packageName}/databases/$databaseName"
-        val backupDBPath = "$databaseName.$userName.sqlite"
+        val backupDBPath = "$databaseName.$DATABASE_VERSION.$userName.sqlite"
         val currentDB = File(dataDirectory, currentDBPath)
         val backupDB = File(externalStorageDirectory, backupDBPath)
 

@@ -100,8 +100,10 @@ class LocationSelection : NaturalTriggerFragment() {
                     } else {
                         listGeofenceButton?.isChecked = true
                     }
-                } else if (wifi != null) {
+                }
+                if (wifi != null) {
                     wifiGeofenceButton?.isChecked = true
+                    worldGeofenceButton?.isChecked = false
                 }
             }
         }

@@ -206,7 +206,7 @@ class CreateTriggerActivity : GeofenceDialogListener,
     private inner class ScreenSlidePagerAdapter(fm: FragmentManager) :
         FragmentStatePagerAdapter(fm) {
         private fun showGeofenceDwellTimeSelection(): Boolean {
-            return model.geofence?.name != EVERYWHERE
+            return model.geofence?.name != EVERYWHERE || model.wifi != null
         }
 
         override fun getItem(position: Int): Fragment =
