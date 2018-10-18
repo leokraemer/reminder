@@ -53,7 +53,7 @@ class ActivityTriggerTest {
         sensorData2.activity = listOf(inVehicle)
         Assert.assertTrue(trigger.check(context, sensorData2))
         Assert.assertTrue(trigger.check(context, sensorData2))
-        trigger.reset()
+        trigger.reset(sensorData2)
         Assert.assertFalse(trigger.check(context, sensorData2))
         Assert.assertFalse(trigger.check(context, sensorData2))
     }
@@ -82,7 +82,7 @@ class ActivityTriggerTest {
         val sensorData2 = SensorDataSet(System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(6),
                                         "test")
         sensorData2.activity = listOf(inVehicle)
-        trigger.reset()
+        trigger.reset(sensorData2)
         Assert.assertFalse(trigger.check(context, sensorData2))
     }
 }

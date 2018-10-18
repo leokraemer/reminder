@@ -43,7 +43,8 @@ class TriggerCreationTest {
     fun setup() {
         IdlingRegistry.getInstance()
             .register(ViewPagerIdlingResource(mActivityRule.activity.viewPager, "viewpager"))
-
+        db = JitaiDatabase.getInstance(getTargetContext())
+        db.close()
         db = JitaiDatabase.getInstance(getTargetContext())
         getTargetContext().deleteDatabase(JitaiDatabase.NAME)
         //should enter first geofence in a new database

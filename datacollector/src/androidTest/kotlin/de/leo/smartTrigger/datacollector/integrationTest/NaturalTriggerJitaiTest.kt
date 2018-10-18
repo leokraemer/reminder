@@ -19,6 +19,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.threeten.bp.LocalTime
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -154,15 +155,20 @@ class NaturalTriggerJitaiTest {
 
     @Test
     fun testTimeActivityGeofenceTrigger() {
-        val positive = SensorDataSet(time = 0, userName = USER, activity = listOf(SIT_CONFIDENT))
-        val negative = SensorDataSet(time = 0, userName = USER, activity = listOf(SIT_CONFIDENT))
+        val zeroTime = TimeUnit.NANOSECONDS.toMillis(LocalTime.of(0, 0).toNanoOfDay())
+        val fiftyMinutesTime = TimeUnit.NANOSECONDS.toMillis(LocalTime.of(0, 50).toNanoOfDay())
+        val positive = SensorDataSet(time = zeroTime,
+                                     userName = USER,
+                                     activity = listOf(SIT_CONFIDENT))
+        val negative = SensorDataSet(time = zeroTime,
+                                     userName = USER,
+                                     activity = listOf(SIT_CONFIDENT))
         positive.gps = Catimini_Location
         negative.gps = Buynormand_Location
         setupDB(positive, negative)
         val activityGeofenceTimeNaturalTriggerModel = testNaturalTriggerModel()
-        //because of local time
-        activityGeofenceTimeNaturalTriggerModel.beginTime = LocalTime.of(1, 0)
-        activityGeofenceTimeNaturalTriggerModel.endTime = LocalTime.of(1, 50)
+        activityGeofenceTimeNaturalTriggerModel.beginTime = LocalTime.of(0, 0)
+        activityGeofenceTimeNaturalTriggerModel.endTime = LocalTime.of(0, 50)
         val geofence = MyGeofence(name = "test",
                                   enter = true,
                                   exit = false,
@@ -179,16 +185,15 @@ class NaturalTriggerJitaiTest {
         val jitai = TestNaturalTriggerJitai(-1,
                                             context,
                                             activityGeofenceTimeNaturalTriggerModel)
-        for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
+        for (i in zeroTime..fiftyMinutesTime step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
             //match every 5 minutes
-            if (sensorDataSet.time == 0L || sensorDataSet.time % FIVE_MINUTES != 0L)
-                Assert.assertFalse("Expected false at ${sensorDataSet.time} seconds",
-                                   jitai.check(sensorDataSet))
+            val match = jitai.check(sensorDataSet)
+            if (sensorDataSet.time == zeroTime || sensorDataSet.time % FIVE_MINUTES != 0L)
+                Assert.assertFalse("Expected false at ${sensorDataSet.time} seconds", match)
             else
-                Assert.assertTrue("Expected true at ${sensorDataSet.time} seconds",
-                                  jitai.check(sensorDataSet))
-            Log.d(TAG, "$i ${jitai.check(sensorDataSet)}")
+                Assert.assertTrue("Expected true at ${sensorDataSet.time} seconds", match)
+            Log.d(TAG, "$i $match")
         }
     }
 
@@ -196,11 +201,12 @@ class NaturalTriggerJitaiTest {
         for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
             val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
             //match only every 5 minutes
+            val match = jitai.check(sensorDataSet)
             if (i == 0L || i % FIVE_MINUTES != 0L)
-                Assert.assertFalse("Expected false at $i seconds", jitai.check(sensorDataSet))
+                Assert.assertFalse("Expected false at $i seconds", match)
             else
-                Assert.assertTrue("Expected true at $i seconds", jitai.check(sensorDataSet))
-            Log.d(TAG, "$i ${jitai.check(sensorDataSet)}")
+                Assert.assertTrue("Expected true at $i seconds", match)
+            Log.d(TAG, "$i $match")
         }
     }
 

@@ -76,7 +76,7 @@ class DatabaseBackedActivityTriggerTest {
         //at time of sensorData2 it should assert true
         Assert.assertTrue(trigger.check(context, sensorData2))
         Assert.assertTrue(trigger.check(context, sensorData2))
-        trigger.reset()
+        trigger.reset(sensorData2)
         Assert.assertFalse(trigger.check(context, sensorData2))
         Assert.assertFalse(trigger.check(context, sensorData2))
     }
@@ -105,7 +105,7 @@ class DatabaseBackedActivityTriggerTest {
         sensorData2.activity = listOf(inVehicle)
         db.insertSensorDataBatch(listOf(sensorData, sensorData2))
         Assert.assertTrue(trigger.check(context, sensorData2))
-        trigger.reset()
+        trigger.reset(sensorData2)
         Assert.assertFalse(trigger.check(context, sensorData2))
     }
 }

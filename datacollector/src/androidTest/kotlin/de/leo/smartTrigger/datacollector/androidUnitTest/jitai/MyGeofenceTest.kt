@@ -142,6 +142,28 @@ class MyGeofenceTest() {
     }
 
     @Test
+    fun testMyGeofenceDwellInside2() {
+        val CA = MyGeofence(Catimini.id,
+                            Catimini.name,
+                            Catimini.latitude,
+                            Catimini.longitude,
+                            Catimini.location.distanceTo(
+                                Auberge_du_coq.location),
+                            false,
+                            false,
+                            true,
+                            false,
+                            1,
+                            0)
+        Assert.assertFalse(CA.updateAndCheck(0L, Catimini.location))
+        Assert.assertTrue(CA.updateAndCheck(2L, Catimini.location))
+        Assert.assertTrue(CA.updateAndCheck(5L, Catimini.location))
+        Assert.assertTrue(CA.updateAndCheck(6L, Catimini.location))
+        Assert.assertTrue(CA.updateAndCheck(7L, Catimini.location))
+        Assert.assertTrue(CA.updateAndCheck(8L, Catimini.location))
+    }
+
+    @Test
     fun testMyGeofenceDwellOutside() {
         val CA = MyGeofence(Catimini.id,
                             Catimini.name,

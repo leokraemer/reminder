@@ -171,6 +171,40 @@ class GeofenceTriggerTest {
     @Test
     fun dwellGeofenceTriggerTest() {
         val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false,
+                                                                 dwellInside = true,
+                                                                 loiteringDelay = 1L)))
+        val sensorData = SensorDataSet(0L, "dummy")
+        //entering
+        sensorData.gps = Auberge_du_coq_Location
+        Assert.assertFalse(trigger.check(context, sensorData))
+        //loitering
+        val laterSensorData = sensorData.copy(time = 2L)
+        Assert.assertTrue(trigger.check(context, laterSensorData))
+        //exiting again
+        laterSensorData.gps = Buynormand_Location
+        Assert.assertFalse(trigger.check(context, laterSensorData))
+    }
+
+    @Test
+    fun dwellLoiteringDelayZero() {
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, dwellInside =
+        true, loiteringDelay = 0L)))
+        val sensorData = SensorDataSet(0L, "dummy")
+        //entering & loitering immediately
+        sensorData.gps = Auberge_du_coq_Location
+        Assert.assertTrue(trigger.check(context, sensorData))
+        trigger.reset(sensorData)
+        //loitering
+        val laterSensorData = sensorData.copy(time = 2L)
+        Assert.assertTrue(trigger.check(context, laterSensorData))
+        //exiting again
+        laterSensorData.gps = Buynormand_Location
+        Assert.assertFalse(trigger.check(context, laterSensorData))
+    }
+
+    @Test
+    fun dwellRepeatedly() {
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false,
                                                                  dwellInside = true)))
         val sensorData = SensorDataSet(0L, "dummy")
         //entering
@@ -179,6 +213,9 @@ class GeofenceTriggerTest {
         //loitering
         val laterSensorData = sensorData.copy(time = 2L)
         Assert.assertTrue(trigger.check(context, laterSensorData))
+        //loitering
+        val evenMoreLaterSensorData = sensorData.copy(time = 4L)
+        Assert.assertTrue(trigger.check(context, evenMoreLaterSensorData))
         //exiting again
         laterSensorData.gps = Buynormand_Location
         Assert.assertFalse(trigger.check(context, laterSensorData))
@@ -201,22 +238,5 @@ class GeofenceTriggerTest {
         //not loitering
         val notLoiteringSensorData = sensorData.copy(time = 6L, gps = Auberge_du_coq_Location)
         Assert.assertFalse(trigger.check(context, notLoiteringSensorData))
-    }
-
-    @Test
-    fun dwellGeofenceTriggerTest2() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, dwellInside =
-        true, loiteringDelay = 0L)))
-        val sensorData = SensorDataSet(0L, "dummy")
-        //entering
-        sensorData.gps = Auberge_du_coq_Location
-        Assert.assertTrue(trigger.check(context, sensorData))
-        trigger.reset()
-        //loitering
-        val laterSensorData = sensorData.copy(time = 2L)
-        Assert.assertTrue(trigger.check(context, laterSensorData))
-        //exiting again
-        laterSensorData.gps = Buynormand_Location
-        Assert.assertFalse(trigger.check(context, laterSensorData))
     }
 }

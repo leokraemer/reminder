@@ -6,6 +6,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.androidUnitTest.checkGeofenceState
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
+import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import junit.framework.Assert
@@ -30,10 +31,18 @@ class MyWifiGeofenceTest() {
 
     val A = "A"
     val B = "B"
+    val C = "C"
     val RSSI = 45
+    val wifiInfo = WifiInfo(BSSID = A, rssi = RSSI, SSID = A, IP = "0:0:0:0", networkId = -1)
 
-    var A_Router = MyWifiGeofence(bssid = A, rssi = RSSI)
-
+    var TEST_GEOFENCE_A = MyWifiGeofence(bssid = A, rssi = RSSI)
+    var SCAN_RESULT_A = listOf(wifiInfo.copy(BSSID = A))
+    var SCAN_RESULT_B = listOf(wifiInfo.copy(BSSID = B))
+    var SCAN_RESULT_AB = listOf(wifiInfo.copy(BSSID = B), wifiInfo.copy(BSSID = A))
+    var SCAN_RESULT_BC = listOf(wifiInfo.copy(BSSID = B), wifiInfo.copy(BSSID = C))
+    var SCAN_RESULT_ABC = listOf(wifiInfo.copy(BSSID = A),
+                                 wifiInfo.copy(BSSID = B),
+                                 wifiInfo.copy(BSSID = C))
 
     @Before
     fun setup() {
@@ -51,94 +60,157 @@ class MyWifiGeofenceTest() {
 
     @Test
     fun testDatabase() {
-        val id = db.enterMyWifiGeofence(A_Router)
+        val id = db.enterMyWifiGeofence(TEST_GEOFENCE_A)
         Assert.assertNotSame(-1, id)
         val retrieved = db.getMyWifiGeofence(id)
         Assert.assertNotNull(retrieved)
-        Assert.assertEquals(A_Router.copy(id = id), retrieved!!)
+        Assert.assertEquals(TEST_GEOFENCE_A.copy(id = id), retrieved!!)
     }
 
     @Test
     fun testMyGeofenceEnter() {
-        A_Router = A_Router.copy(enter = true)
-        Assert.assertTrue(A_Router.update(0L, A, RSSI))
-        Assert.assertTrue(A_Router.checkCondition())
-        Assert.assertTrue(A_Router.update(0L, B, RSSI))
-        Assert.assertFalse(A_Router.checkCondition())
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = true)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_B))
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+    }
+
+    @Test
+    fun testMyGeofenceEnterMoreThanOneWifi() {
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = true)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_ABC))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_BC))
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+    }
+
+    @Test
+    fun testMyGeofenceEnterTwice() {
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = true)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
+        //inside again must not change state...
+        Assert.assertFalse(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        //... and but is still inside
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
+        //exiting must change state
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_B))
+        //but not trigger enter
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+        ///entering again must work
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
     }
 
     @Test
     fun testMyGeofenceExit() {
-        A_Router = A_Router.copy(enter = false, exit = true)
-        Assert.assertTrue(A_Router.update(0L, A, RSSI))
-        Assert.assertFalse(A_Router.checkCondition())
-        Assert.assertTrue(A_Router.update(0L, B, RSSI))
-        Assert.assertTrue(A_Router.checkCondition())
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false, exit = true)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_B))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
+    }
+
+    @Test
+    fun testMyGeofenceExitTwoWifi() {
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false, exit = true)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_ABC))
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_BC))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
     }
 
     @Test
     fun testMyGeofenceDwellInside() {
-        A_Router = A_Router.copy(enter = false, dwellInside = true, loiteringDelay = 2)
-        Assert.assertTrue(A_Router.update(0L, A, RSSI))
-        Assert.assertFalse(A_Router.checkCondition())
-        Assert.assertTrue(A_Router.update(2L, A, RSSI))
-        Assert.assertTrue(A_Router.checkCondition())
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false,
+                                               dwellInside = true,
+                                               loiteringDelay = 2)
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertFalse(TEST_GEOFENCE_A.checkCondition())
+        Assert.assertTrue(TEST_GEOFENCE_A.update(2L, SCAN_RESULT_A))
+        Assert.assertTrue(TEST_GEOFENCE_A.checkCondition())
     }
 
     @Test
     fun testMyGeofenceDwellOutside() {
-        A_Router = A_Router.copy(enter = false, dwellOutside = true, loiteringDelay = 2)
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false,
+                                               dwellOutside = true,
+                                               loiteringDelay = 2)
         //initial state
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertFalse(A_Router.updateAndCheck(0L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertTrue(A_Router.updateAndCheck(2L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, true)
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(0L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, true)
     }
 
     @Test
     fun testCheckStateWithParameters() {
-        Assert.assertTrue(A_Router.update(0L, A, RSSI))
-        Assert.assertEquals(A_Router.checkCondition(),
-                            A_Router.checkCondition(0L, A, RSSI))
-        Assert.assertNotSame(A_Router.checkCondition(),
-                             A_Router.checkCondition(0L, B, RSSI))
+        Assert.assertTrue(TEST_GEOFENCE_A.update(0L, SCAN_RESULT_A))
+        Assert.assertEquals(TEST_GEOFENCE_A.checkCondition(),
+                            TEST_GEOFENCE_A.checkCondition(0L, SCAN_RESULT_A))
+        Assert.assertNotSame(TEST_GEOFENCE_A.checkCondition(),
+                             TEST_GEOFENCE_A.checkCondition(0L, SCAN_RESULT_B))
         //second check to make sure the state did not change by calling checkCondition(... , ...)
-        Assert.assertEquals(A_Router.checkCondition(),
-                            A_Router.checkCondition(0L, A, RSSI))
+        Assert.assertEquals(TEST_GEOFENCE_A.checkCondition(),
+                            TEST_GEOFENCE_A.checkCondition(0L, SCAN_RESULT_A))
     }
 
     @Test
     fun testRepeatedFiringOfLoiteringDelayInside() {
-        A_Router = A_Router.copy(enter = false, dwellInside = true, loiteringDelay = 2)
-        Assert.assertFalse(A_Router.updateAndCheck(0L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, false, false)
-        Assert.assertFalse(A_Router.updateAndCheck(1L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, false, false)
-        Assert.assertTrue(A_Router.updateAndCheck(2L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, true, false)
-        Assert.assertFalse(A_Router.updateAndCheck(2L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, false, false)
-        Assert.assertFalse(A_Router.updateAndCheck(3L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, false, false)
-        Assert.assertTrue(A_Router.updateAndCheck(4L, A, RSSI))
-        A_Router.checkGeofenceState(true, false, true, false)
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false,
+                                               dwellInside = true,
+                                               loiteringDelay = 2)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(0L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(1L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, true, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(3L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(4L, SCAN_RESULT_A))
+        TEST_GEOFENCE_A.checkGeofenceState(true, false, true, false)
     }
 
     @Test
     fun testRepeatedFiringOfLoiteringDelayOutside() {
-        A_Router = A_Router.copy(enter = false, dwellOutside = true, loiteringDelay = 2)
-        Assert.assertFalse(A_Router.updateAndCheck(0L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertFalse(A_Router.updateAndCheck(1L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertTrue(A_Router.updateAndCheck(2L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, true)
-        Assert.assertFalse(A_Router.updateAndCheck(2L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertFalse(A_Router.updateAndCheck(3L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, false)
-        Assert.assertTrue(A_Router.updateAndCheck(4L, B, RSSI))
-        A_Router.checkGeofenceState(false, true, false, true)
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false,
+                                               dwellOutside = true,
+                                               loiteringDelay = 2)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(0L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(1L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, true)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(3L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(4L, SCAN_RESULT_B))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, true)
+    }
+
+    @Test
+    fun testRepeatedFiringOfLoiteringDelayOutsideTwoWifiR() {
+        TEST_GEOFENCE_A = TEST_GEOFENCE_A.copy(enter = false,
+                                               dwellOutside = true,
+                                               loiteringDelay = 2)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(0L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(1L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, true)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(2L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertFalse(TEST_GEOFENCE_A.updateAndCheck(3L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, false)
+        Assert.assertTrue(TEST_GEOFENCE_A.updateAndCheck(4L, SCAN_RESULT_BC))
+        TEST_GEOFENCE_A.checkGeofenceState(false, true, false, true)
     }
 }

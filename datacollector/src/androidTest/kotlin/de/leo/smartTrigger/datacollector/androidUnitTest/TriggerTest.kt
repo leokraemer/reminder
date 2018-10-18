@@ -36,7 +36,7 @@ class TriggerTest {
     fun testTimeTrigger() {
         val dummyTime = TimeUtils.getDateFromString("2017-11-16:12-30-00")
         val sensorData = SensorDataSet(
-            dummyTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            dummyTime.atZone(ZoneId.of("Z")).toInstant().toEpochMilli(),
             "dummy")
 
         //0 == thursday
