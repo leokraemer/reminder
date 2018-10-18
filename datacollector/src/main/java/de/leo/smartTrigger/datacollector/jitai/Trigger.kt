@@ -15,5 +15,5 @@ interface Trigger {
     /**
      * Reset the state of any stateful trigger to the initial state.
      */
-    fun reset()
+    fun reset(sensorData : SensorDataSet)
 }

@@ -3,15 +3,12 @@ package de.leo.smartTrigger.datacollector.datacollection.database
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE
-import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.hardware.SensorEvent
 import android.location.Location
 import android.os.Environment
 import android.preference.PreferenceManager
-import android.util.Log
 import android.widget.Toast
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
@@ -20,19 +17,18 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import de.leo.smartTrigger.datacollector.R
-import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
-import de.leo.smartTrigger.datacollector.datacollection.models.Weather
-import de.leo.smartTrigger.datacollector.datacollection.models.deSerializeWifi
-import de.leo.smartTrigger.datacollector.datacollection.models.serializeWifi
+import de.leo.smartTrigger.datacollector.datacollection.models.*
 import de.leo.smartTrigger.datacollector.datacollection.sensors.WeatherCaller
 import de.leo.smartTrigger.datacollector.jitai.JitaiEvent
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.Constants
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import de.leo.smartTrigger.datacollector.utils.fromJson
+import de.leo.smartTrigger.datacollector.utils.getObjectListFromCursor
+import org.jetbrains.anko.db.transaction
 import org.threeten.bp.LocalTime
 import java.io.File
 import java.io.FileInputStream
@@ -45,16 +41,11 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1023
+const val DATABASE_VERSION = 1024
 
-class JitaiDatabase private constructor(private val context: Context) : SQLiteOpenHelper(context,
-                                                                                         NAME,
-                                                                                         null,
-                                                                                         DATABASE_VERSION,
-                                                                                         null) {
+open class JitaiDatabase protected constructor(protected var context: Context) {
 
-    val TAG: String = JitaiDatabase.javaClass.canonicalName
-    val gson = Converters.registerAll(GsonBuilder()).create()
+    val TAG: String = JitaiDatabase::class.java.canonicalName
     val userName: String by lazy {
         PreferenceManager.getDefaultSharedPreferences(context)
             .getString(context.getString(R.string.user_name), "userName")
@@ -67,136 +58,41 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         fun getInstance(context: Context): JitaiDatabase =
             INSTANCE
                 ?: synchronized(this) {
-                    INSTANCE
-                        ?: buildDatabase(
-                            context).also { INSTANCE = it }
+                    INSTANCE ?: buildDatabase(
+                        context).also {
+                        INSTANCE = it
+                    }
                 }
 
         private fun buildDatabase(context: Context) =
             JitaiDatabase(context)
 
-        const val NAME = "mydb.1017"
-
-        fun serializeDetectedActivitys(activities: List<DetectedActivity>): String {
-            return activities.fold("", { r, f -> r + f.toString() })
-        }
-
-        fun deSerializeActivitys(list: String): List<DetectedActivity> {
-            //split into list and split entries into parts
-            //remove elements that do not represent detected activities
-            //[[type, asdf,  confidence, 7], [type, qwer,  confidence, 8]]
-            val activities = list.split(']', '[').asSequence().map {
-                it.split(',', '=')
-            }.filter { it.size == 4 }.map {
-                DetectedActivity(mapActivities(it[1]), it[3].toInt())
-            }
-            return activities.toList()
-        }
-
-        fun mapActivities(value: String): Int {
-            if (value.contains("IN_VEHICLE")) return 0
-            if (value.contains("ON_BICYCLE")) return 1
-            if (value.contains("ON_FOOT")) return 2
-            if (value.contains("STILL")) return 3
-            if (value.contains("UNKNOWN")) return 4
-            if (value.contains("TILTING")) return 5
-            if (value.contains("WALKING")) return 6
-            if (value.contains("RUNNING")) return 7
-            if (value.contains("IN_ROAD_VEHICLE")) return 8
-            if (value.contains("IN_RAIL_VEHICLE")) return 9
-            else return 4 //unknown
-        }
+        const val NAME = "mydb.1018"
     }
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        Log.d(TAG, "onCreate to ${db?.version}")
-        db!!.transaction {
-            execSQL(CREATE_TABLE_SENSORDATA)
-            execSQL(CREATE_TABLE_WEATHER)
-            execSQL(CREATE_TABLE_ACC)
-            execSQL(CREATE_TABLE_GYRO)
-            execSQL(CREATE_TABLE_ROT)
-            execSQL(CREATE_TABLE_MAG)
-            execSQL(CREATE_TABLE_GEOFENCE)
-            execSQL(CREATE_TABLE_WIFI_GEOFENCE)
-            execSQL(CREATE_TABLE_JITAI_EVENTS)
-            execSQL(CREATE_TABLE_NATURAL_TRIGGER)
-            execSQL(CREATE_GEOFENCE_EVENT_TABLE)
-            createSingleDimensionRealtimeTables(db)
-            execSQL("CREATE INDEX acc_timestamp_index ON $TABLE_REAL_TIME_ACC ($TIMESTAMP)")
-            execSQL("CREATE INDEX mag_timestamp_index ON $TABLE_REAL_TIME_MAG ($TIMESTAMP)")
-            execSQL("CREATE INDEX gyro_timestamp_index ON $TABLE_REAL_TIME_GYRO ($TIMESTAMP)")
-            execSQL("CREATE INDEX air_timestamp_index ON $TABLE_REALTIME_AIR ($TIMESTAMP)")
-            execSQL("CREATE INDEX prox_timestamp_index ON $TABLE_REALTIME_PROXIMITY ($TIMESTAMP)")
-            execSQL("CREATE INDEX light_timestamp_index ON $TABLE_REALTIME_LIGHT ($TIMESTAMP)")
-            execSQL("CREATE INDEX sensorDataSet_timestamp_index ON $TABLE_SENSORDATA ($TIMESTAMP)")
-        }
+    val gson = Converters.registerAll(GsonBuilder()).create()
+
+    open protected fun initializeDatabase(context: Context): SQLiteOpenHelper {
+        val db = JitaiDatabaseOpenHelper(context)
+       // db.setWriteAheadLoggingEnabled(true)
+        return db
     }
 
-    /**
-     * Automatically insert stuff necessary for the transaction.
-     */
-    private inline fun SQLiteDatabase.transaction(block: SQLiteDatabase.() -> Unit) {
-        try {
-            this.beginTransaction()
-            this.block()
-            this.setTransactionSuccessful()
-        } catch (e: SQLiteException) {
-            Log.e(TAG, e.message)
-            e.printStackTrace()
-        } finally {
-            this.endTransaction()
-        }
-    }
+    protected var db: SQLiteOpenHelper = initializeDatabase(context)
+    fun close() = db.close()
 
-    private inline fun <T> getObjectListFromCursor(cursor: Cursor,
-                                                   transform: (Cursor) -> T): List<T> {
-        return cursor.run {
-            mutableListOf<T>().also { list ->
-                if (moveToFirst()) {
-                    do {
-                        list.add(transform(this))
-                    } while (moveToNext())
-                }
-                close()
-            }
-        }
-    }
-
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
-        db!!.transaction {
-            /*execSQL("DROP TABLE IF EXISTS $TABLE_SENSORDATA")
-            execSQL("DROP TABLE IF EXISTS $TABLE_WEATHER")
-            execSQL("DROP TABLE IF EXISTS $TABLE_GEOFENCE")
-            execSQL("DROP TABLE IF EXISTS $TABLE_WIFI_GEOFENCE")
-            execSQL("DROP TABLE IF EXISTS $TABLE_JITAI")
-            execSQL("DROP TABLE IF EXISTS $TABLE_JITAI_EVENTS")
-            execSQL("DROP TABLE IF EXISTS $TABLE_NATURAL_TRIGGER")
-            execSQL("DROP TABLE IF EXISTS $CREATE_GEOFENCE_EVENT_TABLE")
-            execSQL("DROP INDEX IF EXISTS acc_timestamp_index")
-            execSQL("DROP INDEX IF EXISTS mag_timestamp_index")
-            execSQL("DROP INDEX IF EXISTS gyro_timestamp_index")
-            execSQL("DROP INDEX IF EXISTS air_timestamp_index")
-            execSQL("DROP INDEX IF EXISTS prox_timestamp_index")
-            execSQL("DROP INDEX IF EXISTS light_timestamp_index")
-            deleteRealtimeTables(db)*/
-        }
-        Log.d(TAG, "onUpgrade deleting finished")
-        onCreate(db)
-    }
 
     fun insertSensorDataSet(sensorDataSet: SensorDataSet): Long {
         val cv = sensorDataSetToContentValues(sensorDataSet)
         var id = -1L
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             id = insertOrThrow(TABLE_SENSORDATA, null, cv)
         }
         return id
     }
 
     fun insertSensorDataBatch(data: Iterable<SensorDataSet>) {
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             for (sensorDataSet in data) {
                 val cv = sensorDataSetToContentValues(sensorDataSet)
                 insertOrThrow(TABLE_SENSORDATA, null, cv)
@@ -204,51 +100,39 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         }
     }
 
-    private fun sensorDataSetToContentValues(sensorDataSet: SensorDataSet): ContentValues {
-        val cv = ContentValues()
-        with(sensorDataSet) {
-            cv.apply {
-                put(TIMESTAMP, time)
-                put(USERNAME, userName)
-                put(ACTIVITY, activity.toString())
-                put(STEPS, totalStepsToday)
-                put(ABIENT_SOUND, ambientSound)
-                put(LOCATION, locationName)
-                //it is never deserialized -> not needed
-                //put(GPS, gps.toString())
-                put(GPSlat, gps?.latitude)
-                put(GPSlng, gps?.longitude)
-                put(WIFI_NAME, wifiInformation?.let { serializeWifi(it) } ?: "")
-                put(BLUETOOTH, bluetoothDevices?.let { it.toString() } ?: "")
-                put(WEATHER, weather)
-                put(SCREEN_STATE, screenState)
-            }
-        }
-        return cv
+    /**
+     * All sensordata between begin and end, sorted by timestamp.
+     */
+    fun getSensorDataSets(begin: Long, end: Long): MutableList<SensorDataSet> {
+        val c = db.readableDatabase.query(TABLE_SENSORDATA, null,
+                                          "$TIMESTAMP BETWEEN $begin AND $end",
+                                          null,
+                                          null,
+                                          null,
+                                          TIMESTAMP,
+                                          null)
+        return getObjectListFromCursor<SensorDataSet>(c, ::sensorDataSetFromCursor)
     }
 
-    private fun sensorDataSetFromCursor(c: Cursor): SensorDataSet {
+    fun sensorDataSetFromCursor(c: Cursor): SensorDataSet {
         val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
         val user = c.getString(c.getColumnIndex(USERNAME))
         val id = c.getLong(c.getColumnIndex(ID))
-        //TODO fix hack
-        val activity = c.getString(c.getColumnIndex(ACTIVITY))
-        //"DetectedActivity [type=").append(type).append(", confidence=").append(confidence).append("]"
-        val totalStepsToday = c.getLong(c.getColumnIndex(
-            STEPS))
+        val activity = gson.fromJson<List<DetectedActivity>>(c.getString(c.getColumnIndex(ACTIVITY)))
+        val totalStepsToday = c.getLong(c.getColumnIndex(STEPS))
         val ambientSound = c.getDouble(c.getColumnIndex(ABIENT_SOUND))
         val location = c.getString(c.getColumnIndex(LOCATION))
         val gps = Location("from db")
         gps.latitude = c.getDouble(c.getColumnIndex(GPSlat))
         gps.longitude = c.getDouble(c.getColumnIndex(GPSlng))
-        val wifiName = deSerializeWifi(c.getString(c.getColumnIndex(WIFI_NAME)))
-        val bluetoothDevices = listOf(c.getString(c.getColumnIndex(BLUETOOTH)))
+        val wifiName = gson.fromJson<List<WifiInfo>>(c.getString(c.getColumnIndex(WIFI_NAME)))
+        val bluetoothDevices = gson.fromJson<List<String>>(c.getString(c.getColumnIndex(BLUETOOTH)))
         val weather = c.getLong(c.getColumnIndex(WEATHER))
         val screenState = c.getInt(c.getColumnIndex(SCREEN_STATE)) > 0
         val s = SensorDataSet(timestamp,
                               user,
                               id,
-                              deSerializeActivitys(activity),
+                              activity,
                               totalStepsToday,
                               ambientSound,
                               location,
@@ -260,18 +144,40 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         return s
     }
 
+    private fun sensorDataSetToContentValues(sensorDataSet: SensorDataSet): ContentValues {
+        val cv = ContentValues()
+        with(sensorDataSet) {
+            cv.apply {
+                put(TIMESTAMP, time)
+                put(USERNAME, userName)
+                put(ACTIVITY, gson.toJson(activity))
+                put(STEPS, totalStepsToday)
+                put(ABIENT_SOUND, ambientSound)
+                put(LOCATION, locationName)
+                //it is never deserialized -> not needed
+                //put(GPS, gps.toString())
+                put(GPSlat, gps?.latitude)
+                put(GPSlng, gps?.longitude)
+                put(WIFI_NAME, gson.toJson(wifiInformation))
+                put(BLUETOOTH, gson.toJson(bluetoothDevices))
+                put(WEATHER, weather)
+                put(SCREEN_STATE, screenState)
+            }
+        }
+        return cv
+    }
 
     fun enterSingleDimensionData(table: String, value: SensorEvent) {
         val cv = ContentValues()
         cv.put(X, value.values[0])
         cv.put(TIMESTAMP, value.timestamp)
         cv.put(ACCURACY, value.accuracy)
-        writableDatabase.insert(table, null, cv)
+        db.writableDatabase.insert(table, null, cv)
     }
 
     fun enterSingleDimensionDataBatch(table: String,
                                       values: Iterable<Pair<Long, Float>>) {
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
                 cv.put(X, entry.second)
@@ -295,7 +201,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun enterRotDataBatch(values: ArrayDeque<Pair<Long, FloatArray>>) {
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
                 cv.put(TIMESTAMP, entry.first)
@@ -309,7 +215,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     private fun insert3DSensorValues(table: String, values: Iterable<Pair<Long, FloatArray>>) {
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             values.forEach { entry ->
                 val cv = ContentValues()
                 cv.put(TIMESTAMP, entry.first)
@@ -323,17 +229,17 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
     fun getALL3DSensorValues(start: Long, end: Long, table: String): MutableList<Pair<Long,
         FloatArray>> {
-        val c = readableDatabase.query(table,
-                                       arrayOf(X,
-                                               Y,
-                                               Z,
-                                               TIMESTAMP),
-                                       "$TIMESTAMP > ? AND " + "$TIMESTAMP < ?",
-                                       arrayOf(start.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(table,
+                                          arrayOf(X,
+                                                  Y,
+                                                  Z,
+                                                  TIMESTAMP),
+                                          "$TIMESTAMP > ? AND " + "$TIMESTAMP < ?",
+                                          arrayOf(start.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
         val list = mutableListOf<Pair<Long, FloatArray>>()
         if (c.count > 0) {
             c.moveToFirst()
@@ -354,16 +260,16 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     fun getALL3DSensorValuesNoTimestamp(start: Long,
                                         end: Long,
                                         table: String): MutableList<DoubleArray> {
-        val c = readableDatabase.query(table,
-                                       arrayOf(X,
-                                               Y,
-                                               Z),
-                                       "$TIMESTAMP > ? AND " + "$TIMESTAMP < ?",
-                                       arrayOf(start.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(table,
+                                          arrayOf(X,
+                                                  Y,
+                                                  Z),
+                                          "$TIMESTAMP > ? AND " + "$TIMESTAMP < ?",
+                                          arrayOf(start.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
         val list = mutableListOf<DoubleArray>()
         if (c.count > 0) {
             c.moveToFirst()
@@ -383,15 +289,15 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getStepData(until: Long): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(TABLE_SENSORDATA,
-                                       arrayOf(STEPS,
-                                               TIMESTAMP),
-                                       "$TIMESTAMP > ?",
-                                       arrayOf(until.toString()),
-                                       null,
-                                       null,
-                                       "$TIMESTAMP ASC",
-                                       "1")
+        val c = db.readableDatabase.query(TABLE_SENSORDATA,
+                                          arrayOf(STEPS,
+                                                  TIMESTAMP),
+                                          "$TIMESTAMP > ?",
+                                          arrayOf(until.toString()),
+                                          null,
+                                          null,
+                                          "$TIMESTAMP ASC",
+                                          "1")
 
         val list = mutableListOf<Pair<Long, Double>>()
         if (c.count > 0) {
@@ -407,14 +313,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getSoundData(begin: Long, end: Long): MutableList<Pair<Long, Double>> {
-        val c = readableDatabase.query(TABLE_SENSORDATA,
-                                       arrayOf(ABIENT_SOUND, TIMESTAMP),
-                                       "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
-                                       arrayOf(begin.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_SENSORDATA,
+                                          arrayOf(ABIENT_SOUND, TIMESTAMP),
+                                          "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
+                                          arrayOf(begin.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
 
         val list = mutableListOf<Pair<Long, Double>>()
         if (c.count > 0) {
@@ -431,14 +337,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getScreenState(begin: Long, end: Long): MutableList<Pair<Long, Boolean>> {
-        val c = readableDatabase.query(TABLE_SENSORDATA,
-                                       arrayOf(SCREEN_STATE, TIMESTAMP),
-                                       "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
-                                       arrayOf(begin.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_SENSORDATA,
+                                          arrayOf(SCREEN_STATE, TIMESTAMP),
+                                          "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
+                                          arrayOf(begin.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
 
         val list = mutableListOf<Pair<Long, Boolean>>()
         if (c.count > 0) {
@@ -456,14 +362,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
     fun getSensorValues(begin: Long, end: Long, table: String): MutableList<Pair<Long,
         Double>> {
-        val c = readableDatabase.query(table,
-                                       arrayOf(X, TIMESTAMP),
-                                       "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
-                                       arrayOf(begin.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(table,
+                                          arrayOf(X, TIMESTAMP),
+                                          "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
+                                          arrayOf(begin.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
 
         val list = mutableListOf<Pair<Long, Double>>()
         if (c.count > 0) {
@@ -480,14 +386,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
     fun getProximity(time: Long): MutableList<Pair<Long,
         Double>> {
-        val c = readableDatabase.query(TABLE_REALTIME_PROXIMITY,
-                                       arrayOf(X, TIMESTAMP),
-                                       "$TIMESTAMP <= ?",
-                                       arrayOf(time.toString()),
-                                       null,
-                                       null,
-                                       "$TIMESTAMP DESC",
-                                       "1")
+        val c = db.readableDatabase.query(TABLE_REALTIME_PROXIMITY,
+                                          arrayOf(X, TIMESTAMP),
+                                          "$TIMESTAMP <= ?",
+                                          arrayOf(time.toString()),
+                                          null,
+                                          null,
+                                          "$TIMESTAMP DESC",
+                                          "1")
 
         val list = mutableListOf<Pair<Long, Double>>()
         if (c.count > 0) {
@@ -502,61 +408,18 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         return list
     }
 
-    fun createSingleDimensionRealtimeTables(db: SQLiteDatabase) {
-        for (i in 0 until REALTIME_TABLES.size) {
-            val table = REALTIME_TABLES[i]
-            db.execSQL("CREATE TABLE  IF NOT EXISTS $table ( " +
-                           "$ID integer PRIMARY KEY, " +
-                           "$TIMESTAMP date, " +
-                           "$X real ," +
-                           "$ACCURACY real )")
-        }
-    }
-
-    fun deleteRealtimeTables(db: SQLiteDatabase) {
-        for (i in 0 until REALTIME_TABLES.size) {
-            val table = REALTIME_TABLES[i]
-            db.execSQL("DROP TABLE if exists $table")
-        }
-        db.execSQL("DROP TABLE if exists $TABLE_REAL_TIME_ACC")
-        db.execSQL("DROP TABLE if exists $TABLE_REAL_TIME_MAG")
-        db.execSQL("DROP TABLE if exists $TABLE_REAL_TIME_ROT")
-        db.execSQL("DROP TABLE if exists $TABLE_REAL_TIME_GYRO")
-    }
-
-    /**
-     * Returs the highest (latest) recordingId
-     */
-    fun getLatestRecordingId(): Int {
-        val c = writableDatabase.query(true,
-                                       TABLE_SENSORDATA,
-                                       arrayOf(RECORDING),
-                                       null,
-                                       null,
-                                       null,
-                                       null,
-                                       "$RECORDING DESC",
-                                       "1")
-        if (c.count > 0) {
-            c.moveToFirst()
-            return c.getInt(c.getColumnIndex(RECORDING))
-        } else {
-            return 0
-        }
-    }
-
     /**
      * Returs the highest (latest) recordingId
      * returns 0 -> no entry in db
      * -1 -> no entry newer than one hour
      */
     fun getLatestWeather(): Weather? {
-        val c = writableDatabase.query(true,
-                                       TABLE_WEATHER,
-                                       null,
-                                       null, null, null, null,
-                                       "$WEATHER_TIMESTAMP DESC",
-                                       "1")
+        val c = db.writableDatabase.query(true,
+                                          TABLE_WEATHER,
+                                          null,
+                                          null, null, null, null,
+                                          "$WEATHER_TIMESTAMP DESC",
+                                          "1")
         if (c.count > 0) {
             c.moveToFirst()
             val weather = WeatherCaller.fromJSON(
@@ -572,13 +435,13 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getWeather(id: Long): Weather? {
-        val c = readableDatabase.query(TABLE_WEATHER,
-                                       arrayOf(WEATHER_JSON),
-                                       "$WEATHER_ID = ?",
-                                       arrayOf(id.toString()),
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_WEATHER,
+                                          arrayOf(WEATHER_JSON),
+                                          "$WEATHER_ID = ?",
+                                          arrayOf(id.toString()),
+                                          null,
+                                          null,
+                                          null)
         if (c.count == 1) {
             c.moveToFirst()
             val json = c.getString(c.getColumnIndex(WEATHER_JSON))
@@ -592,7 +455,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         c.put(WEATHER_JSON, weather)
         c.put(WEATHER_TIMESTAMP, System.currentTimeMillis())
         var returnvalue = -1L
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             returnvalue = insertOrThrow(TABLE_WEATHER, null, c)
         }
         return returnvalue
@@ -600,18 +463,18 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
     private fun getOrientationSensorValues(begin: Long,
                                            end: Long): MutableList<Pair<Long, FloatArray>> {
-        val c = readableDatabase.query(TABLE_REAL_TIME_ROT,
-                                       arrayOf(X,
-                                               Y,
-                                               Z,
-                                               SCALAR,
-                                               TIMESTAMP),
-                                       "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
-                                       arrayOf(begin.toString(), end.toString()),
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_REAL_TIME_ROT,
+                                          arrayOf(X,
+                                                  Y,
+                                                  Z,
+                                                  SCALAR,
+                                                  TIMESTAMP),
+                                          "$TIMESTAMP >= ? and $TIMESTAMP <= ?",
+                                          arrayOf(begin.toString(), end.toString()),
+                                          null,
+                                          null,
+                                          null,
+                                          null)
         val list = mutableListOf<Pair<Long, FloatArray>>()
         if (c.count > 0) {
             c.moveToFirst()
@@ -631,8 +494,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getAllGeofences(): List<Pair<Int, MyGeofence>> {
-        val c = readableDatabase.query(TABLE_GEOFENCE, null, null, null,
-                                       null, null, null)
+        val c = db.readableDatabase.query(TABLE_GEOFENCE, null, null, null,
+                                          null, null, null)
         val list = mutableListOf<Pair<Int, MyGeofence>>()
         if (c.moveToFirst()) {
             do {
@@ -644,8 +507,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getAllMyGeofencesDistinct(): List<MyGeofence> {
-        val c = readableDatabase.query(true, TABLE_GEOFENCE, null, null, null, GEOFENCE_NAME,
-                                       null, null, null)
+        val c = db.readableDatabase.query(true, TABLE_GEOFENCE, null, null, null, GEOFENCE_NAME,
+                                          null, null, null)
         val list = mutableListOf<MyGeofence>()
         if (c.moveToFirst()) {
             do {
@@ -683,7 +546,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
         cv.put(GEOFENCE_IMAGE, icon)
         var returnval = -1
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             returnval = insertWithOnConflict(TABLE_GEOFENCE, null, cv, CONFLICT_REPLACE).toInt()
         }
         return returnval
@@ -715,7 +578,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             cv.put(WIFI_GEOFENCE_LOITERING_DELAY, loiteringDelay)
         }
         var returnval = -1L
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             returnval = insert(TABLE_WIFI_GEOFENCE, null, cv)
         }
         return returnval.toInt()
@@ -745,7 +608,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(GEOFENCE_LOITERING_DELAY, loiteringDelay)
         cv.put(GEOFENCE_IMAGE, icon)
         var returnval = -1L
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             returnval = insert(TABLE_GEOFENCE, null, cv)
         }
         return returnval.toInt()
@@ -765,8 +628,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getGeofence(id: Int): Geofence {
-        val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
-                                       null, null, null)
+        val c = db.readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
+                                          null, null, null)
         c.moveToFirst()
         val geofece = extractGeofenceFromCursor(c)
         c.close()
@@ -774,8 +637,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getMyGeofence(id: Int): MyGeofence {
-        val c = readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
-                                       null, null, null)
+        val c = db.readableDatabase.query(TABLE_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
+                                          null, null, null)
         var geofece: MyGeofence? = null
         if (c.moveToFirst())
             geofece = extractMyGeofenceFromCursor(c)
@@ -784,8 +647,13 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun getMyWifiGeofence(id: Int): MyWifiGeofence? {
-        val c = readableDatabase.query(TABLE_WIFI_GEOFENCE, null, "$ID = ?", arrayOf(id.toString()),
-                                       null, null, null)
+        val c = db.readableDatabase.query(TABLE_WIFI_GEOFENCE,
+                                          null,
+                                          "$ID = ?",
+                                          arrayOf(id.toString()),
+                                          null,
+                                          null,
+                                          null)
         var geofece: MyWifiGeofence? = null
         if (c.moveToFirst())
             geofece = extractMyWifiGeofenceFromCursor(c)
@@ -796,14 +664,14 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     //HACK the image code is not necessarily unique. Works only for HOME_CODE and WORK_CODE,
 // because they can be created only once
     fun getMyGeofenceByCode(imageCode: Int): MyGeofence? {
-        val c = readableDatabase.query(TABLE_GEOFENCE,
-                                       null,
-                                       "$GEOFENCE_IMAGE = ?",
-                                       arrayOf(imageCode.toString
-                                       ()),
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_GEOFENCE,
+                                          null,
+                                          "$GEOFENCE_IMAGE = ?",
+                                          arrayOf(imageCode.toString
+                                          ()),
+                                          null,
+                                          null,
+                                          null)
         var geofece: MyGeofence? = null
         if (c.moveToFirst())
             geofece = extractMyGeofenceFromCursor(c)
@@ -901,40 +769,33 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(JITAI_GEOFENCE, gson.toJson(jitai.geofenceTrigger))
         cv.put(JITAI_TIME_TRIGGER, gson.toJson(jitai.timeTrigger))
         var id = 0L
-        writableDatabase.transaction { id = insert(TABLE_JITAI, null, cv) }
+        db.writableDatabase.transaction { id = insert(TABLE_JITAI, null, cv) }
         jitai.id = id.toInt()
         return jitai
     }
 
     fun getAllActiveNaturalTriggerJitai(): MutableList<NaturalTriggerJitai> {
-        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
-                                       null,
-                                       "$NATURAL_TRIGGER_ACTIVE = 1 and $NATURAL_TRIGGER_DELETED" +
-                                           " < 1",
-                                       null,
-                                       null,
-                                       null,
-                                       null)
-        val jitais = mutableListOf<NaturalTriggerJitai>()
-        if (c.moveToFirst()) {
-            do {
-                jitais.add(getNaturalTriggerJitaiFromCursor(c))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return jitais
+        val c = db.readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                          null,
+                                          "$NATURAL_TRIGGER_ACTIVE = 1 and $NATURAL_TRIGGER_DELETED" +
+                                              " < 1",
+                                          null,
+                                          null,
+                                          null,
+                                          null)
+        return getObjectListFromCursor(c, ::getNaturalTriggerJitaiFromCursor)
     }
 
     fun getActiveNaturalTriggerJitai(id: Int): NaturalTriggerJitai? {
-        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
-                                       null,
-                                       "$ID = $id " +
-                                           "AND $NATURAL_TRIGGER_ACTIVE = 1 " +
-                                           "AND $NATURAL_TRIGGER_DELETED < 1",
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                          null,
+                                          "$ID = $id " +
+                                              "AND $NATURAL_TRIGGER_ACTIVE = 1 " +
+                                              "AND $NATURAL_TRIGGER_DELETED < 1",
+                                          null,
+                                          null,
+                                          null,
+                                          null)
         var naturalTriggerJitai: NaturalTriggerJitai? = null
         if (c.moveToFirst()) {
             naturalTriggerJitai = getNaturalTriggerJitaiFromCursor(c)
@@ -963,26 +824,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(JITAI_SURVEY_MOMENT_RATING, momentRating)
         cv.put(JITAI_SURVEY_TEXT, surveyText)
         cv.put(JITAI_EVENT_SENSORDATASET_ID, sensorDatasetId)
-        writableDatabase.transaction { insert(TABLE_JITAI_EVENTS, null, cv) }
-    }
-
-    fun getJitaiEvents(id: Int): MutableList<JitaiEvent> {
-        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(id
-                                                                                              .toString()),
-                                       null, null, null)
-        val list = mutableListOf<JitaiEvent>()
-        if (c.moveToFirst()) {
-            do {
-                val id = c.getInt(c.getColumnIndex(JITAI_ID))
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val username = c.getString(c.getColumnIndex(USERNAME))
-                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
-                val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
-                list.add(JitaiEvent(id, timestamp, username, eventType, sensorDatasetId))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
+        db.writableDatabase.transaction { insert(TABLE_JITAI_EVENTS, null, cv) }
     }
 
     fun enterNaturalTrigger(naturalTrigger: NaturalTriggerModel): Int {
@@ -1005,20 +847,20 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             cv.put(NATURAL_TRIGGER_GEOFENCE, geofenceID)
         }
         var returnval = -1L
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             returnval = insertWithOnConflict(TABLE_NATURAL_TRIGGER, null, cv, CONFLICT_REPLACE)
         }
         return returnval.toInt()
     }
 
     fun getNaturalTrigger(id: Int): NaturalTriggerModel {
-        val cursor = readableDatabase.query(TABLE_NATURAL_TRIGGER,
-                                            null,
-                                            "$ID = ?",
-                                            arrayOf(id.toString()),
-                                            null,
-                                            null,
-                                            null)
+        val cursor = db.readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                               null,
+                                               "$ID = ?",
+                                               arrayOf(id.toString()),
+                                               null,
+                                               null,
+                                               null)
         if (cursor.moveToFirst()) {
             return getNaturalTrigger(cursor)
         }
@@ -1028,7 +870,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     fun deleteNaturalTrigger(id: Int) {
         val cv = ContentValues()
         cv.put(NATURAL_TRIGGER_DELETED, true)
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             update(TABLE_NATURAL_TRIGGER,
                    cv,
                    "$ID = ?",
@@ -1039,7 +881,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     fun updateNaturalTrigger(id: Int, active: Boolean) {
         val cv = ContentValues()
         cv.put(NATURAL_TRIGGER_ACTIVE, active)
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             update(TABLE_NATURAL_TRIGGER,
                    cv,
                    "$ID = ?",
@@ -1065,8 +907,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
             gson.fromJson<HashSet<Int>>(
                 getString(getColumnIndex(NATURAL_TRIGGER_ACTIVITY)),
                 object : TypeToken<HashSet<Int>>() {}.getType()).forEach {
-                naturalTrigger
-                    .addActivity(it)
+                naturalTrigger.addActivity(it)
             }
             naturalTrigger.active = getInt(getColumnIndex(NATURAL_TRIGGER_ACTIVE)) > 0
         }
@@ -1074,79 +915,33 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
     }
 
     fun allNaturalTrigger(): Cursor {
-        return readableDatabase.query(TABLE_NATURAL_TRIGGER, null, "$NATURAL_TRIGGER_DELETED < " +
-            "1", null, null, null, null)
+        return db.readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                         null,
+                                         "$NATURAL_TRIGGER_DELETED < 1",
+                                         null,
+                                         null,
+                                         null,
+                                         null)
     }
 
     fun allNaturalTriggerModels(): List<NaturalTriggerModel> {
-        val c = readableDatabase.query(TABLE_NATURAL_TRIGGER,
-                                       null,
-                                       "$NATURAL_TRIGGER_DELETED <" +
-                                           "1",
-                                       null,
-                                       null,
-                                       null,
-                                       null)
+        val c = db.readableDatabase.query(TABLE_NATURAL_TRIGGER,
+                                          null,
+                                          "$NATURAL_TRIGGER_DELETED < 1",
+                                          null,
+                                          null,
+                                          null,
+                                          null)
         return getObjectListFromCursor(c, this::getNaturalTrigger)
     }
 
-    fun getJitaiTriggerEvents(jitaiId: Int): MutableList<JitaiEvent> {
-        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(jitaiId
-                                                                                              .toString()),
-                                       null, null, null)
+    fun getJitaiEvents(id: Int): MutableList<JitaiEvent> {
+        val c = db.readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ?", arrayOf(id
+                                                                                                 .toString()),
+                                          null, null, null)
         val list = mutableListOf<JitaiEvent>()
         if (c.moveToFirst()) {
             do {
-                val id = c.getInt(c.getColumnIndex(JITAI_ID))
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val username = c.getString(c.getColumnIndex(USERNAME))
-                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
-                list.add(JitaiEvent(id, timestamp, username, eventType, -1L))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-    fun getJitaiEventsForTraining(id: Int): MutableList<JitaiEvent> {
-        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_ID = ? AND " +
-            "$JITAI_EVENT IN (" +
-            "'${Jitai.NOTIFICATION_SUCCESS}' ," +
-            "'${Jitai.NOW}' , " +
-            "'${Jitai.NOTIFICATION_FAIL}'" +
-            //"," +
-            //"'${Jitai.NOTIFICATION_DELETED}'" +
-            ")",
-                                       arrayOf(id.toString()),
-                                       null, null, null)
-        val list = mutableListOf<JitaiEvent>()
-        if (c.moveToFirst()) {
-            do {
-                val jitaiId = c.getInt(c.getColumnIndex(JITAI_ID))
-                val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
-                val username = c.getString(c.getColumnIndex(USERNAME))
-                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
-                val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
-                list.add(JitaiEvent(jitaiId, timestamp, username, eventType, sensorDatasetId))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-    fun getAllJitaiEventsForTraining(): MutableList<JitaiEvent> {
-        val c = readableDatabase.query(TABLE_JITAI_EVENTS, null, "$JITAI_EVENT IN (" +
-            "'${Jitai.NOTIFICATION_SUCCESS}' ," +
-            "'${Jitai.NOW}' , " +
-            "'${Jitai.NOTIFICATION_FAIL}'" +
-            //"," +
-            //"'${Jitai.NOTIFICATION_DELETED}'" +
-            ")",
-                                       null, null, null, null)
-        val list = mutableListOf<JitaiEvent>()
-        if (c.moveToFirst()) {
-            do {
-                val id = c.getInt(c.getColumnIndex(JITAI_ID))
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
                 val username = c.getString(c.getColumnIndex(USERNAME))
                 val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
@@ -1158,33 +953,6 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         return list
     }
 
-
-    fun getSensorDataSets(begin: Long, end: Long): List<SensorDataSet> {
-        val c = readableDatabase.query(TABLE_SENSORDATA, null,
-                                       "$TIMESTAMP BETWEEN $begin AND $end",
-                                       null,
-                                       null,
-                                       null,
-                                       TIMESTAMP,
-                                       null)
-        val list = mutableListOf<SensorDataSet>()
-        if (c.moveToFirst()) {
-            do {
-                list.add(sensorDataSetFromCursor(c))
-            } while (c.moveToNext())
-        }
-        c.close()
-        return list
-    }
-
-    /**
-     *         "$ID INTEGER PRIMARY KEY, " +
-    "$TIMESTAMP DATE, " +
-    "$USERNAME TEXT, " +
-    "$GEOFENCE_ID INTEGER, " +
-    "$GEOFENCE_NAME TEXT, " +
-    "$GEOFENCE_EVENT TEXT )"
-     */
     fun enterGeofenceEvent(timestamp: Long, geofenceId: Int, geofenceName: String,
                            geofenceEvent: String) {
         val cv = ContentValues()
@@ -1193,7 +961,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         cv.put(GEOFENCE_NAME, geofenceName)
         cv.put(GEOFENCE_EVENT, geofenceEvent)
         cv.put(USERNAME, userName)
-        writableDatabase.transaction {
+        db.writableDatabase.transaction {
             insert(TABLE_GEOFENCE_EVENT, null, cv)
         }
     }
@@ -1206,8 +974,8 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
         var destination: FileChannel? = null
 
         val currentDBPath =
-            "/data/${context.applicationContext.applicationInfo.packageName}/databases/$databaseName"
-        val backupDBPath = "$databaseName.$DATABASE_VERSION.$userName.sqlite"
+            "/data/${context.applicationContext.applicationInfo.packageName}/databases/$NAME"
+        val backupDBPath = "$NAME.$DATABASE_VERSION.$userName.sqlite"
         val currentDB = File(dataDirectory, currentDBPath)
         val backupDB = File(externalStorageDirectory, backupDBPath)
 
@@ -1234,260 +1002,7 @@ class JitaiDatabase private constructor(private val context: Context) : SQLiteOp
 
         }
     }
-
 }
 
 
-//GEOFENCE
-const val TABLE_GEOFENCE = "table_geofences"
-const val GEOFENCE_NAME = "geofenceName"
-const val GEOFENCE_LAT = "geofenceLat"
-const val GEOFENCE_LONG = "geofenceLong"
-const val GEOFENCE_RADIUS = "geofenceRadius"
-const val GEOFENCE_ENTER = "geofenceEnter"
-const val GEOFENCE_EXIT = "geofenceExit"
-const val GEOFENCE_DWELL = "geofenceDwellInside"
-const val GEOFENCE_DWELL_OUTSIDE = "geofenceDwellOutside"
-const val GEOFENCE_DATE_ADDED = "geofenceTimestamp"
-const val GEOFENCE_VALIDITY = "geofenceValidity"
-const val GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
-const val GEOFENCE_IMAGE = "geofenceImage"
 
-//GEOFENCE
-const val TABLE_WIFI_GEOFENCE = "table_wifi_geofences"
-const val WIFI_GEOFENCE_NAME = "geofenceName"
-const val WIFI_GEOFENCE_BSSID = "geofenceBssid"
-const val WIFI_GEOFENCE_RSSI = "geofenceRssi"
-const val WIFI_GEOFENCE_ENTER = "geofenceEnter"
-const val WIFI_GEOFENCE_EXIT = "geofenceExit"
-const val WIFI_GEOFENCE_DWELL = "geofenceDwellInside"
-const val WIFI_GEOFENCE_DWELL_OUTSIDE = "geofenceDwellOutside"
-const val WIFI_GEOFENCE_LOITERING_DELAY = "geofenceLoiteringDelay"
-
-// Weather
-const val TABLE_WEATHER = "table_weather"
-const val WEATHER_ID = "weather_id"
-const val WEATHER_JSON = "weather_json"
-const val WEATHER_TIMESTAMP = "weather_timestamp"
-
-// SensorData
-const val TABLE_SENSORDATA = "sensorData"
-const val ID = "_id"
-const val SESSION = "session_id"
-const val RECORDING = "recording_id"
-const val TIMESTAMP = "timestamp"
-const val USERNAME = "username"
-const val ACTIVITY = "detectedActivity"
-const val STEPS = "totalStepsToday"
-const val ABIENT_SOUND = "ambientSound"
-const val LOCATION = "location"
-const val GPS = "gps"
-const val GPSlat = "gps_lat"
-const val GPSlng = "gps_lng"
-const val WIFI_NAME = "wifiName"
-const val BLUETOOTH = "bluetooth"
-const val WEATHER = "weather"
-const val SCREEN_STATE = "screenState"
-
-//unused
-
-const val X = "x_axis"
-const val Y = "y_axis"
-const val Z = "z_axis"
-
-// RealTimeSensorData
-
-const val TABLE_REAL_TIME_ACC = "table_realtime_acc"
-const val TABLE_REAL_TIME_GYRO = "table_realtime_gyro"
-const val TABLE_REAL_TIME_MAG = "table_realtime_mag"
-const val TABLE_REAL_TIME_ROT = "table_realtime_rot"
-
-const val TABLE_REALTIME_LIGHT = "table_realtime_light"
-
-const val TABLE_REALTIME_PROXIMITY = "table_realtime_proximity"
-
-const val TABLE_REALTIME_AIR = "table_realtime_air"
-
-const val TABLE_REALTIME_HUMIDITY = "table_humdity"
-
-const val TABLE_REALTIME_TEMPERATURE = "table_realtime_temp"
-
-val REALTIME_TABLES = arrayOf(TABLE_REALTIME_LIGHT,
-                              TABLE_REALTIME_PROXIMITY,
-                              TABLE_REALTIME_AIR,
-                              TABLE_REALTIME_HUMIDITY,
-                              TABLE_REALTIME_TEMPERATURE)
-
-const val ACCURACY = "accuracy"
-const val SCALAR = "scalar"
-
-//jitai
-const val TABLE_JITAI = "tableJitai"
-const val JITAI_ACTIVE = "jitaiActive"
-const val JITAI_GOAL = "jitaiName"
-const val JITAI_MESSAGE = "jitaiMessage"
-const val JITAI_GEOFENCE = "jitaiGeofence"
-
-const val JITAI_WEATHER = "jitaiWeather"
-const val JITAI_TIME_TRIGGER = "jitaiTimeTrigger"
-const val JITAI_DELETED = "jitaiDeleted"
-
-//jitai events
-const val TABLE_JITAI_EVENTS = "table_jitai_events"
-const val JITAI_EVENT = "jitai_event"
-const val JITAI_ID = "jitai_id"
-//how good was the time
-const val JITAI_SURVEY_MOMENT_RATING = "jitaiMomentRating"
-//how good was the trigger with  the conditions
-const val JITAI_SURVEY_TRIGGER_RATING = "jitaiTriggerRating"
-const val JITAI_SURVEY_TEXT = "jitaiSurveyText"
-const val JITAI_EVENT_SENSORDATASET_ID = "jitai_sensorDataSet_id"
-
-//Create table statements
-const val CREATE_TABLE_SENSORDATA =
-    "CREATE TABLE if not exists $TABLE_SENSORDATA (" +
-        "$ID integer PRIMARY KEY, " +
-        "$SESSION integer, " +
-        "$TIMESTAMP date, " +
-        "$USERNAME text, " +
-        "$ACTIVITY string, " +
-        "$STEPS integer, " +
-        "$LOCATION text, " +
-        "$GPS text, " +
-        "$GPSlat real, " +
-        "$GPSlng real, " +
-        "$ABIENT_SOUND real, " +
-        "$WIFI_NAME text, " +
-        "$BLUETOOTH text, " +
-        "$WEATHER integer," +
-        "$SCREEN_STATE int" +
-        ");"
-
-const val CREATE_TABLE_JITAI_EVENTS =
-    "CREATE TABLE if not exists $TABLE_JITAI_EVENTS (" +
-        "$ID INTEGER PRIMARY KEY, " +
-        "$TIMESTAMP DATE, " +
-        "$USERNAME TEXT, " +
-        //see Jitai.companion for codes
-        "$JITAI_EVENT INTEGER, " +
-        "$JITAI_ID INTEGER, " +
-        "$JITAI_SURVEY_MOMENT_RATING INTEGER, " +
-        "$JITAI_SURVEY_TRIGGER_RATING INTEGER, " +
-        "$JITAI_SURVEY_TEXT TEXT, " +
-        "$JITAI_EVENT_SENSORDATASET_ID INTEGER " +
-        ");"
-
-
-const val CREATE_TABLE_WEATHER =
-    "CREATE TABLE if not exists $TABLE_WEATHER ( " +
-        "$WEATHER_ID INTEGER PRIMARY KEY, " +
-        "$WEATHER_JSON TEXT, " +
-        "$WEATHER_TIMESTAMP INTEGER" +
-        ");"
-
-const val CREATE_TABLE_ACC =
-    "CREATE TABLE if not exists $TABLE_REAL_TIME_ACC ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP date, " +
-        "$X real , " +
-        "$Y real , " +
-        "$Z real , " +
-        "$ACCURACY real )"
-
-const val CREATE_TABLE_MAG =
-    "CREATE TABLE if not exists $TABLE_REAL_TIME_MAG ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP date, " +
-        "$X real , " +
-        "$Y real , " +
-        "$Z real , " +
-        "$ACCURACY real )"
-
-const val CREATE_TABLE_GYRO =
-    "CREATE TABLE if not exists $TABLE_REAL_TIME_GYRO ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP date, " +
-        "$X real , " +
-        "$Y real , " +
-        "$Z real , " +
-        "$ACCURACY real )"
-
-const val CREATE_TABLE_ROT =
-    "CREATE TABLE if not exists $TABLE_REAL_TIME_ROT ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$TIMESTAMP date, " +
-        "$X real , " +
-        "$Y real , " +
-        "$Z real , " +
-        "$SCALAR real )"
-
-const val CREATE_TABLE_GEOFENCE =
-    "CREATE TABLE if not exists $TABLE_GEOFENCE ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$GEOFENCE_NAME text, " +
-        "$GEOFENCE_LAT real, " +
-        "$GEOFENCE_LONG real, " +
-        "$GEOFENCE_RADIUS INTEGER, " +
-        "$GEOFENCE_ENTER bool, " +
-        "$GEOFENCE_EXIT bool, " +
-        "$GEOFENCE_DWELL bool, " +
-        "$GEOFENCE_DWELL_OUTSIDE bool, " +
-        "$GEOFENCE_DATE_ADDED time, " +
-        "$GEOFENCE_LOITERING_DELAY number, " +
-        "$GEOFENCE_VALIDITY LONG," +
-        "$GEOFENCE_IMAGE INTEGER )"
-
-
-const val CREATE_TABLE_WIFI_GEOFENCE =
-    "CREATE TABLE if not exists $TABLE_WIFI_GEOFENCE ( " +
-        "$ID integer PRIMARY KEY, " +
-        "$WIFI_GEOFENCE_NAME text, " +
-        "$WIFI_GEOFENCE_BSSID String, " +
-        "$WIFI_GEOFENCE_RSSI INTEGER, " +
-        "$WIFI_GEOFENCE_ENTER bool, " +
-        "$WIFI_GEOFENCE_EXIT bool, " +
-        "$WIFI_GEOFENCE_DWELL bool, " +
-        "$WIFI_GEOFENCE_DWELL_OUTSIDE bool, " +
-        "$WIFI_GEOFENCE_LOITERING_DELAY number )"
-
-const val TABLE_NATURAL_TRIGGER = "table_natural_trigger"
-const val NATURAL_TRIGGER_GOAL = "natural_trigger_goal"
-const val NATURAL_TRIGGER_MESSAGE = "natural_trigger_message"
-const val NATURAL_TRIGGER_SITUATION = "natural_trigger_situation"
-const val NATURAL_TRIGGER_GEOFENCE = "natural_trigger_geofence"
-const val NATURAL_TRIGGER_WIFI = "natural_trigger_wifi"
-const val NATURAL_TRIGGER_BEGIN_TIME = "natural_trigger_begin_time"
-const val NATURAL_TRIGGER_END_TIME = "natural_trigger_end_time"
-const val NATURAL_TRIGGER_DELETED = "natural_trigger_deleted"
-const val NATURAL_TRIGGER_ACTIVE = "natural_trigger_active"
-const val NATURAL_TRIGGER_ACTIVITY = "natural_trigger_activity"
-const val NATURAL_TRIGGER_ACTIVITY_DURATION = "natural_trigger_activity_duration"
-
-const val CREATE_TABLE_NATURAL_TRIGGER =
-    "CREATE TABLE if not exists $TABLE_NATURAL_TRIGGER ( " +
-        "$ID INTEGER PRIMARY KEY, " +
-        "$NATURAL_TRIGGER_GOAL TEXT, " +
-        "$NATURAL_TRIGGER_MESSAGE TEXT, " +
-        "$NATURAL_TRIGGER_SITUATION TEXT, " +
-        "$NATURAL_TRIGGER_GEOFENCE INTEGER, " +
-        "$NATURAL_TRIGGER_WIFI INTEGER, " +
-        "$NATURAL_TRIGGER_BEGIN_TIME TIME, " +
-        "$NATURAL_TRIGGER_END_TIME TIME, " +
-        "$NATURAL_TRIGGER_DELETED BOOLEAN DEFAULT 0, " + //false
-        "$NATURAL_TRIGGER_ACTIVE BOOLEAN DEFAULT 1, " +  //true
-        "$NATURAL_TRIGGER_ACTIVITY TEXT, " +
-        "$NATURAL_TRIGGER_ACTIVITY_DURATION INTEGER )"
-
-//table to store enter/exit/dwell events of a geofence or wifi
-const val TABLE_GEOFENCE_EVENT = "table_geofence_event"
-const val GEOFENCE_EVENT = "geofence_event"
-const val GEOFENCE_ID = "geofence_id"
-
-const val CREATE_GEOFENCE_EVENT_TABLE =
-    "CREATE TABLE if not exists $TABLE_GEOFENCE_EVENT ( " +
-        "$ID INTEGER PRIMARY KEY, " +
-        "$TIMESTAMP DATE, " +
-        "$USERNAME TEXT, " +
-        "$GEOFENCE_ID INTEGER, " +
-        "$GEOFENCE_NAME TEXT, " +
-        "$GEOFENCE_EVENT TEXT )"

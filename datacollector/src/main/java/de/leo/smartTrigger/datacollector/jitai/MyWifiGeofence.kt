@@ -1,5 +1,6 @@
 package de.leo.smartTrigger.datacollector.jitai
 
+import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.WIFI_CODE
 
@@ -24,11 +25,14 @@ class MyWifiGeofence(id: Int = -1,
                                                                      dwellOutside = dwellOutside,
                                                                      loiteringDelay = loiteringDelay,
                                                                      imageResId = WIFI_CODE) {
-    override fun checkInside(vararg args: Any) = checkIfInside(args[0] as String, args[1] as Int)
 
+    override fun checkInside(vararg args: Any) = checkIfInside(args[0] as List<WifiInfo>)
 
-    private fun checkIfInside(bssid: String, rssi: Int) =
-        this.bssid == bssid && this.rssi <= rssi
+    private fun checkIfInside(wifiInformation: List<WifiInfo>): Boolean {
+        return wifiInformation.any {
+            this.bssid == it.BSSID && this.rssi <= it.rssi
+        }
+    }
 
     fun copy(id: Int = this.id,
              name: String = this.name,
@@ -68,3 +72,4 @@ class MyWifiGeofence(id: Int = -1,
         return result
     }
 }
+

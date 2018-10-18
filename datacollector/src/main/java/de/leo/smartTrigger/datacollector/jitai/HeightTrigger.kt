@@ -33,7 +33,7 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
                 .any { v -> v.second > threshold })
     }
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 }
@@ -52,7 +52,7 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
                 .any { v -> v.second < threshold }
     }
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 }

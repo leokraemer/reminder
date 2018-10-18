@@ -28,7 +28,7 @@ class ProximityTrigger(val near: Boolean) : Trigger {
         return !(values.first().second < maxDistance) xor near
     }
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 }

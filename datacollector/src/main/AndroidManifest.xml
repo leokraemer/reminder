@@ -15,6 +15,7 @@
 
     <application
         android:name="de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication"
+        android:label="@string/app_name"
         android:allowBackup="true"
         android:icon="@drawable/reminder_ico"
         android:theme="@style/AppBaseTheme.Light">

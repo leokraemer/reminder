@@ -5,6 +5,7 @@ import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
+import java.util.*
 
 /**
  * Created by Leo on 16.11.2017.
@@ -19,15 +20,12 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
         lastTime = 0L
     }
 
-    override fun reset() {
-        lastTime = Long.MAX_VALUE
-    }
-
     //in percent
     override val confidenceThreshold = 20
     private lateinit var db: JitaiDatabase
 
     private val errorMargin = DataCollectorService.UPDATE_DELAY
+    private var pastSensorData = ArrayDeque<SensorDataSet>()
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         if (lastTime == Long.MAX_VALUE)
@@ -35,12 +33,19 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
         //check if the trigger was already reset
         if (sensorData.time - lastTime < duration)
             return false
-        if (!::db.isInitialized) db = JitaiDatabase.getInstance(context)
+
         val end = sensorData.time
         val begin = sensorData.time - duration
         val firstPositiveMustBeEarlierThan = begin + errorMargin
-        //get relevant samples
-        val pastSensorData = db.getSensorDataSets(begin, end)
+        if (pastSensorData.isEmpty()) {
+            //get relevant samples from db if uninitialized
+            if (!::db.isInitialized) db = JitaiDatabase.getInstance(context)
+            pastSensorData.addAll(db.getSensorDataSets(begin, end))
+        } else {
+            //add online data
+            pastSensorData.pop()
+            pastSensorData.add(sensorData)
+        }
         val positiveMatches = pastSensorData.filter { sensorDataSet ->
             sensorDataSet.activity.any { outer ->
                 activities.any { inner ->

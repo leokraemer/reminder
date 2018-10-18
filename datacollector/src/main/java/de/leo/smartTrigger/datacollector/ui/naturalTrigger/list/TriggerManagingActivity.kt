@@ -1,6 +1,5 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
-import android.animation.LayoutTransition.CHANGING
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
@@ -16,20 +15,15 @@ import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
+import de.leo.smartTrigger.datacollector.testing.createTestNaturalTriggers
 import de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.CreateTriggerActivity
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
 import de.leo.smartTrigger.datacollector.utils.PermissionUtils
-import jp.wasabeef.recyclerview.animators.FadeInAnimator
-import jp.wasabeef.recyclerview.animators.FadeInDownAnimator
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kotlinx.android.synthetic.main.activity_trigger_list.*
 import kotlinx.android.synthetic.main.dialog_enter_user_name.view.*
 import org.jetbrains.anko.commit
@@ -74,8 +68,15 @@ class TriggerManagingActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.getItemId()) {
-            R.id.action_settings -> startActivity(Intent(this, ServiceManagingActivity::class.java))
-            else                 -> {
+            R.id.action_settings  -> startActivity(Intent(this,
+                                                          ServiceManagingActivity::class.java))
+            R.id.action_test_data -> {
+                createTestNaturalTriggers().forEach {
+                    db.enterNaturalTrigger(it)
+                }
+                updateDataset()
+            }
+            else                  -> {
             }
         }
         return true

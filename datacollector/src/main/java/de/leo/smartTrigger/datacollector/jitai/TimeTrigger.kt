@@ -21,7 +21,7 @@ import java.util.*
  */
 class TimeTrigger() : Trigger {
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
     }
 
     companion object {
@@ -57,7 +57,7 @@ class TimeTrigger() : Trigger {
         if (timeRange == null)
             timeRange = startTime.rangeTo(endInclusiveTime)
         val time = LocalDateTime.ofInstant(Instant.ofEpochMilli(sensorData.time),
-                                           ZoneId.systemDefault())
+                                           ZoneId.of("Z"))
         if (timeRange?.contains(time.toLocalTime()) ?: false
             && days.any({ day ->
                             day == time.dayOfWeek

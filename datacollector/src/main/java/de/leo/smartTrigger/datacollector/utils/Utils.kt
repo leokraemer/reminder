@@ -1,5 +1,8 @@
 package de.leo.smartTrigger.datacollector.utils
 
+import android.database.Cursor
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.*
 
 /**
@@ -36,4 +39,21 @@ fun averageDequeueHighPass(dequeue: ArrayDeque<FloatArray>): FloatArray {
     sum[1] = sum[1] / dequeue.size
     sum[2] = sum[2] / dequeue.size
     return sum
+}
+
+inline fun <reified T> Gson.fromJson(json: String) =
+    this.fromJson<T>(json, object : TypeToken<T>() {}.type)
+
+
+inline fun <T> getObjectListFromCursor(cursor: Cursor, transform: (Cursor) -> T): MutableList<T> {
+    return cursor.run {
+        mutableListOf<T>().also { list ->
+            if (moveToFirst()) {
+                do {
+                    list.add(transform(this))
+                } while (moveToNext())
+            }
+            close()
+        }
+    }
 }

@@ -11,15 +11,15 @@ import java.util.concurrent.TimeUnit
  * Created by Leo on 16.11.2017.
  */
 open class GeofenceTrigger() : Trigger {
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         state = 0
     }
 
     private lateinit var locations: List<MyGeofence>
     private var state: Int = -1
     private var lastTime: Long = 0
-    private val TIMEOUT = TimeUnit.MINUTES.toMillis(30)
-    private var db: JitaiDatabase? = null
+    private val TIMEOUT = TimeUnit.HOURS.toMillis(24)
+    private lateinit var db: JitaiDatabase
 
     constructor(locations: List<MyGeofence>) : this() {
         this.locations = locations
@@ -28,14 +28,16 @@ open class GeofenceTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         //only one locationName -> no state checks necessary
         if (locations.size == 1) {
-            val returnval = locations[0].updateAndCheck(sensorData.time, sensorData.gps!!)
-            if (db == null) db = JitaiDatabase.getInstance(context)
-            db!!.enterGeofenceEvent(sensorData.time, locations[0].id, locations[0].name,
-                                   "${locations[0].entered}," +
-                                       "${locations[0].exited}," +
-                                       "${locations[0].loiteringInside}," +
-                                       "${locations[0].loiteringOutside}")
-            return returnval
+            val statechanged = locations[0].update(sensorData.time, sensorData.gps!!)
+            val returnval = locations[0].checkCondition()
+            if (!::db.isInitialized) db = JitaiDatabase.getInstance(context)
+            if (statechanged)
+                db.enterGeofenceEvent(sensorData.time, locations[0].id, locations[0].name,
+                                      "${locations[0].entered}," +
+                                          "${locations[0].exited}," +
+                                          "${locations[0].loiteringInside}," +
+                                          "${locations[0].loiteringOutside}")
+            return returnval && statechanged
         }
 
         //########################currently unused code, because paths are not enabled in the

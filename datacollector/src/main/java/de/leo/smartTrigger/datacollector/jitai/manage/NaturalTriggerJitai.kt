@@ -45,7 +45,7 @@ open class NaturalTriggerJitai(override var id: Int,
     }
 
     override fun check(sensorData: SensorDataSet): Boolean {
-        Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
+        //Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
         //update all triggers to trigger as early as possible
         val activityTriggered = activitTrigger == null || activitTrigger.check(context, sensorData)
         val geofenceTriggered =
@@ -55,9 +55,10 @@ open class NaturalTriggerJitai(override var id: Int,
         val timeTriggered = timeTrigger == null || timeTrigger.check(context, sensorData)
 
         if (activityTriggered && geofenceTriggered && wifiTriggered && weatherTriggered && timeTriggered) {
+            Log.d("hit $goal", "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
             postNotification(id, sensorData.time, goal, message, sensorData.id)
-            geofenceTrigger?.reset()
-            activitTrigger?.reset()
+            geofenceTrigger?.reset(sensorData)
+            activitTrigger?.reset(sensorData)
             return true
         } else {
             //removeNotification(id, sensorData.time, sensorData.id)

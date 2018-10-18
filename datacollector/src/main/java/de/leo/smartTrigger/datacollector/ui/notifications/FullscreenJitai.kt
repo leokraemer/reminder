@@ -34,13 +34,15 @@ class FullscreenJitai : AppCompatActivity() {
         //handle vibration
         if (!(getSystemService(Context.POWER_SERVICE) as PowerManager)
                 .isInteractive()) {
-            vibrator.vibrate(longArrayOf(100L, 100L,100L, 100L,100L, 100L, 500L),
+            vibrator.vibrate(longArrayOf(100L, 100L, 100L, 100L, 100L, 100L, 500L),
                              1,
                              AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
             val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
             filter.addAction(Intent.ACTION_SCREEN_OFF)
             val mReceiver = ScreenEventReciever()
             registerReceiver(mReceiver, filter)
+        } else {
+            vibrator.cancel()
         }
         setTheme(R.style.AppBaseTheme_Light_Fullscreen)
         setContentView(R.layout.activity_full_screen_jitai)

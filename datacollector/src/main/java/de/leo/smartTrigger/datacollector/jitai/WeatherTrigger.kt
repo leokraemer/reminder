@@ -11,7 +11,7 @@ import de.leo.smartTrigger.datacollector.datacollection.models.Weather
 class WeatherTrigger : Trigger {
     val weather: Weather
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 

@@ -15,8 +15,8 @@ open class ActivityTrigger(open val activities: List<DetectedActivity>, open val
     open val confidenceThreshold = 20
     open var lastTime: Long = Long.MAX_VALUE
 
-    override fun reset() {
-        lastTime = Long.MAX_VALUE
+    override fun reset(sensorData: SensorDataSet) {
+        lastTime = sensorData.time
     }
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {

@@ -21,7 +21,7 @@ class DimmerThanTrigger(val threshold: Double, val interval: Long) :
                 .any { v -> v.second > threshold })
     }
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 }
@@ -40,7 +40,7 @@ class BrighterThanTrigger(val threshold: Double, val interval: Long) :
                 .any { v -> v.second > threshold }
     }
 
-    override fun reset() {
+    override fun reset(sensorData: SensorDataSet) {
         //noop
     }
 }

@@ -1,5 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai
 
+import android.support.annotation.VisibleForTesting
+import android.util.Log
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 
 /**
@@ -41,7 +43,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
     @Transient
     var exited = !entered
         get() = !entered
-    //do not use
+        //do not use
         private set
 
     @Transient
@@ -53,7 +55,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
         protected set
 
     @Transient
-    var lastTimestamp : Long = 0
+    var lastTimestamp: Long = 0
 
     /**
      * Update the state of the geofence.
@@ -65,6 +67,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
             //inside
             if (!entered) {
                 stateChanged = true
+                Log.d("TAG", "entering $name")
             }
             entered = true
             exitedTimestamp = Long.MAX_VALUE
@@ -74,15 +77,18 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
             //loiteringbefore is invalid, if the update interval is smaller than loiteringDelay
             val loiteringBefore = loiteringInside && lastTimestamp - timestamp > loiteringDelay
             loiteringInside = enteredTimestamp + loiteringDelay <= timestamp
-            if (loiteringBefore != loiteringInside) {
+            if (loiteringBefore != loiteringInside && dwellInside) {
                 stateChanged = true
                 //reset to hit again after loiteringDelay millis
                 enteredTimestamp = timestamp
+                Log.d("TAG", "loitering in $name for $loiteringDelay millis")
             }
         } else {
             //outside
-            if (entered)
+            if (entered) {
                 stateChanged = true
+                Log.d("TAG", "exiting $name")
+            }
             entered = false
             enteredTimestamp = Long.MAX_VALUE
             loiteringInside = false
@@ -90,16 +96,18 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
                 exitedTimestamp = timestamp
             val loiteringBefore = loiteringOutside && lastTimestamp - timestamp > loiteringDelay
             loiteringOutside = exitedTimestamp + loiteringDelay <= timestamp
-            if (loiteringBefore != loiteringOutside) {
+            if (loiteringBefore != loiteringOutside && dwellOutside) {
                 stateChanged = true
                 //rest to hit again after loiteringDelay millis
                 exitedTimestamp = timestamp
+                Log.d("TAG", "loitering outside $name for $loiteringDelay millis")
             }
         }
         lastTimestamp = timestamp
         return stateChanged
     }
 
+    lateinit var db: JitaiDatabase
     /**
      * Update the geofences state and return the new state. Main API function.
      */
@@ -108,6 +116,7 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
         return stateChanged && checkCondition()
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun checkCondition(timestamp: Long, vararg args: Any): Boolean {
         var inside = false
         var outside = false

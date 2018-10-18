@@ -134,7 +134,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="Wie genau passt ihnen der Zeitpunkt der Erinnerung?"
+        android:text="Wie ist der Zeitpunkt dieser Erinnerung?"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +160,7 @@
             android:layout_marginRight="8dp"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Gar nicht"
+            android:text="Zu früh"
             android:textColor="#000000" />
 
 
@@ -226,7 +226,7 @@
             android:layout_marginLeft="8dp"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Perfekt"
+            android:text="Zu spät"
             android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/agree"
             app:layout_constraintEnd_toEndOf="@+id/agree"
