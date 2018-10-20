@@ -13,13 +13,33 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.utils.getObjectListFromCursor
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.lang.IllegalStateException
 
 
-class TestDatabase(context: Context) : JitaiDatabase(context) {
+class TestDatabase private constructor(val dbFileName: String,
+                                       val oldVersion: Int,
+                                       val newVersion: Int,
+                                       context: Context) : JitaiDatabase(context) {
 
-    override fun initializeDatabase(context: Context): SQLiteOpenHelper =
-        MyDatabaseOpenHelper(context, null, 1025)
+    companion object {
+        @Volatile
+        private var INSTANCE: TestDatabase? = null
+
+        fun getInstance(dbFileName: String,
+                        oldVersion: Int,
+                        newVersion: Int,
+                        context: Context): TestDatabase =
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: TestDatabase(dbFileName, oldVersion, newVersion, context).also {
+                    INSTANCE = it
+                    INSTANCE!!.db =
+                        MyDatabaseOpenHelper(context, dbFileName, null, oldVersion, newVersion)
+                }
+            }
+
+
+        const val NAME = "mydb.1018"
+    }
+
 
     fun getSensorDataSets(count: Int): List<SensorDataSet> {
         val c = db.readableDatabase.query(TABLE_SENSORDATA, null,
@@ -43,14 +63,17 @@ class TestDatabase(context: Context) : JitaiDatabase(context) {
     }
 
     class MyDatabaseOpenHelper(val context: Context,
+                               val databaseFileName: String,
                                name: String? = null,
-                               val version: Int = 1025) : JitaiDatabaseOpenHelper
-                                                          (context,
-                                                           name,
-                                                           version) {
+                               val oldVersion: Int,
+                               val newVersion: Int = 1025) : JitaiDatabaseOpenHelper
+                                                             (context,
+                                                              name,
+                                                              newVersion) {
         override fun onCreate(db: SQLiteDatabase?) {
-            BufferedReader(InputStreamReader(context.getAssets().open("databases/testdb.sql"))).apply {
-                lines().forEach {
+            BufferedReader(
+                InputStreamReader(context.getAssets().open("databases/$databaseFileName"))).apply {
+                forEachLine {
                     try {
                         db!!.execSQL(it)
                     } catch (e: SQLiteException) {
@@ -59,17 +82,14 @@ class TestDatabase(context: Context) : JitaiDatabase(context) {
                 }
                 close()
             }
-
-            onUpgrade(db, 1, version)
-        }
-
-        override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-            super.onUpgrade(db, oldVersion, newVersion)
+            onUpgrade(db, oldVersion, newVersion)
         }
     }
 
     fun swapContext(context: Context) {
+        //initialize the database by opening
         if (db.writableDatabase.isOpen)
+        //swap the context that is used to create objects
             this.context = context
         else
             throw IllegalStateException("db was not created yet")

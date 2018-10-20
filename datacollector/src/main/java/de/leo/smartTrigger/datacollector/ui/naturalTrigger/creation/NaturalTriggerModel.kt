@@ -3,6 +3,8 @@ package de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation
 import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
+import de.leo.smartTrigger.datacollector.testing.geofenceDirection
+import de.leo.smartTrigger.datacollector.testing.mapActivity
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.everywhere_geofence
 import org.threeten.bp.LocalTime
 
@@ -64,14 +66,14 @@ class NaturalTriggerModel(var ID: Int = -1) {
                 modelChangelListener?.modelChangedCallback()
             }
         }
-    var beginTime : LocalTime? = null
+    var beginTime: LocalTime? = null
         set(value) {
             if (field != value) {
                 field = value
                 modelChangelListener?.modelChangedCallback()
             }
         }
-    var endTime : LocalTime? = null
+    var endTime: LocalTime? = null
         set(value) {
             if (field != value) {
                 field = value
@@ -116,6 +118,13 @@ class NaturalTriggerModel(var ID: Int = -1) {
 
     interface ModelChangedListener {
         fun modelChangedCallback()
+    }
+
+    override fun toString(): String {
+        val fence = wifi ?: geofence ?: everywhere_geofence()
+        return "${mapActivity(activity.first())} for ${timeInActivity} ms " +
+            "${geofenceDirection(fence)} for ${fence.loiteringDelay} ms " +
+            "${fence.name} " + "from ${beginTime.toString()} to ${endTime.toString()}"
     }
 }
 

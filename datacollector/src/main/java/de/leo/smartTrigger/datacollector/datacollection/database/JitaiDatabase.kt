@@ -58,28 +58,23 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
         fun getInstance(context: Context): JitaiDatabase =
             INSTANCE
                 ?: synchronized(this) {
-                    INSTANCE ?: buildDatabase(
-                        context).also {
+                    INSTANCE ?: JitaiDatabase(context).also {
                         INSTANCE = it
+                        INSTANCE!!.db = JitaiDatabaseOpenHelper(context)
                     }
                 }
 
-        private fun buildDatabase(context: Context) =
-            JitaiDatabase(context)
 
         const val NAME = "mydb.1018"
     }
 
     val gson = Converters.registerAll(GsonBuilder()).create()
 
-    open protected fun initializeDatabase(context: Context): SQLiteOpenHelper {
-        val db = JitaiDatabaseOpenHelper(context)
-       // db.setWriteAheadLoggingEnabled(true)
-        return db
-    }
+    protected lateinit var db: SQLiteOpenHelper
 
-    protected var db: SQLiteOpenHelper = initializeDatabase(context)
-    fun close() = db.close()
+    fun close() {
+        db.close()
+    }
 
 
     fun insertSensorDataSet(sensorDataSet: SensorDataSet): Long {
@@ -966,7 +961,7 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
         }
     }
 
-    internal fun exportDb() {
+    internal open fun exportDb() {
         val externalStorageDirectory = Environment.getExternalStorageDirectory()
         val dataDirectory = Environment.getDataDirectory()
 

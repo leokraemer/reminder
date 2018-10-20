@@ -47,7 +47,7 @@ class TriggerCreationTest {
         db.close()
         db = JitaiDatabase.getInstance(getTargetContext())
         getTargetContext().deleteDatabase(JitaiDatabase.NAME)
-        //should enter first geofence in a new database
+        //should enter first geofence in a new dbFileName
         Assert.assertEquals(0, db.enterGeofence(0,
                                                 GEOFENCE_NAME,
                                                 LatLng(0.0, 0.0),

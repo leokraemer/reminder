@@ -69,8 +69,9 @@ fun createTestNaturalTriggers(): List<NaturalTriggerModel> {
                 model.timeInActivity = timeInActivity
                 model.beginTime = LocalTime.of(0, 0)
                 model.endTime = LocalTime.of(23, 59)
-                model.goal = "${mapActivity(activity)} ${geofenceDirection(fence)} ${fence.name} " +
-                    "from ${model.beginTime.toString()} to ${model.endTime.toString()}"
+                model.goal = "${mapActivity(activity)} for ${timeInActivity} ms " +
+                    "${geofenceDirection(fence)} for ${fence.loiteringDelay} " +
+                    "${fence.name} " + "from ${model.beginTime.toString()} to ${model.endTime.toString()}"
                 model.situation = model.goal
                 model.message = qoutes[random.nextInt(qoutes.size)]
                 naturalTriggers.add(model)

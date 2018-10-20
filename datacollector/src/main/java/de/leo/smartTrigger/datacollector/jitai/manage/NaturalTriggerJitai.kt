@@ -55,7 +55,7 @@ open class NaturalTriggerJitai(override var id: Int,
         val timeTriggered = timeTrigger == null || timeTrigger.check(context, sensorData)
 
         if (activityTriggered && geofenceTriggered && wifiTriggered && weatherTriggered && timeTriggered) {
-            Log.d("hit $goal", "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
+            Log.d("hit", "$naturalTriggerModel ${sensorData.time}, ${sensorData.activity}")
             postNotification(id, sensorData.time, goal, message, sensorData.id)
             geofenceTrigger?.reset(sensorData)
             activitTrigger?.reset(sensorData)
