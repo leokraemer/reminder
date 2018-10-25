@@ -1,5 +1,13 @@
 package de.leo.smartTrigger.datacollector.datacollection.models;
 
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.Duration;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.LocalTime;
+
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Yunlong on 3/3/2016.
  */
@@ -7,19 +15,20 @@ public class FoursquareModel {
 
     private String name;
     private String city;
-    private String longtitude,latitude,address,country;
+    private String longtitude, latitude, address, country;
 
     private String icon;
-    private String category,category_id;
+    private String category, category_id;
 
 
-    public FoursquareModel(String name,String city,String longtitude,String latitude,String address,String country,String category) {
+    public FoursquareModel(String name, String city, String longtitude, String latitude, String
+            address, String country, String category) {
         this.name = name;
         this.city = city;
         this.longtitude = longtitude;
         this.latitude = latitude;
-        this.address= address;
-        this.country  =  country;
+        this.address = address;
+        this.country = country;
         this.setCategory(category);
 
     }
@@ -29,8 +38,8 @@ public class FoursquareModel {
         this.city = "";
         this.longtitude = "";
         this.latitude = "";
-        this.address= "";
-        this.country  =  "";
+        this.address = "";
+        this.country = "";
         this.setCategory("");
 
     }
@@ -50,61 +59,55 @@ public class FoursquareModel {
     }
 
 
-    public void setCategoryIcon(String icon)
-    {
+    public void setCategoryIcon(String icon) {
         this.icon = icon;
     }
-    public String getCategoryIcon()
-    {
+
+    public String getCategoryIcon() {
         return this.icon;
     }
-    public void setCategoryID(String category_id)
-    {
+
+    public void setCategoryID(String category_id) {
         this.category_id = category_id;
     }
-    public String getCategoryID()
-    {
+
+    public String getCategoryID() {
         return this.category_id;
     }
-    public void setAddress(String address)
-    {
+
+    public void setAddress(String address) {
         this.address = address;
     }
 
-    public String getAddress()
-    {
+    public String getAddress() {
         return this.address;
     }
-    public void setCountry(String country)
-    {
+
+    public void setCountry(String country) {
         this.country = country;
     }
-    public String getCountry()
-    {
+
+    public String getCountry() {
         return this.country;
 
     }
 
 
-    public void setLongtitude(String longtitude)
-    {
+    public void setLongtitude(String longtitude) {
         this.longtitude = longtitude;
     }
 
-    public double getLongtitude( )
-    {
-        return Double.parseDouble(this.longtitude)  ;
+    public double getLongtitude() {
+        return Double.parseDouble(this.longtitude);
     }
 
 
-    public void setLatitude(String latitude)
-    {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public double getLatitude( )
-    {
-        return  Double.parseDouble(this.latitude)  ;
+    public double getLatitude() {
+        return Double.parseDouble(this.latitude);
     }
 
     public void setName(String name) {

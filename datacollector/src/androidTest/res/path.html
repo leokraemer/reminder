@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple Polylines</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+
+      // This example creates a 2-pixel-wide red polyline showing the path of
+      // the first trans-Pacific flight between Oakland, CA, and Brisbane,
+      // Australia which was made by Charles Kingsford Smith.
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: {lat: 47.675176, lng: 9.167927},
+          mapTypeId: 'terrain'
+        });
+
+        var one = [
+            {lat: 47.681184, lng: 9.1453423},
+            {lat: 47.6814186, lng: 9.1446232},
+            {lat: 47.6814186, lng: 9.1446232},
+            {lat: 47.6816822, lng: 9.1438043},
+            {lat: 47.6819417, lng: 9.143017},
+            {lat: 47.6821656, lng: 9.1422678},
+            {lat: 47.6824061, lng: 9.1415491},
+            {lat: 47.6826457, lng: 9.1408374},
+            {lat: 47.6828903, lng: 9.1400362},
+            {lat: 47.6831195, lng: 9.1392304},
+            {lat: 47.6833676, lng: 9.1385149},
+            {lat: 47.6836036, lng: 9.1378213},
+            {lat: 47.6838703, lng: 9.1370548},
+            {lat: 47.6841911, lng: 9.136269},
+            {lat: 47.6844794, lng: 9.135591},
+            {lat: 47.6850393, lng: 9.1359612},
+            {lat: 47.6855118, lng: 9.1363107},
+            {lat: 47.6860124, lng: 9.1364963},
+            {lat: 47.6862251, lng: 9.1356737},
+            {lat: 47.6863772, lng: 9.1349004},
+            {lat: 47.6866288, lng: 9.1341766},
+            {lat: 47.6868391, lng: 9.1337775},
+            {lat: 47.6865566, lng: 9.1344562},
+            {lat: 47.6862314, lng: 9.1350847},
+            {lat: 47.6862314, lng: 9.1350847},
+            {lat: 47.6861132, lng: 9.1359434},
+            {lat: 47.6858462, lng: 9.1367105},
+            {lat: 47.6855978, lng: 9.1374515},
+            {lat: 47.6853072, lng: 9.1384259},
+            {lat: 47.6850093, lng: 9.1393299}]
+        var two = [
+            {lat: 47.6846737, lng: 9.1402567},
+            {lat: 47.6843739, lng: 9.1411689},
+            {lat: 47.6841133, lng: 9.1418697},
+            {lat: 47.6838515, lng: 9.1426491},
+            {lat: 47.6835909, lng: 9.1434527},
+            {lat: 47.683359, lng: 9.1442151},
+            {lat: 47.6831221, lng: 9.1449744},
+            {lat: 47.6829147, lng: 9.145636},
+            {lat: 47.682673, lng: 9.1463496},
+            {lat: 47.6824192, lng: 9.1470876},
+            {lat: 47.6818866, lng: 9.1473264},
+            {lat: 47.6812959, lng: 9.1472909},
+            {lat: 47.6812959, lng: 9.1472909},
+            {lat: 47.6807503, lng: 9.1469924},
+            {lat: 47.6803286, lng: 9.1468476},
+            {lat: 47.6798746, lng: 9.1467217},
+            {lat: 47.6793155, lng: 9.1462791},
+            {lat: 47.6788206, lng: 9.1458572},
+            {lat: 47.678447, lng: 9.1454476},
+            {lat: 47.6784268, lng: 9.1455291},
+            {lat: 47.6784213, lng: 9.1455219},
+            {lat: 47.6783959, lng: 9.1456694},
+            {lat: 47.6783217, lng: 9.1459247},
+            {lat: 47.6782456, lng: 9.1463578},
+            {lat: 47.678065, lng: 9.1471374},
+            {lat: 47.6778789, lng: 9.1478661},
+            {lat: 47.6776652, lng: 9.1485206},
+            {lat: 47.6773707, lng: 9.1491412},
+            {lat: 47.6770489, lng: 9.1496685},
+            {lat: 47.6766747, lng: 9.150216},
+            {lat: 47.6763125, lng: 9.1507436}]
+        var three = [
+            {lat: 47.6759714, lng: 9.1512268},
+            {lat: 47.6756175, lng: 9.1517157},
+            {lat: 47.6753268, lng: 9.152252},
+            {lat: 47.6753268, lng: 9.152252},
+            {lat: 47.6751517, lng: 9.1525946},
+            {lat: 47.6754559, lng: 9.1519589},
+            {lat: 47.6757687, lng: 9.1513877},
+            {lat: 47.6761123, lng: 9.1508696},
+            {lat: 47.6764613, lng: 9.1503483},
+            {lat: 47.6768728, lng: 9.1497203},
+            {lat: 47.677215, lng: 9.1491382},
+            {lat: 47.6775908, lng: 9.1485135},
+            {lat: 47.6778791, lng: 9.1477747},
+            {lat: 47.6780904, lng: 9.1470496},
+            {lat: 47.678296, lng: 9.1462624},
+            {lat: 47.6783739, lng: 9.1458468},
+            {lat: 47.6784149, lng: 9.1458375},
+            {lat: 47.6784014, lng: 9.1458815},
+            {lat: 47.678358, lng: 9.1458654},
+            {lat: 47.6783566, lng: 9.1458845},
+            {lat: 47.6783838, lng: 9.1458748},
+            {lat: 47.6783838, lng: 9.1458748},
+            {lat: 47.6783396, lng: 9.1457712},
+            {lat: 47.6779564, lng: 9.145353},
+            {lat: 47.6775882, lng: 9.1448554},
+            {lat: 47.6771095, lng: 9.1445646},
+            {lat: 47.6767383, lng: 9.1440772},
+            {lat: 47.676315, lng: 9.1437302},
+            {lat: 47.6759865, lng: 9.1433825},
+            {lat: 47.6756523, lng: 9.1431266},
+            {lat: 47.6753353, lng: 9.1428723}]
+        var four = [
+            {lat: 47.6748562, lng: 9.1424471},
+            {lat: 47.6744363, lng: 9.1421726},
+            {lat: 47.6739768, lng: 9.1417808},
+            {lat: 47.6737221, lng: 9.1415605},
+            {lat: 47.6736935, lng: 9.1415722},
+            {lat: 47.6737613, lng: 9.1415044},
+            {lat: 47.6736574, lng: 9.1414241},
+            {lat: 47.6733427, lng: 9.1411208},
+            {lat: 47.6730159, lng: 9.1408824},
+            {lat: 47.6726338, lng: 9.140632},
+            {lat: 47.6723317, lng: 9.1404732},
+            {lat: 47.6720209, lng: 9.1402775},
+            {lat: 47.6720209, lng: 9.1402775},
+            {lat: 47.6716183, lng: 9.140118},
+            {lat: 47.6712842, lng: 9.1399119},
+            {lat: 47.6708835, lng: 9.1396499},
+            {lat: 47.6704895, lng: 9.1393663},
+            {lat: 47.6701152, lng: 9.1391393},
+            {lat: 47.6697455, lng: 9.1389045},
+            {lat: 47.6694038, lng: 9.1386651},
+            {lat: 47.6691329, lng: 9.1384651},
+            {lat: 47.6687608, lng: 9.138097},
+            {lat: 47.6684406, lng: 9.137773},
+            {lat: 47.6680991, lng: 9.1374479},
+            {lat: 47.6677638, lng: 9.1371918},
+            {lat: 47.6674989, lng: 9.136953},
+            {lat: 47.6671982, lng: 9.136638},
+            {lat: 47.6669032, lng: 9.1363784},
+            {lat: 47.6666974, lng: 9.1363146},
+            {lat: 47.6663177, lng: 9.1361487},
+            {lat: 47.6659598, lng: 9.1358756}]
+        var five = [
+            {lat: 47.6659598, lng: 9.1358756},
+            {lat: 47.6658147, lng: 9.1354024},
+            {lat: 47.6658691, lng: 9.1351837},
+            {lat: 47.6658546, lng: 9.1351502},
+            {lat: 47.6658435, lng: 9.135112},
+            {lat: 47.665826, lng: 9.1351279},
+            {lat: 47.6658508, lng: 9.1352507},
+            {lat: 47.6658763, lng: 9.1353776},
+            {lat: 47.6658311, lng: 9.1355929},
+            {lat: 47.6658973, lng: 9.1356789},
+            {lat: 47.6660343, lng: 9.1357683},
+            {lat: 47.6661417, lng: 9.135822},
+            {lat: 47.6662629, lng: 9.1358723},
+            {lat: 47.6664244, lng: 9.1359245},
+            {lat: 47.6665534, lng: 9.1359749},
+            {lat: 47.6666813, lng: 9.1360426},
+            {lat: 47.6666813, lng: 9.1360426},
+            {lat: 47.666821, lng: 9.1361266},
+            {lat: 47.6669646, lng: 9.1361518},
+            {lat: 47.6670806, lng: 9.1362},
+            {lat: 47.6672068, lng: 9.136259},
+            {lat: 47.6673294, lng: 9.1363209},
+            {lat: 47.6674681, lng: 9.1364396},
+            {lat: 47.6675528, lng: 9.1365083},
+            {lat: 47.6676291, lng: 9.1366111},
+            {lat: 47.6677442, lng: 9.1366817},
+            {lat: 47.66794, lng: 9.1368526},
+            {lat: 47.6679613, lng: 9.137068},
+            {lat: 47.6679942, lng: 9.1371696},
+            {lat: 47.668169, lng: 9.137375},
+        ];
+        var flightPath = new google.maps.Polyline({
+          path: one,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        var flightPath2 = new google.maps.Polyline({
+          path: two,
+          geodesic: true,
+          strokeColor: '#FFFF00',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        var flightPath3 = new google.maps.Polyline({
+          path: three,
+          geodesic: true,
+          strokeColor: '#00FF00',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        var flightPath4 = new google.maps.Polyline({
+          path: four,
+          geodesic: true,
+          strokeColor: '#FF00FF',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        var flightPath5 = new google.maps.Polyline({
+          path: five,
+          geodesic: true,
+          strokeColor: '#0000FF',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+        flightPath.setMap(map);
+        flightPath2.setMap(map);
+        flightPath3.setMap(map);
+        flightPath4.setMap(map);
+        flightPath5.setMap(map);
+
+
+
+    // lets add an event listener, if you click the line, i'll tell you the coordinates you clicked
+    google.maps.event.addListener(flightPath, 'click', function(e) {
+        alert(e.latLng.toString())
+    });
+    google.maps.event.addListener(flightPath2, 'click', function(e) {
+        alert(e.latLng.toString())
+    });
+    google.maps.event.addListener(flightPath3, 'click', function(e) {
+        alert(e.latLng.toString())
+    });
+    google.maps.event.addListener(flightPath4, 'click', function(e) {
+        alert(e.latLng.toString())
+    });
+    google.maps.event.addListener(flightPath5, 'click', function(e) {
+        alert(e.latLng.toString())
+    });
+
+    var links = new google.maps.Circle(
+    {
+     center : {lat: 47.67061785643904, lng: 9.139331839978695},
+     radius : 718,
+     strokeColor : '#0000FF',
+     fillColor : '#FF00FF'
+     });
+
+     var rechts = new google.maps.Circle(
+     {
+     center : {lat: 47.67816103666347, lng: 9.15347445756197},
+     radius : 663,
+     strokeColor : '#FFFf00',
+     fillColor : '#FF0000'
+     });
+
+
+        links.setMap(map)
+        rechts.setMap(map)
+      }
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyALLucec-31KbBJPlGgbKqy3m4oT6rpUok&callback=initMap">
+</script>
+</body>
+</html>

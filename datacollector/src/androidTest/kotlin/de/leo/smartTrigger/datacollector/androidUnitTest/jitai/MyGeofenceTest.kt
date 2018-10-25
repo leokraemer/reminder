@@ -66,7 +66,7 @@ class MyGeofenceTest() {
     @Test
     fun testDatabase() {
         var id = db.enterGeofence(Auberge_du_coq)
-         id = db.enterGeofence(Auberge_du_coq)
+        id = db.enterGeofence(Auberge_du_coq)
         //test that we actually entered it
         Assert.assertNotSame(-1, id)
         val retrieved = db.getMyGeofence(id)
@@ -208,7 +208,7 @@ class MyGeofenceTest() {
 
     @Test
     fun testRepeatedFiringOfLoiteringDelayInside() {
-        val CA = MyGeofence(Catimini.id,
+        var CA = MyGeofence(Catimini.id,
                             Catimini.name,
                             Catimini.latitude,
                             Catimini.longitude,
@@ -226,6 +226,7 @@ class MyGeofenceTest() {
         CA.checkGeofenceState(true, false, false, false)
         Assert.assertTrue(CA.updateAndCheck(2L, Catimini.location))
         CA.checkGeofenceState(true, false, true, false)
+        CA = CA.copy()
         Assert.assertFalse(CA.updateAndCheck(2L, Catimini.location))
         CA.checkGeofenceState(true, false, false, false)
         Assert.assertFalse(CA.updateAndCheck(3L, Catimini.location))
@@ -236,7 +237,7 @@ class MyGeofenceTest() {
 
     @Test
     fun testRepeatedFiringOfLoiteringDelayOutside() {
-        val CA = MyGeofence(Catimini.id,
+        var CA = MyGeofence(Catimini.id,
                             Catimini.name,
                             Catimini.latitude,
                             Catimini.longitude,
@@ -253,6 +254,7 @@ class MyGeofenceTest() {
         Assert.assertFalse(CA.updateAndCheck(1L, Buynormand.location))
         CA.checkGeofenceState(false, true, false, false)
         Assert.assertTrue(CA.updateAndCheck(2L, Buynormand.location))
+        CA = CA.copy()
         CA.checkGeofenceState(false, true, false, true)
         Assert.assertFalse(CA.updateAndCheck(2L, Buynormand.location))
         CA.checkGeofenceState(false, true, false, false)

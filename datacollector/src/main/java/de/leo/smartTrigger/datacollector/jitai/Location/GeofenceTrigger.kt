@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit
 open class GeofenceTrigger() : Trigger {
     override fun reset(sensorData: SensorDataSet) {
         state = 0
+        locations = locations.map { if (it.dwellInside || it.dwellOutside) it.copy() else it }
     }
 
     private lateinit var locations: List<MyGeofence>

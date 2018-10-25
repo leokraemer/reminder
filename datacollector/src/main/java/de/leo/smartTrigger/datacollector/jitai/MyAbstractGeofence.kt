@@ -79,9 +79,6 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
             loiteringInside = enteredTimestamp + loiteringDelay <= timestamp
             if (loiteringBefore != loiteringInside && dwellInside) {
                 stateChanged = true
-                //reset to hit again after loiteringDelay millis
-                enteredTimestamp = timestamp
-                Log.d("TAG", "loitering in $name for $loiteringDelay millis")
             }
         } else {
             //outside
@@ -98,9 +95,6 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
             loiteringOutside = exitedTimestamp + loiteringDelay <= timestamp
             if (loiteringBefore != loiteringOutside && dwellOutside) {
                 stateChanged = true
-                //rest to hit again after loiteringDelay millis
-                exitedTimestamp = timestamp
-                Log.d("TAG", "loitering outside $name for $loiteringDelay millis")
             }
         }
         lastTimestamp = timestamp
@@ -113,7 +107,10 @@ abstract class MyAbstractGeofence(open var id: Int = -1,
      */
     internal fun updateAndCheck(timestamp: Long, vararg args: Any): Boolean {
         val stateChanged = update(timestamp, *args)
-        return stateChanged && checkCondition()
+        if (enter || exit)
+            return stateChanged && checkCondition()
+        //keep dwell state until reset() is called
+        return checkCondition()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

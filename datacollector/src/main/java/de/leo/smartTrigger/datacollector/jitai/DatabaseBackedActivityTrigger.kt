@@ -42,8 +42,8 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
             if (!::db.isInitialized) db = JitaiDatabase.getInstance(context)
             pastSensorData.addAll(db.getSensorDataSets(begin, end))
         } else {
-            if (pastSensorData.peek().time < begin)
-                //pop data if it expired
+            while (pastSensorData.peek()?.let { it.time < begin } == true)
+            //pop data if it expired
                 pastSensorData.pop()
             //add online data
             pastSensorData.addLast(sensorData)
@@ -60,6 +60,7 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
         //not enough data
             return false
         //test for percentage
-        return positiveMatches.size > (pastSensorData.size * percentageThreshold)
+        return positiveMatches.size > 0
+            && positiveMatches.size >= (pastSensorData.size * percentageThreshold)
     }
 }

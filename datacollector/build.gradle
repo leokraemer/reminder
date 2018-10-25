@@ -17,8 +17,8 @@ android {
         applicationId 'de.leo.smartTrigger'
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 13
-
+        versionCode 14 
+        
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

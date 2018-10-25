@@ -144,7 +144,7 @@ open class JitaiDatabaseOpenHelper(context: Context,
                     val cv = ContentValues()
                     with(sensorDataSet) {
                         cv.apply {
-                            put(TIMESTAMP, time)
+                            put(TIMESTAMP, sensorDataSet.time)
                             put(USERNAME, userName)
                             put(ACTIVITY, gson.toJson(activity))
                             put(STEPS, totalStepsToday)

@@ -58,6 +58,7 @@ open class NaturalTriggerJitai(override var id: Int,
             Log.d("hit", "$naturalTriggerModel ${sensorData.time}, ${sensorData.activity}")
             postNotification(id, sensorData.time, goal, message, sensorData.id)
             geofenceTrigger?.reset(sensorData)
+            wifiTrigger?.reset(sensorData)
             activitTrigger?.reset(sensorData)
             return true
         } else {

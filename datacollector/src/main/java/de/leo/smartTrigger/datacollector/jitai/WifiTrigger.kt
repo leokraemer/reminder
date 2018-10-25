@@ -1,6 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai;
 
 import android.content.Context
+import android.net.wifi.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 
 /**
@@ -8,18 +9,16 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
  */
 
 /** For rssiThreshold default see according to android.net.wifi.WifiInfo.MIN_RSSI*/
-data class WifiTrigger(val wifi: MyWifiGeofence) : Trigger {
+data class WifiTrigger(var wifi: MyWifiGeofence) : Trigger {
 
     override fun reset(sensorData: SensorDataSet) {
-        //noop
+        if (wifi.dwellOutside || wifi.dwellInside)
+            wifi = wifi.copy()
     }
 
-    override fun check(context: Context, sensorData: SensorDataSet): Boolean {
-        sensorData.wifiInformation?.let {
-            return wifi.updateAndCheck(sensorData.time, it)
-        }
-        return false
-    }
+    override fun check(context: Context, sensorData: SensorDataSet): Boolean =
+        wifi.updateAndCheck(sensorData.time, sensorData.wifiInformation ?: emptyList<WifiInfo>())
+
 
     override fun toString(): String {
         return "${wifi.name}, ${wifi.bssid}, enter:${wifi.enter}, exit:${wifi.exit}, " +
