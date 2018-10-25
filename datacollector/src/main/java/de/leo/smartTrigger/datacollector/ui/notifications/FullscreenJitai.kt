@@ -31,6 +31,7 @@ class FullscreenJitai : AppCompatActivity() {
 
     private var jitaiId: Int = -1
     private var sensorDataId: Long = -1L
+    private val mReceiver: ScreenEventReceiver = ScreenEventReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +42,6 @@ class FullscreenJitai : AppCompatActivity() {
                              AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
             val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
             filter.addAction(Intent.ACTION_SCREEN_OFF)
-            val mReceiver = ScreenEventReceiver()
             registerReceiver(mReceiver, filter)
             GlobalScope.launch {
                 delay(TimeUnit.MINUTES.toMillis(2))
@@ -119,13 +119,9 @@ class FullscreenJitai : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        vibrator.cancel()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+        unregisterReceiver(mReceiver)
         vibrator.cancel()
     }
 }
