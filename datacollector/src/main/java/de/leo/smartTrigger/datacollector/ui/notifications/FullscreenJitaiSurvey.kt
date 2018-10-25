@@ -15,7 +15,6 @@ import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.SURVEY_ABO
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
 import kotlinx.android.synthetic.main.activity_fullscreen_jitai_dialog.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
 
 class FullscreenJitaiSurvey : AppCompatActivity() {
 
@@ -46,7 +45,7 @@ class FullscreenJitaiSurvey : AppCompatActivity() {
         val model = db.getNaturalTrigger(jitaiId)
         situation.text = model.situation
         updateNaturalTriggerReminderCardView(model, reminder_card)
-        submit_survey.onClick {
+        submit_survey.setOnClickListener {
             db.enterUserJitaiEvent(jitaiId, System.currentTimeMillis(),
                                    username,
                                    event,

@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import de.leo.smartTrigger.datacollector.R
 import kotlinx.android.synthetic.main.fragment_activity_selection.*
 import kotlinx.android.synthetic.main.minutepicker.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.TimeUnit
 
 /**
@@ -33,10 +32,10 @@ class ActivitySelection : NaturalTriggerFragment() {
         carText.setOnClickListener { car() }
         sitButton.setOnClickListener { sit() }
         sitText.setOnClickListener { sit() }
-        moreminutes.onClick { showMinutePicker() }
-        fiveminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(5) }
-        fiveteenminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(15) }
-        thirtyminutes.onClick { model?.timeInActivity = TimeUnit.MINUTES.toMillis(30) }
+        moreminutes.setOnClickListener { showMinutePicker() }
+        fiveminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(5) }
+        fiveteenminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(15) }
+        thirtyminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(30) }
         updateView()
     }
 

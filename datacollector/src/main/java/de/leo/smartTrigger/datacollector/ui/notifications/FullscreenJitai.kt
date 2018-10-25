@@ -14,13 +14,16 @@ import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import kotlinx.android.synthetic.main.activity_full_screen_jitai.*
-import kotlinx.android.synthetic.main.activity_fullscreen_jitai_dialog.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.sdk25.coroutines.onClick
+import java.util.concurrent.TimeUnit
 
 
 class FullscreenJitai : AppCompatActivity() {
 
+    val STOP_SERVICE_REQUEST_CODE = 21470
     val db by lazy { JitaiDatabase.getInstance(this) }
 
     val vibrator by lazy { getSystemService(VIBRATOR_SERVICE) as Vibrator }
@@ -32,15 +35,20 @@ class FullscreenJitai : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //handle vibration
-        if (!(getSystemService(Context.POWER_SERVICE) as PowerManager)
-                .isInteractive()) {
-            vibrator.vibrate(longArrayOf(100L, 100L, 100L, 100L, 100L, 100L, 500L),
+        if (!(getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive) {
+            vibrator.vibrate(longArrayOf(100L, 200L, 100L, 200L, 100L, 200L, 500L),
                              1,
                              AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
             val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
             filter.addAction(Intent.ACTION_SCREEN_OFF)
-            val mReceiver = ScreenEventReciever()
+            val mReceiver = ScreenEventReceiver()
             registerReceiver(mReceiver, filter)
+            GlobalScope.launch {
+                delay(TimeUnit.MINUTES.toMillis(2))
+                vibrator.cancel()
+            }
+
+
         } else {
             vibrator.cancel()
         }
@@ -55,7 +63,7 @@ class FullscreenJitai : AppCompatActivity() {
         goal.text = goalText
         //cancel the notification when the fullscreen app is launched
         notificationService.cancel(NotificationService.NOTIFICATIONIDMODIFYER + jitaiId)
-        close.onClick {
+        close.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
                     JITAI_EVENT to Jitai.NOTIFICATION_DELETED,
@@ -65,7 +73,7 @@ class FullscreenJitai : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-        play.onClick {
+        play.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
                     JITAI_EVENT to Jitai.NOTIFICATION_SUCCESS,
@@ -75,7 +83,7 @@ class FullscreenJitai : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
-        snooze.onClick {
+        snooze.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
                     JITAI_EVENT to Jitai.NOTIFICATION_SNOOZE,
@@ -100,7 +108,7 @@ class FullscreenJitai : AppCompatActivity() {
         finish()
     }
 
-    inner class ScreenEventReciever : BroadcastReceiver() {
+    inner class ScreenEventReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Intent.ACTION_SCREEN_OFF) {
                 //noop
@@ -110,5 +118,14 @@ class FullscreenJitai : AppCompatActivity() {
             }
         }
     }
-}
 
+    override fun onPause() {
+        super.onPause()
+        vibrator.cancel()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        vibrator.cancel()
+    }
+}
