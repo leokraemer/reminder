@@ -55,7 +55,8 @@ class DataCollectorService : Service(),
                              GooglePlacesListener,
                              AmbientSoundListener,
                              GoogleFitnessListener,
-                             WeatherCallerListener, WifiUpdateListener {
+                             WeatherCallerListener,
+                             WifiUpdateListener {
 
     override fun wifiUpdated(scanResults: List<ScanResult>) {
         currentWifis = scanResults
