@@ -18,12 +18,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.anko.intentFor
+import java.lang.IllegalArgumentException
 import java.util.concurrent.TimeUnit
 
 
 class FullscreenJitai : AppCompatActivity() {
 
-    val STOP_SERVICE_REQUEST_CODE = 21470
     val db by lazy { JitaiDatabase.getInstance(this) }
 
     val vibrator by lazy { getSystemService(VIBRATOR_SERVICE) as Vibrator }
@@ -31,7 +31,7 @@ class FullscreenJitai : AppCompatActivity() {
 
     private var jitaiId: Int = -1
     private var sensorDataId: Long = -1L
-    private val mReceiver: ScreenEventReceiver = ScreenEventReceiver()
+    private val mReceiver: ScreenEventReceiver by lazy { ScreenEventReceiver() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,7 @@ class FullscreenJitai : AppCompatActivity() {
                              AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
             val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
             filter.addAction(Intent.ACTION_SCREEN_OFF)
-            registerReceiver(mReceiver, filter)
+            registerReceiver(mReceiver, filter) != null
             GlobalScope.launch {
                 delay(TimeUnit.MINUTES.toMillis(2))
                 vibrator.cancel()
@@ -121,7 +121,11 @@ class FullscreenJitai : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(mReceiver)
+        try {
+            unregisterReceiver(mReceiver)
+        } catch (e: IllegalArgumentException) {
+            //ignore
+        }
         vibrator.cancel()
     }
 }

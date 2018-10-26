@@ -14,7 +14,9 @@ open class NaturalTriggerJitai(override var id: Int,
                                context: Context,
                                val naturalTriggerModel: NaturalTriggerModel) : Jitai(context) {
     override val message: String
+        get() = naturalTriggerModel.goal
     override val goal: String
+        get() = naturalTriggerModel.message
 
     val wifiTrigger: WifiTrigger?
     val timeTrigger: TimeTrigger?
@@ -26,10 +28,8 @@ open class NaturalTriggerJitai(override var id: Int,
     val activitTrigger: ActivityTrigger?
 
     init {
-        goal = naturalTriggerModel.goal
-        message = naturalTriggerModel.message
         timeTrigger = TimeTrigger(naturalTriggerModel.beginTime!!.rangeTo(naturalTriggerModel
-                                                                             .endTime!!),
+                                                                              .endTime!!),
                                   TimeTrigger.ALL_DAYS)
         geofenceTrigger = naturalTriggerModel.geofence?.let {
             if (it.name != EVERYWHERE)

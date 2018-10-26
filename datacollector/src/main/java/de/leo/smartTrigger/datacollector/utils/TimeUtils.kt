@@ -1,6 +1,7 @@
 package de.leo.smartTrigger.datacollector.utils
 
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -17,8 +18,9 @@ object TimeUtils {
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd:HH-mm-ss"))
     }
 
-    fun getDateFromString(timeStr: String): LocalDateTime {
+    fun getDateFromString(timeStr: String): ZonedDateTime {
         return LocalDateTime.parse(timeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd:HH-mm-ss"))
+            .atZone(ZoneId.systemDefault())
     }
 
     fun ZonedDateTime.toEpochMillis(): Long = TimeUnit.SECONDS.toMillis(toEpochSecond())

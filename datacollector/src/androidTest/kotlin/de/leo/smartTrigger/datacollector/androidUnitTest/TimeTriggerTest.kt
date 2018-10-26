@@ -26,9 +26,7 @@ class TimeTriggerTest {
     @Test
     fun check() {
         val dummyTime = getDateFromString("2017-11-16:12-30-00")
-        val sensorData = SensorDataSet(
-            dummyTime.atZone(ZoneId.of("Z")).toInstant().toEpochMilli(),
-            "dummy")
+        val sensorData = SensorDataSet(dummyTime.toInstant().toEpochMilli(), "dummy")
         val start = getDateFromString("2017-11-16:12-00-00").toLocalTime()
         val end = getDateFromString("2017-11-16:18-00-00").toLocalTime()
         //0 == thursday

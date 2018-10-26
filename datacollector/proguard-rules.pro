@@ -31,10 +31,12 @@
 -dontwarn javax.annotation.**
 -dontwarn com.google.appengine.**
 -dontwarn org.codehaus.mojo.**
+-dontwarn org.jetbrains.anko.**
 
 # ServiceLoader support
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
 -keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepnames class kotlinx.** { *; }
 
 # Most of volatile fields are updated with AFU and should not be mangled
 -keepclassmembernames class kotlinx.** {

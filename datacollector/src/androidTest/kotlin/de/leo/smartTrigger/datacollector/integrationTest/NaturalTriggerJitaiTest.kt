@@ -6,6 +6,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import com.google.android.gms.location.DetectedActivity
+import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
@@ -13,15 +14,17 @@ import de.leo.smartTrigger.datacollector.integrationTest.util.TestNaturalTrigger
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import de.leo.smartTrigger.datacollector.utils.TimeUtils
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalTime
-import java.util.concurrent.TimeUnit
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit.MINUTES
-import java.util.concurrent.TimeUnit.SECONDS
 
 @RunWith(AndroidJUnit4::class)
 class NaturalTriggerJitaiTest {
@@ -43,7 +46,7 @@ class NaturalTriggerJitaiTest {
     @Test
     fun testActivitySitTrigger() {
         val data = mutableListOf<SensorDataSet>()
-        for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
+        for (i in ZERO_TIME..FIFTY_MINUTES_TIME step N_SECONDS) {
             val sensorDataSet = SensorDataSet(time = i,
                                               userName = USER,
                                               activity = listOf(SIT_CONFIDENT))
@@ -61,9 +64,9 @@ class NaturalTriggerJitaiTest {
     @Test
     fun testTwoActivityTrigger() {
         val data = mutableListOf<SensorDataSet>()
-        for (i in 0..FIVTY_MINUTES step (2 * FIVE_SECONDS)) {
+        for (i in ZERO_TIME..FIFTY_MINUTES_TIME step N_SECONDS) {
             val sit = SensorDataSet(time = i, userName = USER, activity = listOf(BIKE_CONFIDENT))
-            val walk = SensorDataSet(time = i + FIVE_SECONDS,
+            val walk = SensorDataSet(time = i + N_SECONDS,
                                      userName = USER,
                                      activity = listOf(WALK_CONFIDENT))
             data.add(sit)
@@ -80,8 +83,8 @@ class NaturalTriggerJitaiTest {
 
     @Test
     fun testGeofenceTrigger() {
-        val positive = SensorDataSet(time = 0, userName = USER)
-        val negative = SensorDataSet(time = 0, userName = USER)
+        val positive = SensorDataSet(time = ZERO_TIME, userName = USER)
+        val negative = SensorDataSet(time = ZERO_TIME, userName = USER)
         positive.gps = Catimini_Location
         negative.gps = Buynormand_Location
         setupDB(positive, negative)
@@ -104,8 +107,8 @@ class NaturalTriggerJitaiTest {
 
     @Test
     fun testWifiTrigger() {
-        val positive = SensorDataSet(time = 0, userName = USER)
-        val negative = SensorDataSet(time = 0, userName = USER)
+        val positive = SensorDataSet(time = ZERO_TIME, userName = USER)
+        val negative = SensorDataSet(time = ZERO_TIME, userName = USER)
         negative.wifiInformation = listOf(WifiInfo(BSSID2, 0, "", "", 0))
         positive.wifiInformation = listOf(WifiInfo(BSSID, 0, "", "", 0),
                                           WifiInfo(BSSID2, 0, "", "", 0))
@@ -128,8 +131,10 @@ class NaturalTriggerJitaiTest {
 
     @Test
     fun testActivityGeofenceTrigger() {
-        val positive = SensorDataSet(time = 0, userName = USER, activity = listOf(SIT_CONFIDENT))
-        val negative = SensorDataSet(time = 0, userName = USER, activity = listOf(SIT_CONFIDENT))
+        val positive = SensorDataSet(time = ZERO_TIME, userName = USER,
+                                     activity = listOf(SIT_CONFIDENT))
+        val negative = SensorDataSet(time = ZERO_TIME, userName = USER,
+                                     activity = listOf(SIT_CONFIDENT))
         positive.gps = Catimini_Location
         negative.gps = Buynormand_Location
         setupDB(positive, negative)
@@ -155,12 +160,10 @@ class NaturalTriggerJitaiTest {
 
     @Test
     fun testTimeActivityGeofenceTrigger() {
-        val zeroTime = TimeUnit.NANOSECONDS.toMillis(LocalTime.of(0, 0).toNanoOfDay())
-        val fiftyMinutesTime = TimeUnit.NANOSECONDS.toMillis(LocalTime.of(0, 50).toNanoOfDay())
-        val positive = SensorDataSet(time = zeroTime,
+        val positive = SensorDataSet(time = ZERO_TIME,
                                      userName = USER,
                                      activity = listOf(SIT_CONFIDENT))
-        val negative = SensorDataSet(time = zeroTime,
+        val negative = SensorDataSet(time = ZERO_TIME,
                                      userName = USER,
                                      activity = listOf(SIT_CONFIDENT))
         positive.gps = Catimini_Location
@@ -185,27 +188,29 @@ class NaturalTriggerJitaiTest {
         val jitai = TestNaturalTriggerJitai(-1,
                                             context,
                                             activityGeofenceTimeNaturalTriggerModel)
-        for (i in zeroTime..fiftyMinutesTime step FIVE_SECONDS) {
-            val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
+        for (i in ZERO_TIME..FIFTY_MINUTES_TIME step N_SECONDS) {
+            val sensorDataSet = db.getSensorDataSets(i, i + N_SECONDS).first()
             //match every 5 minutes
             val match = jitai.check(sensorDataSet)
-            if (sensorDataSet.time == zeroTime || sensorDataSet.time % FIVE_MINUTES != 0L)
-                Assert.assertFalse("Expected false at ${sensorDataSet.time} seconds", match)
+            val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(i), ZoneId.systemDefault())
+            if (sensorDataSet.time == ZERO_TIME || sensorDataSet.time % FIVE_MINUTES != 0L)
+                Assert.assertFalse("Expected false at ${time.minute}:${time.second}", match)
             else
-                Assert.assertTrue("Expected true at ${sensorDataSet.time} seconds", match)
+                Assert.assertTrue("Expected true at ${time.minute}:${time.second}", match)
             Log.d(TAG, "$i $match")
         }
     }
 
     fun test(jitai: TestNaturalTriggerJitai) {
-        for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
-            val sensorDataSet = db.getSensorDataSets(i, i + FIVE_SECONDS).first()
+        for (i in ZERO_TIME..FIFTY_MINUTES_TIME step N_SECONDS) {
+            val sensorDataSet = db.getSensorDataSets(i, i + 1).first()
             //match only every 5 minutes
+            val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(i), ZoneId.systemDefault())
             val match = jitai.check(sensorDataSet)
-            if (i == 0L || i % FIVE_MINUTES != 0L)
-                Assert.assertFalse("Expected false at $i seconds", match)
+            if (sensorDataSet.time == ZERO_TIME || sensorDataSet.time % FIVE_MINUTES != 0L)
+                Assert.assertFalse("Expected false at ${time.minute}:${time.second}", match)
             else
-                Assert.assertTrue("Expected true at $i seconds", match)
+                Assert.assertTrue("Expected true at ${time.minute}:${time.second}", match)
             Log.d(TAG, "$i $match")
         }
     }
@@ -213,8 +218,8 @@ class NaturalTriggerJitaiTest {
 
     private fun setupDB(positiveMatch: SensorDataSet, negativeMatch: SensorDataSet) {
         val data = mutableListOf<SensorDataSet>()
-        for (i in 0..FIVTY_MINUTES step FIVE_SECONDS) {
-            if (i == 0L || i % FIVE_MINUTES != 0L)
+        for (i in ZERO_TIME..FIFTY_MINUTES_TIME step N_SECONDS) {
+            if (i == ZERO_TIME || i % FIVE_MINUTES != 0L)
                 data.add(negativeMatch.copy(time = i))
             else
                 data.add(positiveMatch.copy(time = i))
@@ -228,10 +233,13 @@ class NaturalTriggerJitaiTest {
     private val BSSID = "DE:AD:BE:EF"
     private val BSSID2 = "DE:CA:FB:AD"
     private val TAG = this.javaClass.simpleName
+    val ZERO_TIME = TimeUtils.getDateFromString("2017-11-01:00-00-00").toInstant().toEpochMilli()
+    val FIFTY_MINUTES_TIME = TimeUtils.getDateFromString("2017-11-01:00-50-00").toInstant()
+        .toEpochMilli()
     private val FIVE_MINUTES = MINUTES.toMillis(5)
     private val FIVTY_MINUTES = MINUTES.toMillis(50)
 
-    private val FIVE_SECONDS = SECONDS.toMillis(5)
+    private val N_SECONDS = DataCollectorService.UPDATE_DELAY
 
     private val USER = "dummy"
 
