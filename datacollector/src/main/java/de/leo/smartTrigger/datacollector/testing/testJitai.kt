@@ -84,8 +84,8 @@ fun createTestNaturalTriggers(): List<NaturalTriggerModel> {
 fun geofenceDirection(geofence: MyAbstractGeofence): String =
     if (geofence.enter) "enter"
     else if (geofence.exit) "exit"
-    else if (geofence.dwellInside) "dwell inside"
-    else if (geofence.dwellOutside) "dwell outside"
+    else if (geofence.dwellInside) "dwell_inside"
+    else if (geofence.dwellOutside) "dwell_outside"
     else "unknown"
 
 fun mapActivity(activity: Int) =

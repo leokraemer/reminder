@@ -12,6 +12,7 @@ import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import de.leo.smartTrigger.datacollector.testUtil.TestDatabase
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import de.leo.smartTrigger.datacollector.ui.notifications.FullscreenJitai
+import junit.framework.Assert
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
 import org.jetbrains.anko.defaultSharedPreferences
@@ -22,9 +23,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.DateTimeFormatterBuilder
+import kotlin.math.max
 import kotlin.math.roundToInt
-
-
 
 
 @RunWith(AndroidJUnit4::class)
@@ -151,7 +151,7 @@ class RecordedDataDrivenTest {
         }
         val jitaiEvents = trigger.map { db.getJitaiEvents(it.id) }
         assertTrue(jitaiEvents.filter { it.isNotEmpty() }.size > 0)
-        linksRechtsExpectedResults.forEachIndexed {index , expected ->
+        linksRechtsExpectedResults.forEachIndexed { index, expected ->
             assertEquals(expected.id, hits[index].trigger.id)
             assertEquals(expected.hits, hits[index].hits)
             assertEquals(expected.timestamps, hits[index].timestamps)
@@ -242,6 +242,74 @@ class RecordedDataDrivenTest {
         }
         //two hits
         assertEquals(2, hits.hits)
+    }
+
+    @Test
+    fun testS8VsAsusVsJ5() {
+        val sensorDataSetsS8 = setUpDbAndGetSensorDataSets("s8TestDataKaufi.sql", 1025, 1025)
+        val triggerS8 = testDb.getAllActiveNaturalTriggerJitai()
+        val jitaiEventsS8 = triggerS8.map { db.getJitaiEvents(it.id) }
+        TestDatabase.reset()
+        val sensorDataSetsAsus = setUpDbAndGetSensorDataSets("asusTestDataKaufi.sql", 1025, 1025)
+        val triggerAsus = testDb.getAllActiveNaturalTriggerJitai()
+        val jitaiEventsAsus = triggerS8.map { db.getJitaiEvents(it.id) }
+        TestDatabase.reset()
+        val sensorDataSetsJ5 = setUpDbAndGetSensorDataSets("j5TestDataKaufi.sql", 1025, 1025)
+        val triggerJ5 = testDb.getAllActiveNaturalTriggerJitai()
+        val jitaiEventsJ5 = triggerS8.map { db.getJitaiEvents(it.id) }
+        //sit for 120000 ms dwell inside for 300000 ms BadewannenWlan from 00:00 to 23:59
+        val hitsS8 = mutableListOf<HitResult>()
+        triggerS8.forEachIndexed { index, trigger ->
+            val hitResult = HitResult(trigger, 0)
+            sensorDataSetsS8.forEachIndexed { i, sensorData ->
+                if (trigger.check(sensorData)) {
+                    hitResult.hits++
+                    hitResult.timestamps.add(sensorData.time)
+                }
+            }
+            hitsS8.add(hitResult)
+        }
+        val hitsAsus = mutableListOf<HitResult>()
+        triggerAsus.forEachIndexed { index, trigger ->
+            val hitResult = HitResult(trigger, 0)
+            sensorDataSetsAsus.forEachIndexed { i, sensorData ->
+                if (trigger.check(sensorData)) {
+                    hitResult.hits++
+                    hitResult.timestamps.add(sensorData.time)
+                }
+            }
+            hitsAsus.add(hitResult)
+        }
+        val hitsJ5 = mutableListOf<HitResult>()
+        triggerJ5.forEachIndexed { index, trigger ->
+            val hitResult = HitResult(trigger, 0)
+            sensorDataSetsJ5.forEachIndexed { i, sensorData ->
+                if (trigger.check(sensorData)) {
+                    hitResult.hits++
+                    hitResult.timestamps.add(sensorData.time)
+                }
+            }
+            hitsJ5.add(hitResult)
+        }
+        val padding = max(max(hitsS8.fold(0) { x, it -> max(x, it.timestamps.size) }, hitsAsus
+            .fold(0) { x, it -> max(x, it.timestamps.size) }), hitsJ5.fold(0) { x, it ->
+            max(x, it.timestamps
+                .size)
+        })
+        hitsS8.forEachIndexed { index, it ->
+            Log.i("hits: ",
+                  "${it.trigger.naturalTriggerModel.ID} ${it.trigger.naturalTriggerModel} " +
+                      "s8 ${it.hits} ${it.timestamps} ${", ".repeat(padding-it.timestamps.size)}" +
+                      "asus ${hitsAsus[index].hits} ${hitsAsus[index].timestamps} ${", ".repeat
+                      (padding-hitsAsus[index].timestamps.size)}" +
+                      "j5 ${hitsJ5[index].hits} ${hitsJ5[index].timestamps}")
+            /*Assert.assertEquals(
+                "For trigger ${it.trigger.naturalTriggerModel} hits s8: ${it.hits}, asus: ${hitsAsus[index].hits}",
+                it.hits, hitsAsus[index].hits)
+            Assert.assertEquals(
+                "For trigger ${it.trigger.naturalTriggerModel} hits s8: ${it.hits}, j5: ${hitsAsus[index].hits}",
+                it.hits, hitsJ5[index].hits)*/
+        }
     }
 
 

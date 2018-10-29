@@ -36,8 +36,12 @@ class TestDatabase private constructor(val dbFileName: String,
                 }
             }
 
-
-        const val NAME = "mydb.1018"
+        fun reset() {
+            synchronized(this) {
+                INSTANCE?.db?.close()
+                INSTANCE = null
+            }
+        }
     }
 
 

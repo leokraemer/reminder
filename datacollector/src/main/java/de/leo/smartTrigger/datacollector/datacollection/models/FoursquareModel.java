@@ -30,7 +30,6 @@ public class FoursquareModel {
         this.address = address;
         this.country = country;
         this.setCategory(category);
-
     }
 
     public FoursquareModel() {
