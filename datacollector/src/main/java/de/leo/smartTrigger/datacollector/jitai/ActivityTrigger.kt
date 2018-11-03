@@ -12,7 +12,7 @@ open class ActivityTrigger(open val activities: List<DetectedActivity>, open val
     Trigger {
 
     //in percent
-    open val confidenceThreshold = 20
+    open val confidenceThreshold = 30
     open var lastTime: Long = Long.MAX_VALUE
 
     override fun reset(sensorData: SensorDataSet) {

@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+
 import de.leo.smartTrigger.datacollector.R;
 
 public class RadarOverlayView extends LinearLayout {

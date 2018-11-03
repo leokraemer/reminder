@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorprimary20"
+    android:theme="@style/AppBaseTheme.Light.Fullscreen">
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:cropToPadding="false"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/header4_scaled" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/messageCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:minHeight="170dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/goalCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="32dp"
+        android:minHeight="170dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/play"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/messageCard">
+
+    </android.support.v7.widget.CardView>
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/snooze"
+        style="@style/CheckableImageViewStyle"
+        android:src="@drawable/ic_schedule_black_48dp"
+        app:layout_constraintBottom_toTopOf="@+id/snoozetext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/close" />
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/play"
+        style="@style/CheckableImageViewStyle"
+        android:src="@drawable/play_green"
+        app:layout_constraintEnd_toStartOf="@+id/close"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/close" />
+
+    <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
+        android:id="@+id/close"
+        style="@style/CheckableImageViewStyle"
+        android:src="@drawable/exit_notification"
+        app:layout_constraintEnd_toStartOf="@+id/snooze"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/play"
+        app:layout_constraintTop_toTopOf="@+id/snooze" />
+
+    <TextView
+        android:id="@+id/goal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:autoSizeTextType="uniform"
+        android:elevation="7dp"
+        android:gravity="center"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/goalCard"
+        app:layout_constraintEnd_toEndOf="@+id/goalCard"
+        app:layout_constraintStart_toStartOf="@+id/goalCard"
+        app:layout_constraintTop_toTopOf="@+id/goalCard"
+        tools:text="Ich möchte nach dem Mittagessen einen Spaziergang machen." />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="8dp"
+        android:autoSizeTextType="uniform"
+        android:elevation="8dp"
+        android:gravity="center"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/messageCard"
+        app:layout_constraintEnd_toEndOf="@+id/messageCard"
+        app:layout_constraintStart_toStartOf="@+id/messageCard"
+        app:layout_constraintTop_toTopOf="@+id/messageCard"
+        tools:text="Steh auf du Sack!" />
+
+    <TextView
+        android:id="@+id/playtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ja, mach ich!"
+        app:layout_constraintEnd_toEndOf="@+id/play"
+        app:layout_constraintStart_toStartOf="@+id/play"
+        app:layout_constraintTop_toBottomOf="@+id/play" />
+
+    <TextView
+        android:id="@+id/closetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nicht jetzt."
+        app:layout_constraintEnd_toEndOf="@+id/close"
+        app:layout_constraintStart_toStartOf="@+id/close"
+        app:layout_constraintTop_toBottomOf="@+id/close" />
+
+    <TextView
+        android:id="@+id/snoozetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_horizontal"
+        android:text="Snooze\n15 Minuten"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/snooze"
+        app:layout_constraintStart_toStartOf="@+id/snooze" />
+
+</android.support.constraint.ConstraintLayout>

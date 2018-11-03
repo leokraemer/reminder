@@ -9,9 +9,9 @@
         layout="@layout/naturaltriggerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/situation" />
@@ -47,14 +47,14 @@
             android:layout_marginRight="8dp"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Gar nicht"
-            android:textColor="#000000" />
+            android:text="Gar nicht" />
 
         <RadioButton
             android:id="@+id/strong_disagree1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:checked="true"
             android:gravity="center"
             android:padding="2dp"
             app:layout_constraintEnd_toStartOf="@+id/disagree1"
@@ -114,16 +114,15 @@
             android:layout_marginLeft="8dp"
             android:gravity="right|center"
             android:padding="2dp"
-            android:text="Perfekt"
-            android:textColor="#000000" />
+            android:text="Perfekt" />
     </RadioGroup>
 
     <View
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -160,8 +159,7 @@
             android:layout_marginRight="8dp"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Zu früh"
-            android:textColor="#000000" />
+            android:text="Zu früh" />
 
 
         <RadioButton
@@ -227,7 +225,6 @@
             android:gravity="center"
             android:padding="2dp"
             android:text="Zu spät"
-            android:textColor="#000000"
             app:layout_constraintBottom_toTopOf="@+id/agree"
             app:layout_constraintEnd_toEndOf="@+id/agree"
             app:layout_constraintStart_toStartOf="@+id/agree" />
@@ -238,8 +235,8 @@
         android:id="@+id/divider2"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

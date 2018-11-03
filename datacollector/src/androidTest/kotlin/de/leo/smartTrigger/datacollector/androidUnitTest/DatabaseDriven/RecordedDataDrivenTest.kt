@@ -152,9 +152,12 @@ class RecordedDataDrivenTest {
         val jitaiEvents = trigger.map { db.getJitaiEvents(it.id) }
         assertTrue(jitaiEvents.filter { it.isNotEmpty() }.size > 0)
         linksRechtsExpectedResults.forEachIndexed { index, expected ->
-            assertEquals(expected.id, hits[index].trigger.id)
-            assertEquals(expected.hits, hits[index].hits)
-            assertEquals(expected.timestamps, hits[index].timestamps)
+            assertEquals("${hits[index].trigger.naturalTriggerModel} at ${expected.timestamps}",
+                         expected.id, hits[index].trigger.id)
+            assertEquals("${hits[index].trigger.naturalTriggerModel} at ${expected.timestamps}",
+                         expected.hits, hits[index].hits)
+            assertEquals("${hits[index].trigger.naturalTriggerModel} at ${expected.timestamps}",
+                         expected.timestamps, hits[index].timestamps)
         }
     }
 
@@ -299,9 +302,9 @@ class RecordedDataDrivenTest {
         hitsS8.forEachIndexed { index, it ->
             Log.i("hits: ",
                   "${it.trigger.naturalTriggerModel.ID} ${it.trigger.naturalTriggerModel} " +
-                      "s8 ${it.hits} ${it.timestamps} ${", ".repeat(padding-it.timestamps.size)}" +
+                      "s8 ${it.hits} ${it.timestamps} ${", ".repeat(padding - it.timestamps.size)}" +
                       "asus ${hitsAsus[index].hits} ${hitsAsus[index].timestamps} ${", ".repeat
-                      (padding-hitsAsus[index].timestamps.size)}" +
+                      (padding - hitsAsus[index].timestamps.size)}" +
                       "j5 ${hitsJ5[index].hits} ${hitsJ5[index].timestamps}")
             /*Assert.assertEquals(
                 "For trigger ${it.trigger.naturalTriggerModel} hits s8: ${it.hits}, asus: ${hitsAsus[index].hits}",

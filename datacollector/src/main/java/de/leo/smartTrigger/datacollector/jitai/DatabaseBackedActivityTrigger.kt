@@ -20,8 +20,6 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
         lastTime = 0L
     }
 
-    //in percent
-    override val confidenceThreshold = 20
     private lateinit var db: JitaiDatabase
 
     private val errorMargin = DataCollectorService.UPDATE_DELAY

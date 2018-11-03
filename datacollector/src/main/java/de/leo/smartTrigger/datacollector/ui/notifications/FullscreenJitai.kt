@@ -13,7 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
-import kotlinx.android.synthetic.main.activity_full_screen_jitai.*
+import kotlinx.android.synthetic.main.activity_full_screen_jitai_round.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class FullscreenJitai : AppCompatActivity() {
             vibrator.cancel()
         }
         setTheme(R.style.AppBaseTheme_Light_Fullscreen)
-        setContentView(R.layout.activity_full_screen_jitai)
+        setContentView(R.layout.activity_full_screen_jitai_round)
         val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
         val goalText = intent?.getStringExtra(JITAI_GOAL) ?: ""
         val messageText = intent?.getStringExtra(JITAI_MESSAGE) ?: ""
@@ -73,6 +73,7 @@ class FullscreenJitai : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+        closetext.setOnClickListener { close.performClick() }
         play.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
@@ -83,6 +84,7 @@ class FullscreenJitai : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+        playtext.setOnClickListener { play.performClick() }
         snooze.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
@@ -95,6 +97,7 @@ class FullscreenJitai : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+        snoozetext.setOnClickListener { snooze.performClick() }
     }
 
     override fun onBackPressed() {
