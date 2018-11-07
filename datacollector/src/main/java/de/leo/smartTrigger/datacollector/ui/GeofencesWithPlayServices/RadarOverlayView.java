@@ -10,8 +10,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import java.util.ArrayList;
-
 import de.leo.smartTrigger.datacollector.R;
 
 public class RadarOverlayView extends LinearLayout {
@@ -56,7 +54,6 @@ public class RadarOverlayView extends LinearLayout {
     public boolean isClickable() {
         return false;
     }
-
 
 
     protected void createWindowFrame() {
@@ -108,6 +105,7 @@ public class RadarOverlayView extends LinearLayout {
     }
 
     private float MIN_RADIUS = 3f;
+
     public void setRadius(float value) {
         if (value < MIN_RADIUS)
             value = MIN_RADIUS;

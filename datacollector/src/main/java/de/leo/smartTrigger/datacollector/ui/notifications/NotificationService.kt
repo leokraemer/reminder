@@ -214,8 +214,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setWhen(0)
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
-                .setSmallIcon(R.drawable.reminder_ico)
-                .setColor(parseColor("blue"))
+                .setSmallIcon(R.drawable.ic_reminder_notification)
+                .setColor(resources.getColor(R.color.green_800))
                 .addAction(R.drawable.check, "Ja", PendingIntent
                     .getService(this,
                                 TRIGGERNOTIFICATIONIDMODIFYER + id,
@@ -287,7 +287,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setSound(alarmSound)
                 .setVibrate(longArrayOf(0L, 150L, 50L, 150L, 50L, 150L))
                 .setContentText(message)
-                .setSmallIcon(R.drawable.reminder_ico)
+                .setSmallIcon(R.drawable.ic_reminder_notification)
+                .setColor(resources.getColor(R.color.green_800))
             mNotificationManager.notify(NOTIFICATIONIDMODIFYER + id, mNotifyBuilder.build())
         }
     }
@@ -303,7 +304,8 @@ class NotificationService : IntentService("NotificationIntentService") {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setWhen(0)
                 .setContentText("Setzen sie sich ihr Ziel für heute")
-                .setSmallIcon(R.drawable.reminder_white)
+                .setSmallIcon(R.drawable.ic_reminder_notification)
+                .setColor(resources.getColor(R.color.green_800))
                 .setContentIntent(PendingIntent.getActivity(this,
                                                             DAILY_REMINDER_REQUEST_CODE,
                                                             createIntent(),

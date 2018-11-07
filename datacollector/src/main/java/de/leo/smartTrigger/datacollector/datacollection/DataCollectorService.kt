@@ -411,7 +411,8 @@ class DataCollectorService : Service(),
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentText("Reminder service is running.")
-            .setSmallIcon(R.drawable.reminder_white)
+            .setSmallIcon(R.drawable.ic_reminder_notification)
+            .setColor(resources.getColor(R.color.green_800))
             .setPriority(NotificationCompat.PRIORITY_LOW)
         startForeground(notificationID, mNotifyBuilder.build())
     }

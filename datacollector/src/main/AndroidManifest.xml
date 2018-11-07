@@ -78,7 +78,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GOOGLE_MAPS_API_KEY" />
-        <service android:name="de.leo.smartTrigger.datacollector.ui.GeofencesWithPlayServices.GeofenceTransitionsIntentService" />
     </application>
 
 </manifest>
