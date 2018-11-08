@@ -39,7 +39,7 @@ object Constants {
      * For this sample, geofences expire after twelve hours.
      */
     internal val GEOFENCE_EXPIRATION_IN_MILLISECONDS =
-            GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000
+        GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000
     internal val GEOFENCE_RADIUS_IN_METERS = 100f // 100m
 
     /**

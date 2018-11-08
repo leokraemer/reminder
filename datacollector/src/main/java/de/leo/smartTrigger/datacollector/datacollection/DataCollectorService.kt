@@ -193,7 +193,7 @@ class DataCollectorService : Service(),
         wifiScanner = null
     }
 
-    private fun startScheduledUpdate(updateDelay : Long) {
+    private fun startScheduledUpdate(updateDelay: Long) {
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {

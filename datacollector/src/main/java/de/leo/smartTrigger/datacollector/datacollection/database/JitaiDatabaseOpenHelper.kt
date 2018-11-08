@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.location.Location
 import android.util.Log
-import android.widget.TableLayout
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
 import com.google.gson.GsonBuilder

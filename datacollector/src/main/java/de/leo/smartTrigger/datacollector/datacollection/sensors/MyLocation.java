@@ -13,15 +13,13 @@ import java.util.concurrent.TimeUnit;
  * Created by Yunlong on 3/2/2016.
  */
 public class MyLocation {
-    MyLocationListener myLocationListener;
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000 * 5; //
-
     private static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
-
     public Location currentBestLocation = null;
+    MyLocationListener myLocationListener;
     private LocationManager locationManager;
     private LocationListener locationListener;
 

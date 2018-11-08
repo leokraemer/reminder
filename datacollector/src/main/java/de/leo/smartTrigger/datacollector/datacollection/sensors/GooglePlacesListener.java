@@ -7,5 +7,5 @@ import java.util.HashMap;
  */
 
 public interface GooglePlacesListener {
-    void onReceivedPlaces(HashMap<String,Float> places);
+    void onReceivedPlaces(HashMap<String, Float> places);
 }

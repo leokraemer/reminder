@@ -10,79 +10,78 @@ import android.util.TypedValue;
 
 /**
  * seekbar background with text on it.
- * 
+ *
  * @author sazonov-adm
- * 
  */
 public class CustomThumbDrawable extends Drawable {
-	/**
-	 * paints.
-	 */
-	private Paint circlePaint;
-	private Context mContext;
-	private float mRadius;
+    /**
+     * paints.
+     */
+    private Paint circlePaint;
+    private Context mContext;
+    private float mRadius;
 
-	public CustomThumbDrawable(Context context, int color) {
-		mContext = context;
-		mRadius = toPix(15);
-		setColor(color);
-	}
+    public CustomThumbDrawable(Context context, int color) {
+        mContext = context;
+        mRadius = toPix(15);
+        setColor(color);
+    }
 
-	public void setColor(int color) {
-		circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		//circlePaint.setColor((0xA0 << 24) + (color & 0x00FFFFFF));
-		circlePaint.setColor((0xFF << 24) + (color & 0x00FFFFFF));
-		invalidateSelf();
-	}
-	
-	public float getRadius() {
-		return mRadius;
-	}
+    public void setColor(int color) {
+        circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //circlePaint.setColor((0xA0 << 24) + (color & 0x00FFFFFF));
+        circlePaint.setColor((0xFF << 24) + (color & 0x00FFFFFF));
+        invalidateSelf();
+    }
 
-	@Override
-	protected final boolean onStateChange(int[] state) {
-		invalidateSelf();
-		return false;
-	}
+    public float getRadius() {
+        return mRadius;
+    }
 
-	@Override
-	public final boolean isStateful() {
-		return true;
-	}
+    @Override
+    protected final boolean onStateChange(int[] state) {
+        invalidateSelf();
+        return false;
+    }
 
-	@Override
-	public final void draw(Canvas canvas) {
-		int height = this.getBounds().centerY();
-        height = (int)CustomDrawable.yLine;
-		int width = this.getBounds().centerX();
-		canvas.drawCircle(width + mRadius, height, mRadius, circlePaint);
-	}
+    @Override
+    public final boolean isStateful() {
+        return true;
+    }
 
-	@Override
-	public int getIntrinsicHeight() {
-		return (int) (mRadius * 2);
-	}
+    @Override
+    public final void draw(Canvas canvas) {
+        int height = this.getBounds().centerY();
+        height = (int) CustomDrawable.yLine;
+        int width = this.getBounds().centerX();
+        canvas.drawCircle(width + mRadius, height, mRadius, circlePaint);
+    }
 
-	@Override
-	public int getIntrinsicWidth() {
-		return (int) (mRadius * 2);
-	}
+    @Override
+    public int getIntrinsicHeight() {
+        return (int) (mRadius * 2);
+    }
 
-	@Override
-	public final int getOpacity() {
-		return PixelFormat.TRANSLUCENT;
-	}
+    @Override
+    public int getIntrinsicWidth() {
+        return (int) (mRadius * 2);
+    }
 
-	@Override
-	public void setAlpha(int alpha) {
-	}
+    @Override
+    public final int getOpacity() {
+        return PixelFormat.TRANSLUCENT;
+    }
 
-	@Override
-	public void setColorFilter(ColorFilter cf) {
-	}
+    @Override
+    public void setAlpha(int alpha) {
+    }
 
-	private float toPix(int size) {
-		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,
-				mContext.getResources().getDisplayMetrics());
-	}
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+    }
+
+    private float toPix(int size) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, size,
+                mContext.getResources().getDisplayMetrics());
+    }
 }

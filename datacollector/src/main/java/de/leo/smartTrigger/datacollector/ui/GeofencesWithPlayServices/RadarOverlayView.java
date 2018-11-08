@@ -13,11 +13,12 @@ import android.widget.LinearLayout;
 import de.leo.smartTrigger.datacollector.R;
 
 public class RadarOverlayView extends LinearLayout {
-    private Bitmap windowFrame;
     Bitmap centerBitmap;
+    private Bitmap windowFrame;
     private float radius = 0f;
     private int centerX = 0;
     private int centerY = 0;
+    private float MIN_RADIUS = 3f;
 
     public RadarOverlayView(Context context) {
         super(context);
@@ -54,7 +55,6 @@ public class RadarOverlayView extends LinearLayout {
     public boolean isClickable() {
         return false;
     }
-
 
     protected void createWindowFrame() {
         windowFrame = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
@@ -103,8 +103,6 @@ public class RadarOverlayView extends LinearLayout {
     public float getRadius() {
         return radius;
     }
-
-    private float MIN_RADIUS = 3f;
 
     public void setRadius(float value) {
         if (value < MIN_RADIUS)

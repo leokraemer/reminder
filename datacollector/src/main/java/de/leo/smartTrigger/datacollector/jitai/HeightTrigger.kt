@@ -12,16 +12,16 @@ const val g = 9.81F
 const val densityHg = 13.595F
 
 fun preassureDifferentialToHeightDifferential(preassureDifferential: Float): Float =
-        preassureDifferential * PaTommHg / (g * densityHg)
+    preassureDifferential * PaTommHg / (g * densityHg)
 
 fun heightDifferentialToPressureDifferential(heightDifferential: Double): Double =
-        heightDifferential * g * densityHg / PaTommHg
+    heightDifferential * g * densityHg / PaTommHg
 
 /**
  * Created by Leo on 11.01.2018.
  */
 class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
     @Transient
     var db: JitaiDatabase? = null
 
@@ -30,7 +30,7 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
             db = JitaiDatabase.getInstance(context)
         return (db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                      TABLE_REALTIME_AIR)
-                .any { v -> v.second > threshold })
+            .any { v -> v.second > threshold })
     }
 
     override fun reset(sensorData: SensorDataSet) {
@@ -40,7 +40,7 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
 
 
 class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
     @Transient
     var db: JitaiDatabase? = null
 
@@ -48,8 +48,8 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
         if (db == null)
             db = JitaiDatabase.getInstance(context)
         return db!!.getSensorValues(sensorData.time - interval, sensorData.time,
-                                     TABLE_REALTIME_AIR)
-                .any { v -> v.second < threshold }
+                                    TABLE_REALTIME_AIR)
+            .any { v -> v.second < threshold }
     }
 
     override fun reset(sensorData: SensorDataSet) {

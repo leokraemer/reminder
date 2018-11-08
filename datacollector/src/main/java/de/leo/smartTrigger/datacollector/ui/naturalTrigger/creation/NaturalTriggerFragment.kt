@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment
  */
 open abstract class NaturalTriggerFragment : Fragment() {
     var model: NaturalTriggerModel? = null
-        set(value){
-            if(field != value){
+        set(value) {
+            if (field != value) {
                 field = value
                 updateView()
             }

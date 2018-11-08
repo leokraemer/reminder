@@ -2,7 +2,7 @@ package de.leo.smartTrigger.datacollector.testUtil
 
 import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.IdlingResource.ResourceCallback
-import androidx.core.view.ViewPager
+import androidx.viewpager.widget.ViewPager
 
 
 class ViewPagerIdlingResource(viewPager: ViewPager, private val mName: String) : IdlingResource {

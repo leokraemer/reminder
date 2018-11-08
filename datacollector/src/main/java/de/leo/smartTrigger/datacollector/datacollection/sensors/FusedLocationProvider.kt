@@ -1,7 +1,6 @@
 package de.leo.smartTrigger.datacollector.datacollection.sensors
 
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.content.IntentSender
 import android.os.Handler

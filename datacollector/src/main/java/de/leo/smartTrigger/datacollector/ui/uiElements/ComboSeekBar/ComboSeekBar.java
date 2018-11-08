@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.appcompat.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,6 +14,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.widget.AppCompatSeekBar;
 import de.leo.smartTrigger.datacollector.R;
 
 
@@ -72,7 +72,7 @@ public class ComboSeekBar extends AppCompatSeekBar {
         setThumb(mThumb);
         mDots = new ArrayList<Dot>();
         setProgressDrawable(new CustomDrawable(this.getProgressDrawable(), this, mThumb.getRadius
-				(), mDots, mColor, mTextSize, mIsMultiline, mPadding));
+                (), mDots, mColor, mTextSize, mIsMultiline, mPadding));
 
         setPadding(0, 0, 0, 0);
     }
@@ -90,13 +90,13 @@ public class ComboSeekBar extends AppCompatSeekBar {
         mColor = 0xFF808285;
         mThumb.setColor(color);
         setProgressDrawable(new CustomDrawable((CustomDrawable) this.getProgressDrawable(), this,
-				mThumb.getRadius(), mDots, mColor, mTextSize, mIsMultiline, mPadding));
+                mThumb.getRadius(), mDots, mColor, mTextSize, mIsMultiline, mPadding));
     }
 
     public void setTextSize(int textSize) {
         mTextSize = textSize;
         setProgressDrawable(new CustomDrawable((CustomDrawable) this.getProgressDrawable(), this,
-				mThumb.getRadius(), mDots, mColor, textSize, mIsMultiline, mPadding));
+                mThumb.getRadius(), mDots, mColor, textSize, mIsMultiline, mPadding));
         Log.d(t, "setTextSize------->" + textSize);
     }
 

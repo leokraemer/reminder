@@ -1,13 +1,5 @@
 package de.leo.smartTrigger.datacollector.datacollection.models;
 
-import org.threeten.bp.DayOfWeek;
-import org.threeten.bp.Duration;
-import org.threeten.bp.LocalDate;
-import org.threeten.bp.LocalDateTime;
-import org.threeten.bp.LocalTime;
-
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by Yunlong on 3/3/2016.
  */
@@ -57,33 +49,28 @@ public class FoursquareModel {
         }
     }
 
-
-    public void setCategoryIcon(String icon) {
-        this.icon = icon;
-    }
-
     public String getCategoryIcon() {
         return this.icon;
     }
 
-    public void setCategoryID(String category_id) {
-        this.category_id = category_id;
+    public void setCategoryIcon(String icon) {
+        this.icon = icon;
     }
 
     public String getCategoryID() {
         return this.category_id;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCategoryID(String category_id) {
+        this.category_id = category_id;
     }
 
     public String getAddress() {
         return this.address;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getCountry() {
@@ -91,30 +78,32 @@ public class FoursquareModel {
 
     }
 
-
-    public void setLongtitude(String longtitude) {
-        this.longtitude = longtitude;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public double getLongtitude() {
         return Double.parseDouble(this.longtitude);
     }
 
-
-    public void setLatitude(String latitude) {
-        this.latitude = latitude;
+    public void setLongtitude(String longtitude) {
+        this.longtitude = longtitude;
     }
 
     public double getLatitude() {
         return Double.parseDouble(this.latitude);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCategory() {

@@ -8,7 +8,7 @@ import com.util.DistanceFunctionFactory
  * Created by Leo on 16.01.2018.
  */
 class RealTimeDataTrigger(reference: MutableCollection<Pair<Long, FloatArray>>,
-                         private var threshold: Double) {
+                          private var threshold: Double) {
     companion object {
         val DISTANCE_FUNCTION = DistanceFunctionFactory.getDistFnByName("EuclideanDistance")
         val SEARCH_RADIUS = 3
@@ -31,7 +31,7 @@ class RealTimeDataTrigger(reference: MutableCollection<Pair<Long, FloatArray>>,
         return threshold < getDistance3D(referenceTimeSeries, getTimeSeries(sensorData))
     }
 
-    fun getSize(){
+    fun getSize() {
         referenceTimeSeries.size()
     }
 

@@ -32,15 +32,15 @@ class MotionSensors(context: Context) {
 
         override fun onSensorChanged(event: SensorEvent) {
             when (event.sensor.type) {
-                Sensor.TYPE_ACCELEROMETER -> accData.addLast(
-                        Pair(System.currentTimeMillis(), event.values.copyOf()))
-                Sensor.TYPE_GYROSCOPE -> gyroData.addLast(
-                        Pair(System.currentTimeMillis(), event.values.copyOf()))
+                Sensor.TYPE_ACCELEROMETER   -> accData.addLast(
+                    Pair(System.currentTimeMillis(), event.values.copyOf()))
+                Sensor.TYPE_GYROSCOPE       -> gyroData.addLast(
+                    Pair(System.currentTimeMillis(), event.values.copyOf()))
                 Sensor.TYPE_ROTATION_VECTOR -> rotData.addLast(
-                        Pair(System.currentTimeMillis(), event.values.copyOf()))
-                Sensor.TYPE_MAGNETIC_FIELD -> magData.addLast(
-                        Pair(System.currentTimeMillis(), event.values.copyOf()))
-                else -> {
+                    Pair(System.currentTimeMillis(), event.values.copyOf()))
+                Sensor.TYPE_MAGNETIC_FIELD  -> magData.addLast(
+                    Pair(System.currentTimeMillis(), event.values.copyOf()))
+                else                        -> {
                 }
             }
         }
@@ -79,13 +79,13 @@ class MotionSensors(context: Context) {
         mSensorMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
 
         if (GYRO) mSensorManager.registerListener(myListener, mSensorGyro, SensorManager
-                .SENSOR_DELAY_GAME)
+            .SENSOR_DELAY_GAME)
         if (ACC) mSensorManager.registerListener(myListener, mSensorAcc, SensorManager
-                .SENSOR_DELAY_GAME)
+            .SENSOR_DELAY_GAME)
         if (ROT) mSensorManager.registerListener(myListener, mSensorRotation, SensorManager
-                .SENSOR_DELAY_GAME)
+            .SENSOR_DELAY_GAME)
         if (MAG) mSensorManager.registerListener(myListener, mSensorMagnetometer, SensorManager
-                .SENSOR_DELAY_GAME)
+            .SENSOR_DELAY_GAME)
     }
 
     fun stopMotionSensor() {

@@ -17,7 +17,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import de.leo.smartTrigger.datacollector.R
-import de.leo.smartTrigger.datacollector.datacollection.models.*
+import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
+import de.leo.smartTrigger.datacollector.datacollection.models.Weather
+import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.WeatherCaller
 import de.leo.smartTrigger.datacollector.jitai.JitaiEvent
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence

@@ -1,16 +1,11 @@
 package de.leo.smartTrigger.datacollector.ui.uiElements
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Checkable
 import android.widget.ImageView
-import de.leo.smartTrigger.datacollector.R
-import java.util.*
-import java.util.stream.Stream
 
 /**
  * Created by Leo on 01.03.2018.

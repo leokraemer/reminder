@@ -5,13 +5,12 @@ package de.leo.smartTrigger.datacollector.utils;
  */
 public class Constants {
 
-    private Constants(){
+    public static final String PACKAGE_NAME = "com.example.yunlong.datacollector.utils"; //
+    public static final String STRING_ACTION = PACKAGE_NAME + ".STRING_ACTION";
+    // Change as appropriate
+    public static final String STRING_EXTRA = PACKAGE_NAME + ".STRING_EXTRA";
+
+    private Constants() {
 
     }
-
-    public static final String PACKAGE_NAME = "com.example.yunlong.datacollector.utils"; // Change as appropriate
-
-    public static final String STRING_ACTION = PACKAGE_NAME + ".STRING_ACTION";
-
-    public static final String STRING_EXTRA = PACKAGE_NAME + ".STRING_EXTRA";
 }

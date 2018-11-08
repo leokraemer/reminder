@@ -122,7 +122,7 @@ class NaturalTriggerModel(var ID: Int = -1) {
 
     override fun toString(): String {
         val fence = wifi ?: geofence ?: everywhere_geofence()
-        return "${mapActivity(activity.firstOrNull() ?: -1 )} for ${timeInActivity} ms " +
+        return "${mapActivity(activity.firstOrNull() ?: -1)} for ${timeInActivity} ms " +
             "${geofenceDirection(fence)} for ${fence.loiteringDelay} ms " +
             "${fence.name} " + "from ${beginTime.toString()} to ${endTime.toString()}"
     }

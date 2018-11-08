@@ -8,14 +8,14 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
  * Created by Leo on 11.01.2018.
  */
 class ScreenStateTrigger(screenState: String, val interval: Long) :
-        Trigger {
+    Trigger {
     private val isScreenOn: Boolean
 
     init {
         when (screenState) {
             SCREEN_OFF -> isScreenOn = false
-            SCREEN_ON -> isScreenOn = true
-            else -> isScreenOn = false
+            SCREEN_ON  -> isScreenOn = true
+            else       -> isScreenOn = false
         }
     }
 

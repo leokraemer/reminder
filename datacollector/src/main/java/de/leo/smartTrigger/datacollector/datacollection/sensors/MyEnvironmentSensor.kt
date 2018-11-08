@@ -29,12 +29,17 @@ class MyEnvironmentSensor(private val context: Context) : SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent) {
         when (event.sensor.type) {
-            Sensor.TYPE_LIGHT -> light.addLast(Pair(System.currentTimeMillis(), event.values[0]))
-            Sensor.TYPE_AMBIENT_TEMPERATURE -> temperature.addLast(Pair(System.currentTimeMillis(), event.values[0]))
-            Sensor.TYPE_PRESSURE -> pressure.addLast(Pair(System.currentTimeMillis(), event.values[0]))
-            Sensor.TYPE_RELATIVE_HUMIDITY -> humidity.addLast(Pair(System.currentTimeMillis(), event.values[0]))
-            Sensor.TYPE_PROXIMITY -> proximity.addLast(Pair(System.currentTimeMillis(), event.values[0]))
-            else -> {
+            Sensor.TYPE_LIGHT               -> light.addLast(Pair(System.currentTimeMillis(),
+                                                                  event.values[0]))
+            Sensor.TYPE_AMBIENT_TEMPERATURE -> temperature.addLast(Pair(System.currentTimeMillis(),
+                                                                        event.values[0]))
+            Sensor.TYPE_PRESSURE            -> pressure.addLast(Pair(System.currentTimeMillis(),
+                                                                     event.values[0]))
+            Sensor.TYPE_RELATIVE_HUMIDITY   -> humidity.addLast(Pair(System.currentTimeMillis(),
+                                                                     event.values[0]))
+            Sensor.TYPE_PROXIMITY           -> proximity.addLast(Pair(System.currentTimeMillis(),
+                                                                      event.values[0]))
+            else                            -> {
             }
         }
     }
@@ -88,7 +93,7 @@ class MyEnvironmentSensor(private val context: Context) : SensorEventListener {
         mSensorManager!!.registerListener(this, mLight, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager!!.registerListener(this, mAmbientPressure, SensorManager.SENSOR_DELAY_NORMAL)
         mSensorManager!!.registerListener(this, mAmbientTemperature, SensorManager
-                .SENSOR_DELAY_NORMAL)
+            .SENSOR_DELAY_NORMAL)
         mSensorManager!!.registerListener(this,
                                           mRelativeHumidity,
                                           SensorManager.SENSOR_DELAY_NORMAL)

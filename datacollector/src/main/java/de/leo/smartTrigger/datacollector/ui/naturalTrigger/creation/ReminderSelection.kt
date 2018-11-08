@@ -23,6 +23,7 @@ class ReminderSelection : NaturalTriggerFragment() {
         super.onViewCreated(view, savedInstanceState)
         updateView()
     }
+
     override fun updateView() {
         situation_text?.setText(model?.situation ?: "")
     }

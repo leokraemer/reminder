@@ -9,7 +9,7 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
  * Created by Leo on 11.01.2018.
  */
 class DimmerThanTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
     @Transient
     var db: JitaiDatabase? = null
 
@@ -18,7 +18,7 @@ class DimmerThanTrigger(val threshold: Double, val interval: Long) :
             db = JitaiDatabase.getInstance(context)
         return !(db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                       TABLE_REALTIME_LIGHT)
-                .any { v -> v.second > threshold })
+            .any { v -> v.second > threshold })
     }
 
     override fun reset(sensorData: SensorDataSet) {
@@ -28,7 +28,7 @@ class DimmerThanTrigger(val threshold: Double, val interval: Long) :
 
 
 class BrighterThanTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
     @Transient
     var db: JitaiDatabase? = null
 
@@ -37,7 +37,7 @@ class BrighterThanTrigger(val threshold: Double, val interval: Long) :
             db = JitaiDatabase.getInstance(context)
         return db!!.getSensorValues(sensorData.time - interval, sensorData.time,
                                     TABLE_REALTIME_LIGHT)
-                .any { v -> v.second > threshold }
+            .any { v -> v.second > threshold }
     }
 
     override fun reset(sensorData: SensorDataSet) {

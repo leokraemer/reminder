@@ -39,7 +39,8 @@ class LockableViewPager : ViewPager {
         }
 
         if (height != 0) {
-            tempHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+            tempHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height,
+                                                                     View.MeasureSpec.EXACTLY)
         }
         super.onMeasure(widthMeasureSpec, tempHeightMeasureSpec)
     }

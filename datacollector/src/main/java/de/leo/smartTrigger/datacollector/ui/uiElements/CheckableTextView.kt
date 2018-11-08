@@ -6,11 +6,6 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.Checkable
 import android.widget.TextView
-import android.content.res.TypedArray
-import android.graphics.PorterDuff
-import de.leo.smartTrigger.datacollector.R
-import kotlinx.android.synthetic.main.activity_trigger_list.view.*
-import org.jetbrains.anko.attr
 
 
 /**

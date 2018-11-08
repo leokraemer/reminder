@@ -35,67 +35,9 @@ public class FoursquareCaller {
 
     public FoursquareCaller(Context context, Location location) {
         this.context = context;
-        fourSquareListener = (FourSquareListener)context;
+        fourSquareListener = (FourSquareListener) context;
         resultList = new ArrayList<FoursquareModel>();
         this.location = location;
-    }
-
-    public void findPlaces(){
-        new fourquare().execute(location);
-    }
-
-    private class fourquare extends AsyncTask<Location, Void, String> {
-
-        String temp;
-
-
-        @Override
-        protected String doInBackground(Location... location) {
-
-            if(location[0] != null) {
-                // make Call to the url
-                temp = makeCall("https://api.foursquare.com/v2/venues/search?client_id="
-                        + CLIENT_ID
-                        + "&client_secret="
-                        + CLIENT_SECRET
-                        + "&v=20130815&ll="
-                        + String.valueOf(location[0].getLatitude())
-                        + ","
-                        + String.valueOf(location[0].getLongitude()));
-                //Log.e("Link ---- > ", temp);
-            }
-            return "";
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // we can start a progress bar here
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            String name = null;
-            if (temp == null) {
-                // we have an error to the call
-                // we can also stop the progress bar
-                Log.d("foursquare","no places found");
-                name = "No place found";
-            } else {
-                // all things went right
-
-                // parseFoursquare venues search result
-                resultList = (ArrayList<FoursquareModel>) parseFoursquare(temp);
-                for(FoursquareModel f:resultList){
-                    if(name == null){
-                        name = f.getName();
-                    }else {
-                        name = name + "\n" + f.getName();
-                    }
-                }
-
-            }
-            fourSquareListener.placesFound(name);
-        }
     }
 
     public static String makeCall(String url) {
@@ -266,6 +208,64 @@ public class FoursquareCaller {
         }
         return temp;
 
+    }
+
+    public void findPlaces() {
+        new fourquare().execute(location);
+    }
+
+    private class fourquare extends AsyncTask<Location, Void, String> {
+
+        String temp;
+
+
+        @Override
+        protected String doInBackground(Location... location) {
+
+            if (location[0] != null) {
+                // make Call to the url
+                temp = makeCall("https://api.foursquare.com/v2/venues/search?client_id="
+                        + CLIENT_ID
+                        + "&client_secret="
+                        + CLIENT_SECRET
+                        + "&v=20130815&ll="
+                        + String.valueOf(location[0].getLatitude())
+                        + ","
+                        + String.valueOf(location[0].getLongitude()));
+                //Log.e("Link ---- > ", temp);
+            }
+            return "";
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // we can start a progress bar here
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            String name = null;
+            if (temp == null) {
+                // we have an error to the call
+                // we can also stop the progress bar
+                Log.d("foursquare", "no places found");
+                name = "No place found";
+            } else {
+                // all things went right
+
+                // parseFoursquare venues search result
+                resultList = (ArrayList<FoursquareModel>) parseFoursquare(temp);
+                for (FoursquareModel f : resultList) {
+                    if (name == null) {
+                        name = f.getName();
+                    } else {
+                        name = name + "\n" + f.getName();
+                    }
+                }
+
+            }
+            fourSquareListener.placesFound(name);
+        }
     }
 
 }

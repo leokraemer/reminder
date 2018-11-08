@@ -37,101 +37,20 @@ public class WeatherCaller {
         getCurrentWeather();
     }
 
+    public static Weather fromJSON(String weatherStr) {
+        Weather weather = null;
+        if (weatherStr != null) {
+            try {
+                weather = JSONWeatherParser.getWeather(weatherStr);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return weather;
+    }
+
     public void getCurrentWeather() {
         new JSONWeatherTask().execute(new String[]{city});
-    }
-
-    private class JSONWeatherTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            return (new WeatherHttpClient()).getWeatherData(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String weatherStr) {
-            super.onPostExecute(weatherStr);
-            weatherCallerListener.onReceivedWeather(weatherStr);
-            Log.d("Weather caller", "Recieved " + weatherStr);
-        }
-    }
-
-    class WeatherHttpClient {
-
-        String getWeatherData(String location) {
-            HttpURLConnection con = null;
-            InputStream is = null;
-
-            try {
-                con = (HttpURLConnection) (new URL(BASE_URL + location +
-                        "&lang=de" + "&appid=" + KEY))
-                        .openConnection();
-                con.setRequestMethod("GET");
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                con.connect();
-
-                // Let's read the response
-                StringBuffer buffer = new StringBuffer();
-                is = con.getInputStream();
-                BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                String line = null;
-                while ((line = br.readLine()) != null)
-                    buffer.append(line + "\r\n");
-
-                is.close();
-                con.disconnect();
-                return buffer.toString();
-            } catch (Throwable t) {
-                t.printStackTrace();
-            } finally {
-                try {
-                    is.close();
-                } catch (Throwable t) {
-                }
-                try {
-                    con.disconnect();
-                } catch (Throwable t) {
-                }
-            }
-
-            return null;
-
-        }
-
-        public byte[] getImage(String code) {
-            HttpURLConnection con = null;
-            InputStream is = null;
-            try {
-                con = (HttpURLConnection) (new URL(IMG_URL + code)).openConnection();
-                con.setRequestMethod("GET");
-                con.setDoInput(true);
-                con.setDoOutput(true);
-                con.connect();
-
-                // Let's read the response
-                is = con.getInputStream();
-                byte[] buffer = new byte[1024];
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                while (is.read(buffer) != -1)
-                    baos.write(buffer);
-
-                return baos.toByteArray();
-            } catch (Throwable t) {
-                t.printStackTrace();
-            } finally {
-                try {
-                    is.close();
-                } catch (Throwable t) {
-                }
-                try {
-                    con.disconnect();
-                } catch (Throwable t) {
-                }
-            }
-            return null;
-        }
     }
 
     static class JSONWeatherParser {
@@ -226,15 +145,96 @@ public class WeatherCaller {
         }
     }
 
-    public static Weather fromJSON(String weatherStr) {
-        Weather weather = null;
-        if (weatherStr != null) {
-            try {
-                weather = JSONWeatherParser.getWeather(weatherStr);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    private class JSONWeatherTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return (new WeatherHttpClient()).getWeatherData(params[0]);
         }
-        return weather;
+
+        @Override
+        protected void onPostExecute(String weatherStr) {
+            super.onPostExecute(weatherStr);
+            weatherCallerListener.onReceivedWeather(weatherStr);
+            Log.d("Weather caller", "Recieved " + weatherStr);
+        }
+    }
+
+    class WeatherHttpClient {
+
+        String getWeatherData(String location) {
+            HttpURLConnection con = null;
+            InputStream is = null;
+
+            try {
+                con = (HttpURLConnection) (new URL(BASE_URL + location +
+                        "&lang=de" + "&appid=" + KEY))
+                        .openConnection();
+                con.setRequestMethod("GET");
+                con.setDoInput(true);
+                con.setDoOutput(true);
+                con.connect();
+
+                // Let's read the response
+                StringBuffer buffer = new StringBuffer();
+                is = con.getInputStream();
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String line = null;
+                while ((line = br.readLine()) != null)
+                    buffer.append(line + "\r\n");
+
+                is.close();
+                con.disconnect();
+                return buffer.toString();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (Throwable t) {
+                }
+                try {
+                    con.disconnect();
+                } catch (Throwable t) {
+                }
+            }
+
+            return null;
+
+        }
+
+        public byte[] getImage(String code) {
+            HttpURLConnection con = null;
+            InputStream is = null;
+            try {
+                con = (HttpURLConnection) (new URL(IMG_URL + code)).openConnection();
+                con.setRequestMethod("GET");
+                con.setDoInput(true);
+                con.setDoOutput(true);
+                con.connect();
+
+                // Let's read the response
+                is = con.getInputStream();
+                byte[] buffer = new byte[1024];
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                while (is.read(buffer) != -1)
+                    baos.write(buffer);
+
+                return baos.toByteArray();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (Throwable t) {
+                }
+                try {
+                    con.disconnect();
+                } catch (Throwable t) {
+                }
+            }
+            return null;
+        }
     }
 }

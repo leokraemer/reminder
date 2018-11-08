@@ -73,8 +73,8 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
      * @return A PendingIntent for the IntentService that handles geofence transitions.
      */
     protected// Reuse the PendingIntent if we already have it.
-            // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-            // addGeofences() and removeGeofences().
+    // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+    // addGeofences() and removeGeofences().
     val geofencePendingIntent: PendingIntent
         get() {
             if (mGeofencePendingIntent != null) {
@@ -133,18 +133,33 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
 
     @SuppressWarnings("MissingPermission")
     protected fun addGeofence(geofenceName: String, latLng: LatLng, radius: Float) {
-        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, true, true, false,
+        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName,
+                                                                                 latLng,
+                                                                                 radius,
+                                                                                 true,
+                                                                                 true,
+                                                                                 false,
                                                                                  fiveMinutes)),
                                        geofencePendingIntent)
-                .addOnCompleteListener(this)
+            .addOnCompleteListener(this)
     }
 
     @SuppressWarnings("MissingPermission")
-    protected fun addGeofence(geofenceName: String, latLng: LatLng, radius: Float, enter: Boolean, exit: Boolean, dwell: Boolean) {
-        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName, latLng, radius, enter, exit, dwell,
+    protected fun addGeofence(geofenceName: String,
+                              latLng: LatLng,
+                              radius: Float,
+                              enter: Boolean,
+                              exit: Boolean,
+                              dwell: Boolean) {
+        mGeofencingClient.addGeofences(getGeofencingRequest(getGeofenceForLatlng(geofenceName,
+                                                                                 latLng,
+                                                                                 radius,
+                                                                                 enter,
+                                                                                 exit,
+                                                                                 dwell,
                                                                                  fiveMinutes)),
                                        geofencePendingIntent)
-                .addOnCompleteListener(this)
+            .addOnCompleteListener(this)
     }
 
     /**
@@ -170,29 +185,29 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
         val exitI = if (exit) Geofence.GEOFENCE_TRANSITION_EXIT else 0;
         val dwellI = if (dwell) Geofence.GEOFENCE_TRANSITION_DWELL else 0;
         return Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
-                .setRequestId(name)
+            // Set the request ID of the geofence. This is a string to identify this
+            // geofence.
+            .setRequestId(name)
 
-                // Set the circular region of this geofence.
-                .setCircularRegion(
-                        latLng.latitude,
-                        latLng.longitude,
-                        radius
-                )
+            // Set the circular region of this geofence.
+            .setCircularRegion(
+                latLng.latitude,
+                latLng.longitude,
+                radius
+                              )
 
-                .setLoiteringDelay(loiteringDelay.toInt())
+            .setLoiteringDelay(loiteringDelay.toInt())
 
-                // Set the expiration duration of the geofence. This geofence gets automatically
-                // removed after this period of time.
-                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+            // Set the expiration duration of the geofence. This geofence gets automatically
+            // removed after this period of time.
+            .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
 
-                // Set the transition types of interest. Alerts are only generated for these
-                // transition. We track entry and exit transitions in this sample.
-                .setTransitionTypes(enterI or exitI or dwellI)
+            // Set the transition types of interest. Alerts are only generated for these
+            // transition. We track entry and exit transitions in this sample.
+            .setTransitionTypes(enterI or exitI or dwellI)
 
-                // Create the geofence.
-                .build()
+            // Create the geofence.
+            .build()
     }
 
 
@@ -218,10 +233,10 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
     private fun showSnackbar(mainTextStringId: Int, actionStringId: Int,
                              listener: View.OnClickListener) {
         Snackbar.make(
-                findViewById(android.R.id.content),
-                getString(mainTextStringId),
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show()
+            findViewById(android.R.id.content),
+            getString(mainTextStringId),
+            Snackbar.LENGTH_INDEFINITE)
+            .setAction(getString(actionStringId), listener).show()
     }
 
     /**
@@ -229,33 +244,33 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
      */
     private fun checkPermissions(): Boolean {
         val permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
+                                                                 Manifest.permission.ACCESS_FINE_LOCATION)
         return permissionState == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermissions() {
         val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
+                                                                                         Manifest.permission.ACCESS_FINE_LOCATION)
 
         // Provide an additional rationale to the user. This would happen if the user denied the
         // request previously, but didn't check the "Don't ask again" checkbox.
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.")
             showSnackbar(R.string.permission_rationale, android.R.string.ok,
-                    View.OnClickListener {
-                        // Request permission
-                        ActivityCompat.requestPermissions(this@MainActivity,
-                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                REQUEST_PERMISSIONS_REQUEST_CODE)
-                    })
+                         View.OnClickListener {
+                             // Request permission
+                             ActivityCompat.requestPermissions(this@MainActivity,
+                                                               arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                                               REQUEST_PERMISSIONS_REQUEST_CODE)
+                         })
         } else {
             Log.i(TAG, "Requesting permission")
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
             ActivityCompat.requestPermissions(this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSIONS_REQUEST_CODE)
+                                              arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                                              REQUEST_PERMISSIONS_REQUEST_CODE)
         }
     }
 
@@ -285,16 +300,16 @@ open class MainActivity : AppCompatActivity(), OnCompleteListener<Void> {
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
                 showSnackbar(R.string.permission_denied_explanation, R.string.settings,
-                        View.OnClickListener {
-                            // Build intent that displays the App settings screen.
-                            val intent = Intent()
-                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            val uri = Uri.fromParts("package",
-                                    BuildConfig.APPLICATION_ID, null)
-                            intent.data = uri
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                        })
+                             View.OnClickListener {
+                                 // Build intent that displays the App settings screen.
+                                 val intent = Intent()
+                                 intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                 val uri = Uri.fromParts("package",
+                                                         BuildConfig.APPLICATION_ID, null)
+                                 intent.data = uri
+                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                 startActivity(intent)
+                             })
             }
         }
     }

@@ -8,7 +8,7 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
  * Created by Leo on 11.01.2018.
  */
 class LouderThanSoundTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
 
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
@@ -16,7 +16,7 @@ class LouderThanSoundTrigger(val threshold: Double, val interval: Long) :
         if (sensorData.ambientSound!! >= threshold)
             return true
         return db.getSoundData(sensorData.time - interval, sensorData.time)
-                .any { v -> v.second >= threshold }
+            .any { v -> v.second >= threshold }
     }
 
     override fun reset(sensorData: SensorDataSet) {
@@ -26,13 +26,13 @@ class LouderThanSoundTrigger(val threshold: Double, val interval: Long) :
 
 
 class LessLoudThanSoundTrigger(val threshold: Double, val interval: Long) :
-        Trigger {
+    Trigger {
 
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         val db = JitaiDatabase.getInstance(context)
         if (sensorData.ambientSound!! < threshold)
             return !(db.getSoundData(sensorData.time - interval, sensorData.time)
-                    .any { v -> v.second > threshold })
+                .any { v -> v.second > threshold })
         return false
     }
 

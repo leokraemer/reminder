@@ -8,7 +8,6 @@ import de.leo.smartTrigger.datacollector.jitai.*
 import de.leo.smartTrigger.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
-import java.time.LocalTime
 
 open class NaturalTriggerJitai(override var id: Int,
                                context: Context,

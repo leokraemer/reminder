@@ -1,7 +1,6 @@
 package de.leo.smartTrigger.datacollector.datacollection.models
 
 import android.net.wifi.ScanResult
-import android.util.Log
 
 data class WifiInfo(val BSSID: String,
                     val rssi: Int,

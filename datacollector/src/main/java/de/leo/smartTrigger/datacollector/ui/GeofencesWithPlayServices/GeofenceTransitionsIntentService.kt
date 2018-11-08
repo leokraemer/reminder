@@ -23,10 +23,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import androidx.core.app.NotificationCompat
-import androidx.core.app.TaskStackBuilder
 import android.text.TextUtils
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import de.leo.smartTrigger.datacollector.R
@@ -56,7 +56,7 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceErrorMessages.getErrorString(this,
-                    geofencingEvent.errorCode)
+                                                                    geofencingEvent.errorCode)
             Log.e(TAG, errorMessage)
             return
         }
@@ -72,7 +72,7 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
 
             // Get the transition details as a String.
             val geofenceTransitionDetails = getGeofenceTransitionDetails(geofenceTransition,
-                    triggeringGeofences)
+                                                                         triggeringGeofences)
 
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails)
@@ -91,8 +91,8 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
      * @return The transition details formatted as String.
      */
     private fun getGeofenceTransitionDetails(
-            geofenceTransition: Int,
-            triggeringGeofences: List<Geofence>): String {
+        geofenceTransition: Int,
+        triggeringGeofences: List<Geofence>): String {
 
         val geofenceTransitionString = getTransitionString(geofenceTransition)
 
@@ -124,22 +124,23 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
         stackBuilder.addNextIntent(notificationIntent)
 
         // Get a PendingIntent containing the entire back stack.
-        val notificationPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationPendingIntent = stackBuilder.getPendingIntent(0,
+                                                                      PendingIntent.FLAG_UPDATE_CURRENT)
 
         // Get a notification builder that's compatible with platform versions >= 4
         val builder = NotificationCompat.Builder(this)
 
         // Define the notification settings.
         builder.setSmallIcon(R.mipmap.ic_launcher)
-                // In a real app, you may want to use a library like Volley
-                // to decode the Bitmap.
-                .setLargeIcon(BitmapFactory.decodeResource(resources,
-                        R.mipmap.ic_launcher))
-                .setColor(Color.RED)
-                .setContentTitle(notificationDetails)
-                .setContentText(getString(R.string.geofence_transition_notification_text))
-                .setContentIntent(notificationPendingIntent)
-                .setVibrate(longArrayOf(0, 200, 100, 100, 100, 50))
+            // In a real app, you may want to use a library like Volley
+            // to decode the Bitmap.
+            .setLargeIcon(BitmapFactory.decodeResource(resources,
+                                                       R.mipmap.ic_launcher))
+            .setColor(Color.RED)
+            .setContentTitle(notificationDetails)
+            .setContentText(getString(R.string.geofence_transition_notification_text))
+            .setContentIntent(notificationPendingIntent)
+            .setVibrate(longArrayOf(0, 200, 100, 100, 100, 50))
 
         // Dismiss notification once the user touches it.
         builder.setAutoCancel(true)
@@ -160,8 +161,8 @@ class GeofenceTransitionsIntentService : IntentService(TAG) {
     private fun getTransitionString(transitionType: Int): String {
         when (transitionType) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> return getString(R.string.geofence_transition_entered)
-            Geofence.GEOFENCE_TRANSITION_EXIT -> return getString(R.string.geofence_transition_exited)
-            else -> return getString(R.string.unknown_geofence_transition)
+            Geofence.GEOFENCE_TRANSITION_EXIT  -> return getString(R.string.geofence_transition_exited)
+            else                               -> return getString(R.string.unknown_geofence_transition)
         }
     }
 

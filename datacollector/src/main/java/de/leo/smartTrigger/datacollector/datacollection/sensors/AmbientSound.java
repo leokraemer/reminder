@@ -4,11 +4,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by Yunlong on 8/8/2017.
@@ -16,8 +17,8 @@ import java.util.TimerTask;
 
 public class AmbientSound {
 
-    private MediaRecorder mRecorder = null;
     private static final String TAG = "AmbientSound";
+    private MediaRecorder mRecorder = null;
     private Context context;
     private AmbientSoundListener ambientSoundListener;
 

@@ -56,7 +56,8 @@ class TimeTrigger() : Trigger {
     override fun check(context: Context, sensorData: SensorDataSet): Boolean {
         if (timeRange == null)
             timeRange = startTime.rangeTo(endInclusiveTime)
-        val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(sensorData.time), ZoneId.systemDefault())
+        val time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(sensorData.time),
+                                           ZoneId.systemDefault())
         if (timeRange?.contains(time.toLocalTime()) == true
             && days.any { day -> day == time.dayOfWeek })
             return true

@@ -9,5 +9,6 @@ import java.util.List;
  */
 public interface MyActivityListener {
     void activityUpdate(List<DetectedActivity> activity);
+
     void stopActivityDetection();
 }

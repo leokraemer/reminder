@@ -22,10 +22,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 import de.leo.smartTrigger.datacollector.R;
 
@@ -35,14 +35,16 @@ import de.leo.smartTrigger.datacollector.R;
 public abstract class PermissionUtils {
 
     /**
-     * Requests the fine locationName permission. If a rationale with an additional explanation should
+     * Requests the fine locationName permission. If a rationale with an additional explanation
+     * should
      * be shown to the user, displays a dialog that triggers the request.
      */
     public static void requestPermission(AppCompatActivity activity, int requestId,
                                          String permission, boolean finishActivity) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             // Display a dialog with rationale.
-            PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity).show(activity.getSupportFragmentManager(), "dialog");
+            PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity).show(activity
+                    .getSupportFragmentManager(), "dialog");
         } else {
             // Location permission has not been granted yet, request it.
             ActivityCompat.requestPermissions(activity, new String[]{permission}, requestId);
@@ -57,7 +59,7 @@ public abstract class PermissionUtils {
      * @see androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
      */
     public static boolean isPermissionGranted(String[] grantPermissions, int[] grantResults,
-            String permission) {
+                                              String permission) {
         for (int i = 0; i < grantPermissions.length; i++) {
             if (permission.equals(grantPermissions[i])) {
                 return grantResults[i] == PackageManager.PERMISSION_GRANTED;
@@ -126,7 +128,8 @@ public abstract class PermissionUtils {
         private boolean mFinishActivity = false;
 
         /**
-         * Creates a new instance of a dialog displaying the rationale for the use of the locationName
+         * Creates a new instance of a dialog displaying the rationale for the use of the
+         * locationName
          * permission.
          * <p>
          * The permission is requested after clicking 'ok'.

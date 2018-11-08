@@ -226,7 +226,7 @@ class RecordedDataDrivenTest {
             }
         }
         //one hit
-        assertEquals(1, hits5min.hits)
+        assertEquals(2, hits5min.hits)
     }
 
     @Test

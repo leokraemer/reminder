@@ -1,7 +1,5 @@
 package de.leo.smartTrigger.datacollector.testing
 
-import android.text.format.Time
-import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.jitai.MyAbstractGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import de.leo.smartTrigger.datacollector.jitai.MyWifiGeofence

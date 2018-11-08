@@ -1,13 +1,12 @@
 /**
  * This is a tutorial source code
  * provided "as is" and without warranties.
- *
+ * <p>
  * For any question please visit the web site
  * http://www.survivingwithandroid.com
- *
+ * <p>
  * or write an email to
  * survivingwithandroid@gmail.com
- *
  */
 package de.leo.smartTrigger.datacollector.datacollection.models;
 
@@ -30,57 +29,68 @@ import java.io.Serializable;
  */
 public class Location implements Serializable {
 
-	private double longitude;
-	private double latitude;
-	private long sunset;
-	private long sunrise;
-	private String country;
-	private String city;
-	private double accuracy;
+    private double longitude;
+    private double latitude;
+    private long sunset;
+    private long sunrise;
+    private String country;
+    private String city;
+    private double accuracy;
 
-	public double getLongitude() {
-		return longitude;
-	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-	public double getLatitude() {
-		return latitude;
-	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}
-	public long getSunset() {
-		return sunset;
-	}
-	public void setSunset(long sunset) {
-		this.sunset = sunset;
-	}
-	public long getSunrise() {
-		return sunrise;
-	}
-	public void setSunrise(long sunrise) {
-		this.sunrise = sunrise;
-	}
-	public String getCountry() {
-		return country;
-	}
-	public void setCountry(String country) {
-		this.country = country;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public long getSunset() {
+        return sunset;
+    }
+
+    public void setSunset(long sunset) {
+        this.sunset = sunset;
+    }
+
+    public long getSunrise() {
+        return sunrise;
+    }
+
+    public void setSunrise(long sunrise) {
+        this.sunrise = sunrise;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
 
-	public double getAccuracy() {
-		return accuracy;
-	}
+    public double getAccuracy() {
+        return accuracy;
+    }
 
-	public void setAccuracy(double accuracy) {
-		this.accuracy = accuracy;
-	}
+    public void setAccuracy(double accuracy) {
+        this.accuracy = accuracy;
+    }
 }

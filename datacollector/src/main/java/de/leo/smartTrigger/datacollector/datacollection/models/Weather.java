@@ -11,7 +11,6 @@
 package de.leo.smartTrigger.datacollector.datacollection.models;
 
 import androidx.annotation.DrawableRes;
-
 import de.leo.smartTrigger.datacollector.R;
 
 /*
@@ -42,40 +41,6 @@ public class Weather {
     public Clouds clouds = new Clouds();
 
     public byte[] iconData;
-
-    public class CurrentCondition {
-        public int weatherId;
-        public String condition;
-        public String descr;
-        public String icon;
-        public float pressure;
-        public float humidity;
-    }
-
-    public class Temperature {
-        public float temp;
-        public float minTemp;
-        public float maxTemp;
-    }
-
-    public class Wind {
-        public float speed;
-        public float deg;
-    }
-
-    public class Rain {
-        public String time;
-        public float ammount;
-    }
-
-    public class Snow {
-        public String time;
-        public float ammount;
-    }
-
-    public class Clouds {
-        public int perc;
-    }
 
     // @see https://openweathermap.org/weather-conditions
     public @DrawableRes
@@ -115,6 +80,40 @@ public class Weather {
         }
         //else false
         return false;
+    }
+
+    public class CurrentCondition {
+        public int weatherId;
+        public String condition;
+        public String descr;
+        public String icon;
+        public float pressure;
+        public float humidity;
+    }
+
+    public class Temperature {
+        public float temp;
+        public float minTemp;
+        public float maxTemp;
+    }
+
+    public class Wind {
+        public float speed;
+        public float deg;
+    }
+
+    public class Rain {
+        public String time;
+        public float ammount;
+    }
+
+    public class Snow {
+        public String time;
+        public float ammount;
+    }
+
+    public class Clouds {
+        public int perc;
     }
 
 }

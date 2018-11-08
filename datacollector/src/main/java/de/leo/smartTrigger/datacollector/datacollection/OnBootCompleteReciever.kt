@@ -1,10 +1,10 @@
 package de.leo.smartTrigger.datacollector.datacollection
 
-import android.content.Intent
 import android.content.BroadcastReceiver
 import android.content.Context
-import org.jetbrains.anko.toast
+import android.content.Intent
 import android.os.Build
+import org.jetbrains.anko.toast
 
 
 class OnBootCompleteReciever : BroadcastReceiver() {
