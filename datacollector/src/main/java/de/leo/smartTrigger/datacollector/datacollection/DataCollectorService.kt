@@ -139,7 +139,7 @@ class DataCollectorService : Service(),
             //myLocation = MyLocation(this)
             if (fusedLocationProviderClient == null)
                 fusedLocationProviderClient = FusedLocationProvider(this, this)
-            fusedLocationProviderClient!!.startLocationUpdates()
+            fusedLocationProviderClient!!.startLocationUpdates(UPDATE_DELAY)
         }
         if (LOCATION_NAME_ENABLED) {
             googlePlacesCaller = GooglePlacesCaller(this)
@@ -167,7 +167,7 @@ class DataCollectorService : Service(),
         }
         wifiScanner = WifiScanner(this, this)
 
-        startScheduledUpdate()
+        startScheduledUpdate(UPDATE_DELAY)
     }
 
     override fun onCreate() {
@@ -202,14 +202,14 @@ class DataCollectorService : Service(),
         wifiScanner = null
     }
 
-    private fun startScheduledUpdate() {
+    private fun startScheduledUpdate(updateDelay : Long) {
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
                 //get the time when the update started to reduce jitter
                 val currentTime = System.currentTimeMillis()
                 //we assume that the operation finishes before it must be called again
-                handler.postDelayed(this, UPDATE_DELAY)
+                handler.postDelayed(this, updateDelay)
                 if (isRunning) {
                     uploadDataSet(currentTime)
                 }

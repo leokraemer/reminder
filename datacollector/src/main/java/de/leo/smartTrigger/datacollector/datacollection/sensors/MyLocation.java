@@ -7,6 +7,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by Yunlong on 3/2/2016.
  */
@@ -17,20 +19,18 @@ public class MyLocation {
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000 * 5; //
 
-    private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private static final long TWO_MINUTES = TimeUnit.MINUTES.toMillis(2);
 
     public Location currentBestLocation = null;
-    LocationManager locationManager;
-    LocationListener locationListener;
-    Context context;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
 
     public MyLocation(Context context) {
-        this.context = context;
-        myLocationListener = (MyLocationListener)context;
+        myLocationListener = (MyLocationListener) context;
         initLocation(context);
     }
 
-    private void initLocation(final Context context){
+    private void initLocation(final Context context) {
         // Acquire a reference to the system MyLocation Manager
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
@@ -38,17 +38,20 @@ public class MyLocation {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(android.location.Location location) {
-                if(isBetterLocation(location,currentBestLocation)) {
+                if (isBetterLocation(location, currentBestLocation)) {
                     currentBestLocation = location;
                     myLocationListener.locationChanged(location);
                 }
             }
+
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
+
             @Override
             public void onProviderEnabled(String provider) {
             }
+
             @Override
             public void onProviderDisabled(String provider) {
             }
@@ -56,25 +59,28 @@ public class MyLocation {
         };
 
         try {
-            Location lastKnownLocation_byNetwork =locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            if(lastKnownLocation_byNetwork!=null){
+            Location lastKnownLocation_byNetwork = locationManager.getLastKnownLocation
+                    (LocationManager.GPS_PROVIDER);
+            if (lastKnownLocation_byNetwork != null) {
                 currentBestLocation = lastKnownLocation_byNetwork;
                 myLocationListener.locationChanged(currentBestLocation);
             }
-        }catch (SecurityException e){
-            Log.e("MyLocation","SecurityException");
+        } catch (SecurityException e) {
+            Log.e("MyLocation", "SecurityException");
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-        }catch (SecurityException e){
-            Log.e("MyLocation","SecurityException");
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+        } catch (SecurityException e) {
+            Log.e("MyLocation", "SecurityException");
         }
 
         try {
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,MIN_TIME_BW_UPDATES,MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
-        }catch (SecurityException e){
-            Log.e("MyLocation","SecurityException");
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                    MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, locationListener);
+        } catch (SecurityException e) {
+            Log.e("MyLocation", "SecurityException");
         }
 
     }
@@ -115,13 +121,12 @@ public class MyLocation {
             return true;
         } else if (isNewer && !isLessAccurate) {
             return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
+        } else return isNewer && !isSignificantlyLessAccurate && isFromSameProvider;
     }
 
-    /** Checks whether two providers are the same */
+    /**
+     * Checks whether two providers are the same
+     */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
@@ -129,10 +134,10 @@ public class MyLocation {
         return provider1.equals(provider2);
     }
 
-    public void stopLocationUpdate(){
+    public void stopLocationUpdate() {
         try {
             locationManager.removeUpdates(locationListener);
-        }catch (SecurityException e){
+        } catch (SecurityException e) {
             Log.e("MyLocation", "SecurityException");
         }
     }

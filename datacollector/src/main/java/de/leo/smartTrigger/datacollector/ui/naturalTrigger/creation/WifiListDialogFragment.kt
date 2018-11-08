@@ -84,7 +84,7 @@ class WifiListDialogFragment : DialogFragment() {
             val view = convertView ?: LayoutInflater.from(context!!)
                 .inflate(R.layout.geofence_dialog_list_item, parent, false)
             val scanResult = getItem(position)
-            /*val configs = mWifiManager.configuredNetworks
+            /*val configs = wifiManager.configuredNetworks
             val knownNetwork = configs.filter { it.BSSID == scanResult.BSSID }*/
             val drawableID = when (WifiManager.calculateSignalLevel(scanResult.level, 5)) {
                 0    -> R.drawable.wifi_level0
