@@ -1,13 +1,13 @@
 package de.leo.smartTrigger.datacollector.integrationTest
 
-import android.support.test.InstrumentationRegistry
-import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.ViewActions.click
-import android.support.test.espresso.assertion.ViewAssertions.matches
-import android.support.test.espresso.matcher.ViewMatchers.isEnabled
-import android.support.test.espresso.matcher.ViewMatchers.withId
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity

@@ -1,15 +1,15 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
 import android.content.Context
-import android.support.constraint.ConstraintSet
-import android.support.constraint.ConstraintSet.BOTTOM
-import android.support.constraint.ConstraintSet.TOP
-import android.support.v7.widget.RecyclerView
-import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.constraintlayout.widget.ConstraintSet.BOTTOM
+import androidx.constraintlayout.widget.ConstraintSet.TOP
+import androidx.recyclerview.widget.RecyclerView
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService
 import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
@@ -22,7 +22,6 @@ import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNatura
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.android.synthetic.main.trigger_list_element.view.*
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.singleLine
 import org.jetbrains.anko.toast
 
 class TriggerListRecyclerViewAdapter(private val context: Context,
@@ -94,9 +93,9 @@ class TriggerListRecyclerViewAdapter(private val context: Context,
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
                 ConstraintSet().apply {
-                    clone(cardLayout)
+                    clone(cardLayout as ConstraintLayout)
                     connect(R.id.active_toggle_button, TOP, R.id.situation, BOTTOM)
-                    applyTo(cardLayout)
+                    applyTo(cardLayout as ConstraintLayout)
                 }
                 expandButton.setImageResource(R.drawable.baseline_expand_less_black_36)
             }

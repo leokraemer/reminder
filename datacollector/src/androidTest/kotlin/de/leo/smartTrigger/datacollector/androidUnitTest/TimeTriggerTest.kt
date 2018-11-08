@@ -1,7 +1,7 @@
 package de.leo.smartTrigger.datacollector.androidUnitTest
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
+import androidx.test.InstrumentationRegistry
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.TimeTrigger
 import de.leo.smartTrigger.datacollector.utils.TimeUtils.getDateFromString

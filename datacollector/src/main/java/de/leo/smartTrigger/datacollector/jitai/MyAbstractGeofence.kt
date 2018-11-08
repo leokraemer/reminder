@@ -1,7 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai
 
-import android.support.annotation.VisibleForTesting
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 
 /**

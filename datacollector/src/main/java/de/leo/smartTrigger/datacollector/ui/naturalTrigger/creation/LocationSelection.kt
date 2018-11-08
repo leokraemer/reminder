@@ -112,9 +112,8 @@ class LocationSelection : NaturalTriggerFragment() {
     fun clickHome() {
         model?.wifi = null
         if (homeGeofence == null) {
-            val intent = intentFor<GeofenceMapActivity>()
-            intent.putExtra(GEOFENCE_NAME, HOME_NAME)
-            intent.putExtra(GEOFENCE_IMAGE, HOME_CODE)
+            val intent = intentFor<GeofenceMapActivity>(GEOFENCE_NAME to HOME_NAME,
+                                                        GEOFENCE_IMAGE to HOME_CODE)
             startActivityForResult(intent, HOME_CODE)
         } else
             model!!.geofence = homeGeofence
@@ -123,17 +122,15 @@ class LocationSelection : NaturalTriggerFragment() {
     fun clickWork() {
         model?.wifi = null
         if (workGeofence == null) {
-            val intent = intentFor<GeofenceMapActivity>()
-            intent.putExtra(GEOFENCE_NAME, WORK_NAME)
-            intent.putExtra(GEOFENCE_IMAGE, WORK_CODE)
+            val intent = intentFor<GeofenceMapActivity>(GEOFENCE_NAME to WORK_NAME,
+                                                        GEOFENCE_IMAGE to WORK_CODE)
             startActivityForResult(intent, WORK_CODE)
         } else
             model!!.geofence = workGeofence
     }
 
     fun clickMap() {
-        val intent = intentFor<GeofenceMapActivity>()
-        intent.putExtra(GEOFENCE_IMAGE, CREATE_CODE)
+        val intent = intentFor<GeofenceMapActivity>(GEOFENCE_IMAGE to CREATE_CODE)
         startActivityForResult(intent, CREATE_CODE)
     }
 

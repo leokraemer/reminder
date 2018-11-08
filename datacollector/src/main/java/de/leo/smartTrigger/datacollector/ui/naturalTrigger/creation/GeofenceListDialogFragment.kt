@@ -3,12 +3,12 @@ package de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.fragment.app.DialogFragment
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
@@ -40,9 +40,9 @@ class GeofenceListDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        dialog.window.setTitle("Ihre Orte")
+        dialog?.window?.setTitle("Ihre Orte")
         val view = inflater.inflate(R.layout.geofence_list_dialog, container, false)
-        view.add_geofences_button.setOnClickListener { mListener.onCreateGeofence(); dialog.cancel() }
+        view.add_geofences_button.setOnClickListener { mListener.onCreateGeofence(); dialog?.cancel() }
         val list = JitaiDatabase.getInstance(context!!).getAllMyGeofencesDistinct()
         val empty = view.empty
         if (list.isEmpty()) {
@@ -73,7 +73,7 @@ class GeofenceListDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+    override fun onCancel(dialog: DialogInterface) {
         mListener.onNoGeofenceSelected()
         super.onCancel(dialog)
     }

@@ -2,24 +2,17 @@ package de.leo.smartTrigger.datacollector.datacollection
 
 import android.app.PendingIntent
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.hardware.display.DisplayManager
 import android.location.Location
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.PowerManager
 import android.preference.PreferenceManager
-import android.support.v4.app.NotificationCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
-import android.view.Display
-import android.view.ViewDebug
+import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
@@ -27,7 +20,6 @@ import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.*
 import de.leo.smartTrigger.datacollector.jitai.activityDetection.ActivityRecognizer
-import de.leo.smartTrigger.datacollector.ui.ServiceManagingActivity
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACTIVITY_ENABLED
@@ -39,9 +31,8 @@ import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WEATHER_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WIFI_NAME_ENABLED
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
-import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
-import de.leo.smartTrigger.datacollector.utils.*
+import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import java.util.*

@@ -2,8 +2,8 @@ package de.leo.smartTrigger.datacollector.androidUnitTest
 
 import android.content.Context
 import android.location.Location
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence

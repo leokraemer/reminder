@@ -2,8 +2,8 @@ package de.leo.smartTrigger.datacollector.datacollection.sensors;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -14,10 +14,7 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Yunlong on 4/4/2017.

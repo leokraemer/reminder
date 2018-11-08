@@ -1,6 +1,6 @@
 package de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 
 /**
  * Created by Leo on 07.03.2018.

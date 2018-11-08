@@ -3,8 +3,8 @@ package de.leo.smartTrigger.datacollector.androidUnitTest
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.database.TABLE_REALTIME_PROXIMITY
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet

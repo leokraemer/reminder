@@ -22,11 +22,11 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
 import de.leo.smartTrigger.datacollector.R;
 
 /**
@@ -42,8 +42,7 @@ public abstract class PermissionUtils {
                                          String permission, boolean finishActivity) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             // Display a dialog with rationale.
-            PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity)
-                    .show(activity.getSupportFragmentManager(), "dialog");
+            PermissionUtils.RationaleDialog.newInstance(requestId, finishActivity).show(activity.getSupportFragmentManager(), "dialog");
         } else {
             // Location permission has not been granted yet, request it.
             ActivityCompat.requestPermissions(activity, new String[]{permission}, requestId);
@@ -55,7 +54,7 @@ public abstract class PermissionUtils {
      * Checks if the result contains a {@link PackageManager#PERMISSION_GRANTED} result for a
      * permission from a runtime permissions request.
      *
-     * @see android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback
+     * @see androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback
      */
     public static boolean isPermissionGranted(String[] grantPermissions, int[] grantResults,
             String permission) {
@@ -115,7 +114,7 @@ public abstract class PermissionUtils {
      * permission.
      * <p>
      * The activities should implement
-     * {@link android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback}
+     * {@link androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback}
      * to handle permit or denial of this permission request.
      */
     public static class RationaleDialog extends DialogFragment {
@@ -134,7 +133,7 @@ public abstract class PermissionUtils {
          *
          * @param requestCode    Id of the request that is used to request the permission. It is
          *                       returned to the
-         *                       {@link android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback}.
+         *                       {@link androidx.core.app.ActivityCompat.OnRequestPermissionsResultCallback}.
          * @param finishActivity Whether the calling Activity should be finished if the dialog is
          *                       cancelled.
          */

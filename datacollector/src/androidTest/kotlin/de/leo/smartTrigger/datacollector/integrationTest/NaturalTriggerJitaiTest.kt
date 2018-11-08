@@ -2,8 +2,8 @@ package de.leo.smartTrigger.datacollector.integrationTest
 
 import android.content.Context
 import android.location.Location
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import android.util.Log
 import com.google.android.gms.location.DetectedActivity
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService

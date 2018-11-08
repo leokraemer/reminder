@@ -1,9 +1,9 @@
 package de.leo.smartTrigger.datacollector.androidUnitTest.jitai
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.androidUnitTest.checkGeofenceState
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo

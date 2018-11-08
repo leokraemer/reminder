@@ -2,14 +2,13 @@ package de.leo.smartTrigger.datacollector.ui.naturalTrigger.list
 
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
 import kotlinx.android.synthetic.main.activity_trigger_overview.*
-import kotlinx.android.synthetic.main.naturaltriggerview.*
 
 class TriggerOverviewActivity : AppCompatActivity() {
 

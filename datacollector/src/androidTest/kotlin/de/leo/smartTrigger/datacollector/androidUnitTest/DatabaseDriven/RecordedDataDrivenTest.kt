@@ -2,9 +2,9 @@ package de.leo.smartTrigger.datacollector.androidUnitTest.DatabaseDriven
 
 import android.app.Instrumentation
 import android.app.Instrumentation.ActivityMonitor
-import android.support.test.InstrumentationRegistry
-import android.support.test.rule.ActivityTestRule
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
+import androidx.test.runner.AndroidJUnit4
 import android.util.Log
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet

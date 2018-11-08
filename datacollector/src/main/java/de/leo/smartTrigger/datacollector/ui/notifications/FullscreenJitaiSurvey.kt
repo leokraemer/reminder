@@ -1,11 +1,8 @@
 package de.leo.smartTrigger.datacollector.ui.notifications
 
-import android.app.NotificationManager
-import android.content.Context
 import android.os.Bundle
-import android.os.Vibrator
 import android.preference.PreferenceManager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.NOTIFICATION_DELETED

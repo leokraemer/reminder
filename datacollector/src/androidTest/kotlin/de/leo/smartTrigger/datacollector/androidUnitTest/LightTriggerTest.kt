@@ -1,9 +1,9 @@
 package de.leo.smartTrigger.datacollector.androidUnitTest
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
-import android.support.test.InstrumentationRegistry.getContext
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.InstrumentationRegistry.getContext
+import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.database.TABLE_REALTIME_LIGHT
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet

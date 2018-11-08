@@ -1,10 +1,10 @@
 package de.leo.smartTrigger.datacollector.ui.uiElements
 
 import android.content.Context
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import androidx.viewpager.widget.ViewPager
 
 
 /**
@@ -27,7 +27,7 @@ class LockableViewPager : ViewPager {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var heightMeasureSpec = heightMeasureSpec
+        var tempHeightMeasureSpec = heightMeasureSpec
 
         var height = 0
         for (i in 0 until childCount) {
@@ -39,8 +39,8 @@ class LockableViewPager : ViewPager {
         }
 
         if (height != 0) {
-            heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+            tempHeightMeasureSpec = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
         }
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        super.onMeasure(widthMeasureSpec, tempHeightMeasureSpec)
     }
 }

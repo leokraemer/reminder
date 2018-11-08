@@ -9,7 +9,7 @@ import android.media.AudioAttributes
 import android.os.Bundle
 import android.os.PowerManager
 import android.os.Vibrator
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.jitai.manage.Jitai

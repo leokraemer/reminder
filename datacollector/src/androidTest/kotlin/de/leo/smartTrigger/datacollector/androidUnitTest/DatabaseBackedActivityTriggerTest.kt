@@ -1,8 +1,8 @@
 package de.leo.smartTrigger.datacollector.androidUnitTest
 
 import android.content.Context
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.DetectedActivity.IN_VEHICLE
 import com.google.android.gms.location.DetectedActivity.ON_FOOT

@@ -18,10 +18,10 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 17
-        
+
         versionName "1.0"
         multiDexEnabled true
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
     buildTypes {
@@ -59,34 +59,30 @@ android {
 
 dependencies {
 
-
-    configurations.all {
-        resolutionStrategy {
-            force "com.android.support:support-annotations:$support_version"
-        }
-    }
-
-
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     // kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0-RC1'
 
-    //anko
+    //androidx
+    implementation 'androidx.core:core-ktx:1.0.1'
+
+    //
     implementation "org.jetbrains.anko:anko:$anko_version"
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
 
     //appcompat
-    implementation "com.android.support:support-annotations:$support_version"
-    implementation "com.android.support:support-compat:$support_version"
-    implementation "com.android.support:support-core-utils:$support_version"
-    implementation "com.android.support:support-core-ui:$support_version"
-    implementation "com.android.support:support-fragment:$support_version"
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:cardview-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.core:core:1.1.0-alpha01'
+    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    implementation 'androidx.legacy:legacy-support-core-ui:1.0.0'
+    implementation 'androidx.fragment:fragment:1.1.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.0-alpha2'
     implementation 'org.slf4j:slf4j-nop:1.7.25'
 
     //google services
@@ -101,7 +97,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-places:11.6.0'
 
     //data transfer
-    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'cz.msebera.android:httpclient:4.4.1.2'
     implementation 'com.github.leokraemer:android-gson-javatime-serialisers:2.1.2'
 
@@ -137,16 +133,16 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     androidTestImplementation "com.github.ranaparamveer:android-sqlite-asset-helper:v2.0.7"
-    androidTestImplementation "com.android.support:support-annotations:$support_version"
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'androidx.annotation:annotation:1.0.0'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation 'androidx.test:rules:1.1.0'
 
     // Optional -- Hamcrest library
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 
     // Optional -- UI testing with Espresso
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 
     // Optional -- UI testing with UI Automator
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }

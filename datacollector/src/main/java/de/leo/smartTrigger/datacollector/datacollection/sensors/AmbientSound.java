@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 
 import java.util.Timer;

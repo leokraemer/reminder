@@ -10,7 +10,7 @@
  */
 package de.leo.smartTrigger.datacollector.datacollection.models;
 
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 import de.leo.smartTrigger.datacollector.R;
 

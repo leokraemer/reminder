@@ -1,8 +1,8 @@
 package de.leo.smartTrigger.datacollector.testUtil;
 
 
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.action.ViewActions;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.ViewActions;
 
 public class MultiSliderActions {
 

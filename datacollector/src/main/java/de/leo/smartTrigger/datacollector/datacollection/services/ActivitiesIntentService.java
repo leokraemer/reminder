@@ -2,13 +2,13 @@ package de.leo.smartTrigger.datacollector.datacollection.services;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
 
 import java.util.ArrayList;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import de.leo.smartTrigger.datacollector.utils.Constants;
 
 
