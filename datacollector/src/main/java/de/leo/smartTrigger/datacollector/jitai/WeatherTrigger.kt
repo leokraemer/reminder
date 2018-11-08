@@ -4,6 +4,7 @@ import android.content.Context
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.Weather
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Leo on 11.01.2018.
@@ -52,4 +53,8 @@ class WeatherTrigger : Trigger {
             weatherCondition = "gutem Wetter"
         return "Bei $weatherCondition"
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
+
 }

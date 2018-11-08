@@ -22,6 +22,9 @@ class LouderThanSoundTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }
 
 
@@ -39,4 +42,7 @@ class LessLoudThanSoundTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

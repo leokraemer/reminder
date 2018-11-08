@@ -337,8 +337,8 @@ const val CREATE_TABLE_JITAI_EVENTS =
         "$ID INTEGER PRIMARY KEY, " +
         "$TIMESTAMP DATE, " +
         "$USERNAME TEXT, " +
-        //see Jitai.companion for codes
-        "$JITAI_EVENT INTEGER, " +
+        //see NaturalTriggerJitai.companion for codes
+        "$JITAI_EVENT TEXT, " +
         "$JITAI_ID INTEGER, " +
         "$JITAI_SURVEY_MOMENT_RATING INTEGER, " +
         "$JITAI_SURVEY_TRIGGER_RATING INTEGER, " +

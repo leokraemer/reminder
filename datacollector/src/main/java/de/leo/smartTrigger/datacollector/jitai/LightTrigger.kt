@@ -24,6 +24,9 @@ class DimmerThanTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }
 
 
@@ -43,4 +46,7 @@ class BrighterThanTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

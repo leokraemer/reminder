@@ -1,11 +1,10 @@
-package de.leo.smartTrigger.datacollector.jitai.Location
+package de.leo.smartTrigger.datacollector.jitai
 
 import android.content.Context
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
-import de.leo.smartTrigger.datacollector.jitai.MyGeofence
-import de.leo.smartTrigger.datacollector.jitai.Trigger
 import java.util.concurrent.TimeUnit
+
 
 /**
  * Created by Leo on 16.11.2017.
@@ -38,9 +37,9 @@ open class GeofenceTrigger() : Trigger {
                                           "${locations[0].exited}," +
                                           "${locations[0].loiteringInside}," +
                                           "${locations[0].loiteringOutside}")
+            updateNextUpdateTimestamp(sensorData)
             return returnval && statechanged
         }
-
         //########################currently unused code, because paths are not enabled in the
         //######################## trigger creation
         var currentGeofence: Int = -1
@@ -85,5 +84,37 @@ open class GeofenceTrigger() : Trigger {
     override fun toString(): String {
         return locations.fold("Geofences: ") { r, f -> r + f.name + " -> " }
             .trimEnd('-', '>', ' ')
+    }
+
+    var nextupdate = 0L
+
+    val SIXTY_KM_H_IN_M_S = 16.66F
+
+    fun updateNextUpdateTimestamp(sensorData: SensorDataSet) {
+        val location = getCurrentLocation()
+        if (location.enter || location.exit || location.dwellInside) {
+            //handle all as enter, as exit and dwellInside must enter first
+            if (location.exited) {
+                val distance = location.location.distanceTo(sensorData.gps) - location.radius
+                nextupdate = System.currentTimeMillis() + (distance / SIXTY_KM_H_IN_M_S).toLong()
+            } else {
+                //TODO there is room to improve for large areas
+                nextupdate = 0
+            }
+        } else if (location.dwellOutside) {
+            if (location.entered) {
+                val distance = location.radius - location.location.distanceTo(sensorData.gps)
+                nextupdate = Math.min((System.currentTimeMillis() + (distance / SIXTY_KM_H_IN_M_S)).toLong(),
+                                      location.loiteringDelay)
+            } else {
+                //TODO there is room to improve for large areas
+                nextupdate = 0
+            }
+        }
+    }
+
+    //wants to be checked again after some time, when the position can have changed
+    override fun nextUpdate(): Long {
+        return Math.max(nextupdate - System.currentTimeMillis(), 0)
     }
 }

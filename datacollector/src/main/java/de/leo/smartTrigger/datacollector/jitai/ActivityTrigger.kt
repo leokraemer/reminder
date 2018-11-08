@@ -43,4 +43,6 @@ open class ActivityTrigger(open val activities: List<DetectedActivity>, open val
         }
     }
 
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

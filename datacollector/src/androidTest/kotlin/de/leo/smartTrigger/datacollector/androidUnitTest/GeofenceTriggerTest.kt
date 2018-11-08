@@ -5,7 +5,7 @@ import android.location.Location
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
-import de.leo.smartTrigger.datacollector.jitai.Location.GeofenceTrigger
+import de.leo.smartTrigger.datacollector.jitai.GeofenceTrigger
 import de.leo.smartTrigger.datacollector.jitai.MyGeofence
 import junit.framework.Assert
 import org.junit.Before
@@ -91,7 +91,8 @@ class GeofenceTriggerTest {
 
     @Test
     fun twoGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq,
+                                                                                     Buynormand))
         val sensorData = SensorDataSet(0L,
                                        "dummy")
         sensorData.gps = Auberge_du_coq_Location
@@ -104,7 +105,9 @@ class GeofenceTriggerTest {
 
     @Test
     fun breakChainGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand, Catimini))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq,
+                                                                                     Buynormand,
+                                                                                     Catimini))
         val sensorData = SensorDataSet(0L,
                                        "dummy")
         sensorData.gps = Auberge_du_coq_Location
@@ -131,7 +134,8 @@ class GeofenceTriggerTest {
 
     @Test
     fun timeoutGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq, Buynormand))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq,
+                                                                                     Buynormand))
         val sensorData = SensorDataSet(0L, "dummy")
         sensorData.gps = Auberge_du_coq_Location
         Assert.assertFalse(trigger.check(context, sensorData))
@@ -150,7 +154,9 @@ class GeofenceTriggerTest {
 
     @Test
     fun exitGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, exit = true)))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(
+            enter = false,
+            exit = true)))
         val sensorData = SensorDataSet(0L, "dummy")
         //test outside
         sensorData.gps = Buynormand_Location
@@ -170,9 +176,10 @@ class GeofenceTriggerTest {
 
     @Test
     fun dwellGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false,
-                                                                 dwellInside = true,
-                                                                 loiteringDelay = 1L)))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(
+            enter = false,
+            dwellInside = true,
+            loiteringDelay = 1L)))
         val sensorData = SensorDataSet(0L, "dummy")
         //entering
         sensorData.gps = Auberge_du_coq_Location
@@ -187,8 +194,11 @@ class GeofenceTriggerTest {
 
     @Test
     fun dwellLoiteringDelayZero() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false, dwellInside =
-        true, loiteringDelay = 0L)))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(
+            enter = false,
+            dwellInside =
+            true,
+            loiteringDelay = 0L)))
         val sensorData = SensorDataSet(0L, "dummy")
         //entering & loitering immediately
         sensorData.gps = Auberge_du_coq_Location
@@ -204,8 +214,9 @@ class GeofenceTriggerTest {
 
     @Test
     fun dwellRepeatedly() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false,
-                                                                 dwellInside = true)))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(
+            enter = false,
+            dwellInside = true)))
         val sensorData = SensorDataSet(0L, "dummy")
         //entering
         sensorData.gps = Auberge_du_coq_Location
@@ -223,8 +234,9 @@ class GeofenceTriggerTest {
 
     @Test
     fun dwellOutsideGeofenceTriggerTest() {
-        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(enter = false,
-                                                                 dwellOutside = true)))
+        val trigger = GeofenceTrigger(listOf(Auberge_du_coq.copy(
+            enter = false,
+            dwellOutside = true)))
         val sensorData = SensorDataSet(0L, "dummy")
         //entering
         sensorData.gps = Auberge_du_coq_Location

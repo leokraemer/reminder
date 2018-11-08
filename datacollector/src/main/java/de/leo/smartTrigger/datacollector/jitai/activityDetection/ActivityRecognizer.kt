@@ -3,7 +3,6 @@ package de.leo.smartTrigger.datacollector.jitai.activityDetection
 import android.content.Context
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 
 
@@ -12,7 +11,7 @@ import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
  */
 class ActivityRecognizer(val context: Context) {
 
-    val jitaiList = mutableListOf<Jitai>()
+    val jitaiList = mutableListOf<NaturalTriggerJitai>()
     val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
 
     init {
@@ -36,4 +35,7 @@ class ActivityRecognizer(val context: Context) {
             it.check(sensorValues)
         }
     }
+
+    fun nextUpdate(): Long = jitaiList.maxBy { it.nextUpdate() }?.nextUpdate() ?: 0
+
 }

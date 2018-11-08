@@ -1,6 +1,7 @@
 package de.leo.smartTrigger.datacollector.ui.application
 
 import android.app.Application
+import android.net.wifi.p2p.WifiP2pManager
 import com.jakewharton.threetenabp.AndroidThreeTen
 
 
@@ -8,7 +9,6 @@ import com.jakewharton.threetenabp.AndroidThreeTen
  * Created by Yunlong on 4/22/2016.
  */
 class DataCollectorApplication : Application() {
-
 
     override fun onCreate() {
         super.onCreate()

@@ -16,4 +16,11 @@ interface Trigger {
      * Reset the state of any stateful trigger to the initial state.
      */
     fun reset(sensorData: SensorDataSet)
+
+    /**
+     * Milliseconds until the next check is required.
+     * Between the call of this method and the passing of the time
+     * the return value of check() will be false.
+     */
+    fun nextUpdate(): Long
 }

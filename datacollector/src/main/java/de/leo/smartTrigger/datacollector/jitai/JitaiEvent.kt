@@ -6,5 +6,5 @@ package de.leo.smartTrigger.datacollector.jitai
 data class JitaiEvent(val JITAI_ID: Int,
                       val timestamp: Long,
                       val username: String,
-                      val eventType: Int,
+                      val eventType: String,
                       val sensorDatasetId: Long)

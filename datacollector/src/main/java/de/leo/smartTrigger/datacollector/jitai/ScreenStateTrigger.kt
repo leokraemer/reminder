@@ -45,4 +45,7 @@ class ScreenStateTrigger(screenState: String, val interval: Long) :
         const val SCREEN_ON = "on"
         const val SCREEN_OFF = "off"
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

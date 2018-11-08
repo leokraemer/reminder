@@ -81,4 +81,20 @@ class TimeTrigger() : Trigger {
         }
         return -1.0
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long {
+        if (timeRange == null)
+            timeRange = startTime.rangeTo(endInclusiveTime)
+        val now = ZonedDateTime.now()
+        if (timeRange?.contains(now.toLocalTime()) == true) {
+            if (days.any { day -> day == now.dayOfWeek })
+                return 0
+            else return Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
+        } else if (now.toLocalTime().isBefore(startTime)) {
+            return Duration.between(now.toLocalTime(), startTime).toMillis()
+        } else if (now.toLocalTime().isAfter(endInclusiveTime))
+            return Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
+        return 0
+    }
 }

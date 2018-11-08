@@ -31,4 +31,7 @@ class ProximityTrigger(val near: Boolean) : Trigger {
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

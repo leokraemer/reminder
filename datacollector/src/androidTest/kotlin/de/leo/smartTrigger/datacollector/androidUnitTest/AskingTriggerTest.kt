@@ -6,7 +6,7 @@ import androidx.test.runner.AndroidJUnit4
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.AskingTrigger
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import junit.framework.Assert
 import org.junit.After
 import org.junit.Before
@@ -43,10 +43,10 @@ class AskingTriggerTest {
                                       "dummy",
                                       0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES, -1, -1,
                                -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, Jitai.NOTIFICATION_TRIGGER_NO, -1, -1,
+        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO, -1, -1,
                                -1, "")
         Assert.assertFalse(trigger.check(context, sensorDataSet))
     }
@@ -58,7 +58,7 @@ class AskingTriggerTest {
                                       "dummy",
                                       0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES, -1, -1,
                                -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
         //<= 30 minutes later
@@ -76,10 +76,10 @@ class AskingTriggerTest {
                                       "dummy",
                                       0)
         Assert.assertFalse(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, Jitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+        db.enterUserJitaiEvent(jitaiID, 1, USERNAME, NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES, -1, -1,
                                -1, "")
         Assert.assertTrue(trigger.check(context, sensorDataSet))
-        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, Jitai.NOTIFICATION_TRIGGER_NO, -1, -1,
+        db.enterUserJitaiEvent(jitaiID, 2, USERNAME, NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO, -1, -1,
                                -1, "")
         Assert.assertFalse(trigger.check(context, sensorDataSet))
         sensorDataSet = sensorDataSet.copy(time = TimeUnit.MINUTES.toMillis(30) + 1)

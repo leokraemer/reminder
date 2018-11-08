@@ -12,7 +12,7 @@ import android.os.Vibrator
 import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
 import kotlinx.android.synthetic.main.activity_full_screen_jitai_round.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -47,7 +47,6 @@ class FullscreenJitai : AppCompatActivity() {
                 vibrator.cancel()
             }
 
-
         } else {
             vibrator.cancel()
         }
@@ -65,7 +64,7 @@ class FullscreenJitai : AppCompatActivity() {
         close.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
-                    JITAI_EVENT to Jitai.NOTIFICATION_DELETED,
+                    JITAI_EVENT to NaturalTriggerJitai.NOTIFICATION_DELETED,
                     JITAI_ID to jitaiId,
                     JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
                     .setAction("Jitai_user_deleted")
@@ -76,7 +75,7 @@ class FullscreenJitai : AppCompatActivity() {
         play.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
-                    JITAI_EVENT to Jitai.NOTIFICATION_SUCCESS,
+                    JITAI_EVENT to NaturalTriggerJitai.NOTIFICATION_SUCCESS,
                     JITAI_ID to jitaiId,
                     JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
                     .setAction("jitai_correct")
@@ -87,7 +86,7 @@ class FullscreenJitai : AppCompatActivity() {
         snooze.setOnClickListener {
             val intent =
                 applicationContext.intentFor<FullscreenJitaiSurvey>(
-                    JITAI_EVENT to Jitai.NOTIFICATION_SNOOZE,
+                    JITAI_EVENT to NaturalTriggerJitai.NOTIFICATION_SNOOZE,
                     JITAI_ID to jitaiId,
                     JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
                     JITAI_GOAL to goalText,
@@ -102,7 +101,7 @@ class FullscreenJitai : AppCompatActivity() {
     override fun onBackPressed() {
         val intent =
             applicationContext.intentFor<FullscreenJitaiSurvey>(
-                JITAI_EVENT to Jitai.NOTIFICATION_DELETED,
+                JITAI_EVENT to NaturalTriggerJitai.NOTIFICATION_DELETED,
                 JITAI_ID to jitaiId,
                 JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
                 .setAction("Jitai_user_deleted")

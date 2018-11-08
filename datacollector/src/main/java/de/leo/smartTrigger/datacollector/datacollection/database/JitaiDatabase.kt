@@ -43,7 +43,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1024
+const val DATABASE_VERSION = 1025
 
 open class JitaiDatabase protected constructor(protected var context: Context) {
 
@@ -809,7 +809,7 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
         return jitai
     }
 
-    fun enterUserJitaiEvent(id: Int, timestamp: Long, username: String, eventName: Int,
+    fun enterUserJitaiEvent(id: Int, timestamp: Long, username: String, eventName: String,
                             sensorDatasetId: Long, triggerRating: Int, momentRating: Int,
                             surveyText: String) {
         val cv = ContentValues()
@@ -941,7 +941,7 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
             do {
                 val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
                 val username = c.getString(c.getColumnIndex(USERNAME))
-                val eventType = c.getInt(c.getColumnIndex(JITAI_EVENT))
+                val eventType = c.getString(c.getColumnIndex(JITAI_EVENT))
                 val sensorDatasetId = c.getLong(c.getColumnIndex(JITAI_EVENT_SENSORDATASET_ID))
                 list.add(JitaiEvent(id, timestamp, username, eventType, sensorDatasetId))
             } while (c.moveToNext())

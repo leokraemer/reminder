@@ -36,6 +36,7 @@ import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import java.util.*
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -158,13 +159,13 @@ class DataCollectorService : Service(),
         }
         wifiScanner = WifiScanner(this, this)
 
-        startScheduledUpdate(UPDATE_DELAY)
+        startScheduledUpdate()
     }
 
     override fun onCreate() {
         super.onCreate()
         isRunning = false
-        startNotification()
+        startNotification(updateDelay)
     }
 
     override fun onDestroy() {
@@ -193,19 +194,36 @@ class DataCollectorService : Service(),
         wifiScanner = null
     }
 
-    private fun startScheduledUpdate(updateDelay: Long) {
+    private fun startScheduledUpdate() {
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
                 //get the time when the update started to reduce jitter
                 val currentTime = System.currentTimeMillis()
                 //we assume that the operation finishes before it must be called again
+                updateDelay = Math.max(
+                    Math.min(activityRecognizer.nextUpdate(), TimeUnit.MINUTES.toMillis(5)),
+                    UPDATE_DELAY)
                 handler.postDelayed(this, updateDelay)
                 if (isRunning) {
                     uploadDataSet(currentTime)
                 }
             }
         })
+    }
+
+    private var updateDelay: Long = UPDATE_DELAY
+        set(value) {
+            if (field != value) {
+                field = value
+                adjustUpdateInterval(field)
+                startNotification(field)
+            }
+        }
+
+    private fun adjustUpdateInterval(updateDelay: Long) {
+        fusedLocationProviderClient?.changeUpdateInterval(updateDelay)
+        wifiScanner?.changeUpdateDelay(updateDelay)
     }
 
     private fun getPlaces() {
@@ -391,17 +409,18 @@ class DataCollectorService : Service(),
             currentWeatherId = db!!.enterWeather(weather, currentWeatherId + 1)
     }
 
-    fun startNotification() {
+    fun startNotification(updateDelay : Long) {
         val contentIntent = intentFor<TriggerManagingActivity>().setAction("OPEN_TRIGGER_LIST")
         val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
             .setContentIntent(PendingIntent.getActivity(this,
                                                         6874,
                                                         contentIntent,
                                                         PendingIntent.FLAG_UPDATE_CURRENT))
-            .setContentTitle("Smart Reminder")
+            .setContentTitle("Smart Trigger")
             .setAutoCancel(false)
             .setOngoing(true)
-            .setContentText("Reminder service is running.")
+            .setContentText("Service is running. Current rate: ${TimeUnit.MILLISECONDS
+                .toSeconds(updateDelay)}")
             .setSmallIcon(R.drawable.ic_reminder_notification)
             .setColor(resources.getColor(R.color.green_800))
             .setPriority(NotificationCompat.PRIORITY_LOW)

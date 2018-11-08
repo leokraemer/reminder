@@ -5,10 +5,10 @@ import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
 import de.leo.smartTrigger.datacollector.datacollection.database.*
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.NOTIFICATION_DELETED
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.NOTIFICATION_SNOOZE
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.NOTIFICATION_SUCCESS
-import de.leo.smartTrigger.datacollector.jitai.manage.Jitai.Companion.SURVEY_ABORD
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_DELETED
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_SNOOZE
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_SUCCESS
+import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.SURVEY_ABORD
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.updateNaturalTriggerReminderCardView
 import kotlinx.android.synthetic.main.activity_fullscreen_jitai_dialog.*
 import kotlinx.android.synthetic.main.naturaltriggerview.*
@@ -28,7 +28,7 @@ class FullscreenJitaiSurvey : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppBaseTheme_Light)
         setContentView(R.layout.activity_fullscreen_jitai_dialog)
-        val event = intent?.getIntExtra(JITAI_EVENT, -1) ?: -1
+        val event = intent?.getStringExtra(JITAI_EVENT)?: ""
         title = when (event) {
             NOTIFICATION_DELETED -> "Falscher Moment"
             NOTIFICATION_SUCCESS -> "Richtiger Moment"

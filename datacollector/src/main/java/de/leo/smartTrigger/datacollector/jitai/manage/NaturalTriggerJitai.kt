@@ -1,20 +1,62 @@
 package de.leo.smartTrigger.datacollector.jitai.manage
 
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.Log
 import com.google.android.gms.location.DetectedActivity
+import de.leo.smartTrigger.datacollector.R
+import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.*
-import de.leo.smartTrigger.datacollector.jitai.Location.GeofenceTrigger
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSelection.Companion.EVERYWHERE
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
+import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService
+import org.jetbrains.anko.intentFor
 
-open class NaturalTriggerJitai(override var id: Int,
-                               context: Context,
-                               val naturalTriggerModel: NaturalTriggerModel) : Jitai(context) {
-    override val message: String
+
+/**
+ * Created by Leo on 13.11.2017.
+ */
+open class NaturalTriggerJitai(var id: Int,
+                               val context: Context,
+                               val naturalTriggerModel: NaturalTriggerModel) {
+    companion object {
+        //all_conditions_for_jitai_met_reaching_out_to_user
+        const val CONDITION_MET = "condition_met"
+        //"the_notification_was_correct"
+        const val NOTIFICATION_SUCCESS = "correct"
+        //"the_notification_was_wrong"
+        const val NOTIFICATION_FAIL = "wrong"
+        //sooze for 15 minutes
+        const val NOTIFICATION_SNOOZE = "snoozw"
+        const val NOTIFICATION_SNOOZE_FINISHED = "end snooze"
+        //"The_notification_timed_out_(conditions_not_met_any_more)"
+        const val NOTIFICATION_NOT_VALID_ANY_MORE = "timed out"
+        //notification not sent not to bud the user
+        const val TOO_FREQUENT_NOTIFICATIONS = "too many"
+        //when the user deletes the notification without classifying
+        const val NOTIFICATION_DELETED = "dismissed"
+        const val SURVEY_ABORD = "survey abort"
+
+        //for notification trigger
+        const val NOTIFICATION_TRIGGER = "notification "
+        const val NOTIFICATION_TRIGGER_YES = NOTIFICATION_TRIGGER + "yes"
+        const val NOTIFICATION_TRIGGER_NO = NOTIFICATION_TRIGGER + "no"
+        const val NOTIFICATION_TRIGGER_DELETE = NOTIFICATION_TRIGGER + "delete"
+        const val NOTIFICATION_FULL_SCREEN = NOTIFICATION_TRIGGER + "fullscreen"
+    }
+
+    var active = true
+
+    internal val db: JitaiDatabase by lazy { JitaiDatabase.getInstance(context) }
+    private val userName: String by lazy {
+        PreferenceManager.getDefaultSharedPreferences(context)
+            .getString(context.getString(R.string.user_name), null)
+    }
+
+    val message: String
         get() = naturalTriggerModel.goal
-    override val goal: String
+    val goal: String
         get() = naturalTriggerModel.message
 
     val wifiTrigger: WifiTrigger?
@@ -27,8 +69,8 @@ open class NaturalTriggerJitai(override var id: Int,
     val activitTrigger: ActivityTrigger?
 
     init {
-        timeTrigger = TimeTrigger(naturalTriggerModel.beginTime!!.rangeTo(naturalTriggerModel
-                                                                              .endTime!!),
+        timeTrigger = TimeTrigger(naturalTriggerModel.beginTime!!
+                                      .rangeTo(naturalTriggerModel.endTime!!),
                                   TimeTrigger.ALL_DAYS)
         geofenceTrigger = naturalTriggerModel.geofence?.let {
             if (it.name != EVERYWHERE)
@@ -43,7 +85,7 @@ open class NaturalTriggerJitai(override var id: Int,
         } else null
     }
 
-    override fun check(sensorData: SensorDataSet): Boolean {
+    fun check(sensorData: SensorDataSet): Boolean {
         //Log.d(goal, "${sensorData.time}, ${sensorData.activity.firstOrNull()?.toString()}")
         //update all triggers to trigger as early as possible
         val activityTriggered = activitTrigger == null || activitTrigger.check(context, sensorData)
@@ -64,5 +106,44 @@ open class NaturalTriggerJitai(override var id: Int,
             //removeNotification(id, sensorData.time, sensorData.id)
             return false
         }
+    }
+
+    private fun removeNotification(id: Int, timestamp: Long, sensorDataId: Long) {
+        JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
+                                                               timestamp,
+                                                               userName,
+                                                               NOTIFICATION_NOT_VALID_ANY_MORE,
+                                                               sensorDataId,
+                                                               -1,
+                                                               -1,
+                                                               "")
+        val intent = context.intentFor<NotificationService>(JITAI_ID to id,
+                                                            JITAI_EVENT to
+                                                                NOTIFICATION_NOT_VALID_ANY_MORE,
+                                                            JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
+        context.startService(intent)
+    }
+
+    internal open fun postNotification(id: Int, timestamp: Long, goal: String, message: String,
+                                       sensorDataId: Long) {
+        JitaiDatabase.getInstance(context).enterUserJitaiEvent(id,
+                                                               timestamp,
+                                                               userName,
+                                                               CONDITION_MET,
+                                                               sensorDataId,
+                                                               -1,
+                                                               -1,
+                                                               "")
+        val intent = context.intentFor<NotificationService>(JITAI_ID to id,
+                                                            JITAI_EVENT to CONDITION_MET,
+                                                            JITAI_GOAL to goal,
+                                                            JITAI_MESSAGE to message,
+                                                            JITAI_EVENT_SENSORDATASET_ID to sensorDataId)
+        context.startService(intent)
+    }
+
+    internal fun nextUpdate(): Long {
+        return listOf(activitTrigger, geofenceTrigger, timeTrigger, wifiTrigger, weatherTrigger)
+            .maxBy { it?.nextUpdate() ?: 0 }?.nextUpdate() ?: 0
     }
 }

@@ -61,4 +61,7 @@ class DatabaseBackedActivityTrigger(override val activities: List<DetectedActivi
         return positiveMatches.size > 0
             && positiveMatches.size >= (pastSensorData.size * percentageThreshold)
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

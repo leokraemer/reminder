@@ -36,6 +36,9 @@ class PressureHigherThanTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }
 
 
@@ -55,6 +58,9 @@ class PressureLowerThanTrigger(val threshold: Double, val interval: Long) :
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }
 
 /*class heightDifferentialTrigger(val context: Context, val threshold: Float, val windowSize: Long) :

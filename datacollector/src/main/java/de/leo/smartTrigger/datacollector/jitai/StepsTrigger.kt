@@ -21,6 +21,9 @@ class MinStepsTrigger(var minSteps: Double, val interval: Long) : Trigger {
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }
 
 class MaxStepsTrigger(var maxSteps: Double, val interval: Long) : Trigger {
@@ -36,4 +39,7 @@ class MaxStepsTrigger(var maxSteps: Double, val interval: Long) : Trigger {
     override fun reset(sensorData: SensorDataSet) {
         //noop
     }
+
+    //wants to be checked again immediately
+    override fun nextUpdate(): Long = 0
 }

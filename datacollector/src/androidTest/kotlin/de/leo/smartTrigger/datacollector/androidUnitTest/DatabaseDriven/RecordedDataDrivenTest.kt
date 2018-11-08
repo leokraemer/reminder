@@ -6,6 +6,7 @@ import androidx.test.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import android.util.Log
+import androidx.test.filters.LargeTest
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
@@ -105,6 +106,7 @@ class RecordedDataDrivenTest {
         assertTrue(hits.sumBy { it.hits } > 0)
     }
 
+    @LargeTest
     @Test
     fun testLinksRechts() {
         val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
@@ -128,6 +130,7 @@ class RecordedDataDrivenTest {
         assertTrue(hits.sumBy { it.hits } > 0)
     }
 
+    @LargeTest
     @Test
     fun testLinksRechtsIndividualJitai() {
         val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
