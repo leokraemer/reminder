@@ -3,6 +3,7 @@ package de.leo.smartTrigger.datacollector.datacollection.sensors
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.IntentSender
+import android.location.Location
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -12,6 +13,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import de.leo.smartTrigger.datacollector.datacollection.DataCollectorService.Companion.UPDATE_DELAY
+import de.leo.smartTrigger.datacollector.jitai.UNKNOWN_LOCATION
 import java.util.concurrent.Executor
 
 
@@ -63,13 +65,17 @@ class FusedLocationProvider(val context: Context, val locationListener: MyLocati
 
             }
         })
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+            locationListener.locationChanged(it ?: Location(UNKNOWN_LOCATION))
+        }
         fusedLocationProviderClient.requestLocationUpdates(mLocationRequest, locationCallback, null)
     }
 
     val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult?) {
-            if (locationResult != null)
+            locationResult?.let {
                 locationListener.locationChanged(locationResult.lastLocation)
+            }
         }
     }
 

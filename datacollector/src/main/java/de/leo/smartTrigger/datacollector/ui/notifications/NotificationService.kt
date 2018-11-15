@@ -56,142 +56,150 @@ class NotificationService : IntentService("NotificationIntentService") {
             PUSH_DAILY_REMINDER_TO_USER -> dailyReminderNotification()
             SET_DAILY_REMINDER          -> {
                 val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val intent = applicationContext.intentFor<NotificationService>()
-                intent.action = PUSH_DAILY_REMINDER_TO_USER
+                val daily_intent = applicationContext.intentFor<NotificationService>()
+                daily_intent.action = PUSH_DAILY_REMINDER_TO_USER
                 val pendingIntent = PendingIntent.getService(
                     applicationContext,
                     DAILY_REMINDER_REQUEST_CODE,
-                    intent,
+                    daily_intent,
                     PendingIntent.FLAG_UPDATE_CURRENT)
                 //wake up tomorrow at 5:00 am
-                var date: LocalDate = LocalDate.now().plusDays(1)
+                val date: LocalDate = LocalDate.now().plusDays(1)
                 val time = LocalTime.of(5, 0)
                 val dateTime = LocalDateTime.of(date, time).atZone(ZoneId.systemDefault())
                 am.set(AlarmManager.RTC_WAKEUP, dateTime.toEpochMillis(), pendingIntent)
             }
         }
-        when (event) {
-            //already in db
-            NaturalTriggerJitai.CONDITION_MET                   -> {
-                naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
-                naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
-                Log.d(TAG, "start  $sensorDataId")
-            }
-            NaturalTriggerJitai.NOTIFICATION_SNOOZE_FINISHED    -> {
-                naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
-                naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
-                Log.d(TAG, "start  $sensorDataId")
-            }
-            //already in db
-            NaturalTriggerJitai.NOTIFICATION_NOT_VALID_ANY_MORE -> {
-                cancelNotification(jitaiId)
-                Log.d(TAG, "not valid $sensorDataId")
-            }
+        if (!event.isBlank()) {
+            when (event) {
+                //already in db
+                NaturalTriggerJitai.CONDITION_MET                   -> {
+                    naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
+                    naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
+                    Log.d(TAG, "start  $sensorDataId")
+                }
+                NaturalTriggerJitai.NOTIFICATION_SNOOZE_FINISHED    -> {
+                    naturalTriggerNotification(jitaiId, goal, message, sensorDataId)
+                    naturalTriggerFullScreenReminder(jitaiId, goal, message, sensorDataId)
+                    Log.d(TAG, "start  $sensorDataId")
+                }
+                //already in db
+                NaturalTriggerJitai.NOTIFICATION_NOT_VALID_ANY_MORE -> {
+                    cancelNotification(jitaiId)
+                    Log.d(TAG, "not valid $sensorDataId")
+                }
 
-            NaturalTriggerJitai.TOO_FREQUENT_NOTIFICATIONS      -> {
-                Log.d(TAG, "too many $sensorDataId")
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.TOO_FREQUENT_NOTIFICATIONS,
-                                       sensorDataId, -1,
-                                       -1, "")
-            }
-            NaturalTriggerJitai.NOTIFICATION_DELETED            -> {
-                Log.d(TAG, "deleted $sensorDataId")
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_DELETED, sensorDataId, -1,
-                                       -1, "")
-                //if the notification was deleted by the user set one minte timeout
-                notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
-            }
-            NaturalTriggerJitai.NOTIFICATION_FAIL               -> {
-                Log.d(TAG, "incorrect $sensorDataId")
-                cancelNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_FAIL, sensorDataId, -1,
-                                       -1, "")
-            }
-            NaturalTriggerJitai.NOTIFICATION_SNOOZE             -> {
-                Log.d(TAG, "snooze $sensorDataId")
-                cancelNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_FAIL, sensorDataId, -1,
-                                       -1, "")
-                //set alarm to re-post notification in 15 minutes
-                val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                val intent = applicationContext.intentFor<NotificationService>(
-                    JITAI_EVENT to NaturalTriggerJitai.CONDITION_MET,
-                    JITAI_ID to jitaiId,
-                    JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
-                    JITAI_GOAL to goal,
-                    JITAI_MESSAGE to message)
-                val pendingIntent = PendingIntent.getService(applicationContext,
-                                                             12356,
-                                                             intent,
-                                                             PendingIntent.FLAG_UPDATE_CURRENT)
-                am.setExact(AlarmManager.RTC,
-                            System.currentTimeMillis() + TIMEOUT_SNOOZE,
-                            pendingIntent)
-            }
-            NaturalTriggerJitai.NOTIFICATION_SUCCESS            -> {
-                Log.d(TAG, "success $sensorDataId")
-                cancelNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_SUCCESS, sensorDataId, -1,
-                                       -1, "")
-            }
+                NaturalTriggerJitai.TOO_FREQUENT_NOTIFICATIONS      -> {
+                    Log.d(TAG, "too many $sensorDataId")
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.TOO_FREQUENT_NOTIFICATIONS,
+                                           sensorDataId, -1,
+                                           -1, "")
+                }
+                NaturalTriggerJitai.NOTIFICATION_DELETED            -> {
+                    Log.d(TAG, "deleted $sensorDataId")
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_DELETED,
+                                           sensorDataId,
+                                           -1,
+                                           -1,
+                                           "")
+                    //if the notification was deleted by the user set one minte timeout
+                    notificationStore.put(jitaiId, System.currentTimeMillis() + TIMEOUT_LONG)
+                }
+                NaturalTriggerJitai.NOTIFICATION_FAIL               -> {
+                    Log.d(TAG, "incorrect $sensorDataId")
+                    cancelNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_FAIL, sensorDataId, -1,
+                                           -1, "")
+                }
+                NaturalTriggerJitai.NOTIFICATION_SNOOZE             -> {
+                    Log.d(TAG, "snooze $sensorDataId")
+                    cancelNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_FAIL, sensorDataId, -1,
+                                           -1, "")
+                    //set alarm to re-post notification in 15 minutes
+                    val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val intent = applicationContext.intentFor<NotificationService>(
+                        JITAI_EVENT to NaturalTriggerJitai.CONDITION_MET,
+                        JITAI_ID to jitaiId,
+                        JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
+                        JITAI_GOAL to goal,
+                        JITAI_MESSAGE to message)
+                    val pendingIntent = PendingIntent.getService(applicationContext,
+                                                                 12356,
+                                                                 intent,
+                                                                 PendingIntent.FLAG_UPDATE_CURRENT)
+                    am.setExact(AlarmManager.RTC,
+                                System.currentTimeMillis() + TIMEOUT_SNOOZE,
+                                pendingIntent)
+                }
+                NaturalTriggerJitai.NOTIFICATION_SUCCESS            -> {
+                    Log.d(TAG, "success $sensorDataId")
+                    cancelNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_SUCCESS,
+                                           sensorDataId,
+                                           -1,
+                                           -1,
+                                           "")
+                }
 
-            //trigger notifications
-            NaturalTriggerJitai.NOTIFICATION_TRIGGER            -> {
-                Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
-                    "situation")
-                startNotificationMachineLearningJitai(jitaiId, goal, message)
-            }
-            NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES        -> {
-                Log.d(TAG, "$goal notification trigger yes")
-                cancelTriggerNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES, -1, -1,
-                                       -1, "")
+                //trigger notifications
+                NaturalTriggerJitai.NOTIFICATION_TRIGGER            -> {
+                    Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
+                        "situation")
+                    startNotificationMachineLearningJitai(jitaiId, goal, message)
+                }
+                NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES        -> {
+                    Log.d(TAG, "$goal notification trigger yes")
+                    cancelTriggerNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_TRIGGER_YES, -1, -1,
+                                           -1, "")
 
-            }
-            NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO         -> {
-                Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
-                    "situation")
-                cancelTriggerNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO, -1, -1,
-                                       -1, "")
+                }
+                NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO         -> {
+                    Log.d(TAG, "$goal notification trigger, asking user for confirmation of " +
+                        "situation")
+                    cancelTriggerNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_TRIGGER_NO, -1, -1,
+                                           -1, "")
 
-            }
-            NaturalTriggerJitai.NOTIFICATION_TRIGGER_DELETE     -> {
-                Log.d(TAG,
-                      "$goal notification trigger, asking user for confirmation of situation")
-                cancelTriggerNotification(jitaiId)
-                db.enterUserJitaiEvent(jitaiId,
-                                       System.currentTimeMillis(),
-                                       username,
-                                       NaturalTriggerJitai.NOTIFICATION_TRIGGER_DELETE, -1, -1,
-                                       -1, "")
+                }
+                NaturalTriggerJitai.NOTIFICATION_TRIGGER_DELETE     -> {
+                    Log.d(TAG,
+                          "$goal notification trigger, asking user for confirmation of situation")
+                    cancelTriggerNotification(jitaiId)
+                    db.enterUserJitaiEvent(jitaiId,
+                                           System.currentTimeMillis(),
+                                           username,
+                                           NaturalTriggerJitai.NOTIFICATION_TRIGGER_DELETE, -1, -1,
+                                           -1, "")
 
-            }
+                }
 
-            else                                                -> {
-                Log.d("NotificationService", "I dont know how I ended up here o.0")
-                return
+                else                                                -> {
+                    Log.d("NotificationService", "I dont know how I ended up here o.0")
+                    return
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package de.leo.smartTrigger.datacollector.jitai
 
 import android.content.Context
+import android.util.Log
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
@@ -84,17 +85,19 @@ class TimeTrigger() : Trigger {
 
     //wants to be checked again immediately
     override fun nextUpdate(): Long {
+        var delay = 0L
         if (timeRange == null)
             timeRange = startTime.rangeTo(endInclusiveTime)
         val now = ZonedDateTime.now()
         if (timeRange?.contains(now.toLocalTime()) == true) {
             if (days.any { day -> day == now.dayOfWeek })
-                return 0
-            else return Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
+                delay = 0
+            else delay = Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
         } else if (now.toLocalTime().isBefore(startTime)) {
-            return Duration.between(now.toLocalTime(), startTime).toMillis()
+            delay = Duration.between(now.toLocalTime(), startTime).toMillis()
         } else if (now.toLocalTime().isAfter(endInclusiveTime))
-            return Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
-        return 0
+            delay = Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
+        Log.d("time delay", "$delay")
+        return delay
     }
 }

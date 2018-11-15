@@ -19,6 +19,7 @@ import de.leo.smartTrigger.datacollector.datacollection.database.*
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
 import de.leo.smartTrigger.datacollector.datacollection.sensors.*
+import de.leo.smartTrigger.datacollector.jitai.UNKNOWN_LOCATION
 import de.leo.smartTrigger.datacollector.jitai.activityDetection.ActivityRecognizer
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.ACCELEROMETER_MAGNETOMETER_GYROSCOPE_ORIENTATION_ENABLED
@@ -74,7 +75,7 @@ class DataCollectorService : Service(),
     private lateinit var myActivity: MyActivity
 
     private var googlePlacesCaller: GooglePlacesCaller? = null
-    private var currentLocation: Location = Location("init")
+    private var currentLocation: Location = Location(UNKNOWN_LOCATION)
 
     private var myEnvironmentSensor: MyEnvironmentSensor? = null
 
@@ -100,6 +101,15 @@ class DataCollectorService : Service(),
 
     private val pm: PowerManager by lazy { applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager }
 
+    private var updateDelay: Long = UPDATE_DELAY
+        set(value) {
+            if (field != value) {
+                field = value
+                adjustUpdateInterval(field)
+                startNotification(field)
+            }
+        }
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
@@ -110,6 +120,9 @@ class DataCollectorService : Service(),
         Log.d(TAG, "service recieved ${intent?.action ?: "unknown signal"}")
         if (!this.isRunning) {
             startDataCollection()
+        } else {
+            //reschedule to update updatedelay
+            startScheduledUpdate()
         }
         if (intent != null && intent.action != null)
             when (intent.action) {
@@ -198,28 +211,18 @@ class DataCollectorService : Service(),
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
-                //get the time when the update started to reduce jitter
                 val currentTime = System.currentTimeMillis()
-                //we assume that the operation finishes before it must be called again
-                updateDelay = Math.max(
-                    Math.min(activityRecognizer.nextUpdate(), TimeUnit.MINUTES.toMillis(5)),
-                    UPDATE_DELAY)
-                handler.postDelayed(this, updateDelay)
                 if (isRunning) {
                     uploadDataSet(currentTime)
                 }
+                updateDelay = Math.max(
+                    Math.min(activityRecognizer.nextUpdate(), TimeUnit.MINUTES.toMillis(5)),
+                    UPDATE_DELAY)
+                handler.removeCallbacks { this }
+                handler.postDelayed(this, updateDelay)
             }
         })
     }
-
-    private var updateDelay: Long = UPDATE_DELAY
-        set(value) {
-            if (field != value) {
-                field = value
-                adjustUpdateInterval(field)
-                startNotification(field)
-            }
-        }
 
     private fun adjustUpdateInterval(updateDelay: Long) {
         fusedLocationProviderClient?.changeUpdateInterval(updateDelay)
@@ -285,9 +288,9 @@ class DataCollectorService : Service(),
         if (DataCollectorApplication.ACTIVITY_ENABLED) sensorDataSet.activity = currentActivities
         if (DataCollectorApplication.WIFI_NAME_ENABLED) sensorDataSet.wifiInformation = currentWifiInfo
         if (DataCollectorApplication.LOCATION_ENABLED) {
-            Log.d(TAG, "lat: ${currentLocation.latitude}")
-            Log.d(TAG, "long: ${currentLocation.longitude}")
-            Log.d(TAG, "accuracy ${currentLocation.accuracy}")
+            Log.d(TAG, "lat: ${currentLocation.latitude}," +
+                " long: ${currentLocation.longitude}," +
+                " accuracy ${currentLocation.accuracy}")
             sensorDataSet.gps = currentLocation
             sensorDataSet.locationName = currentPlaceName
         }
@@ -409,7 +412,7 @@ class DataCollectorService : Service(),
             currentWeatherId = db!!.enterWeather(weather, currentWeatherId + 1)
     }
 
-    fun startNotification(updateDelay : Long) {
+    fun startNotification(updateDelay: Long) {
         val contentIntent = intentFor<TriggerManagingActivity>().setAction("OPEN_TRIGGER_LIST")
         val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
             .setContentIntent(PendingIntent.getActivity(this,
@@ -420,10 +423,11 @@ class DataCollectorService : Service(),
             .setAutoCancel(false)
             .setOngoing(true)
             .setContentText("Service is running. Current rate: ${TimeUnit.MILLISECONDS
-                .toSeconds(updateDelay)}")
+                .toSeconds(updateDelay)}s")
             .setSmallIcon(R.drawable.ic_reminder_notification)
             .setColor(resources.getColor(R.color.green_800))
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOnlyAlertOnce(true)
         startForeground(notificationID, mNotifyBuilder.build())
     }
 

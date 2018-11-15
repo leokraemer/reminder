@@ -53,7 +53,7 @@ open class JitaiDatabaseOpenHelper(context: Context,
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
         Log.d(TAG, "onUpgrade from $oldVersion to $newVersion")
         db!!.transaction {
-            if (oldVersion < 1024) {
+            if (oldVersion < 1027) {
                 val time = System.currentTimeMillis()
                 Log.d("db update start", "$time")
                 val gson = Converters.registerAll(GsonBuilder()).create()
@@ -243,7 +243,6 @@ const val WEATHER_TIMESTAMP = "weather_timestamp"
 const val TABLE_SENSORDATA = "sensorData"
 const val ID = "_id"
 const val SESSION = "session_id"
-const val RECORDING = "recording_id"
 const val TIMESTAMP = "timestamp"
 const val USERNAME = "username"
 const val ACTIVITY = "detectedActivity"
@@ -253,6 +252,7 @@ const val LOCATION = "location"
 const val GPS = "gps"
 const val GPSlat = "gps_lat"
 const val GPSlng = "gps_lng"
+const val GPSacc = "gps_accuracy"
 const val WIFI_NAME = "wifiName"
 const val BLUETOOTH = "bluetooth"
 const val WEATHER = "weather"
@@ -325,6 +325,7 @@ const val CREATE_TABLE_SENSORDATA =
         "$GPS text, " +
         "$GPSlat real, " +
         "$GPSlng real, " +
+        "$GPSacc real, " +
         "$ABIENT_SOUND real, " +
         "$WIFI_NAME text, " +
         "$BLUETOOTH text, " +

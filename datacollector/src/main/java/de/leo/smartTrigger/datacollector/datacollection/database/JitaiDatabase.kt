@@ -43,7 +43,7 @@ import java.util.*
 /**
  * Created by Leo on 18.11.2017.
  */
-const val DATABASE_VERSION = 1025
+const val DATABASE_VERSION = 1027
 
 open class JitaiDatabase protected constructor(protected var context: Context) {
 
@@ -122,6 +122,7 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
         val gps = Location("from db")
         gps.latitude = c.getDouble(c.getColumnIndex(GPSlat))
         gps.longitude = c.getDouble(c.getColumnIndex(GPSlng))
+        gps.accuracy = c.getFloat(c.getColumnIndex(GPSacc))
         val wifiName = gson.fromJson<List<WifiInfo>>(c.getString(c.getColumnIndex(WIFI_NAME)))
         val bluetoothDevices = gson.fromJson<List<String>>(c.getString(c.getColumnIndex(BLUETOOTH)))
         val weather = c.getLong(c.getColumnIndex(WEATHER))
@@ -155,6 +156,7 @@ open class JitaiDatabase protected constructor(protected var context: Context) {
                 //put(GPS, gps.toString())
                 put(GPSlat, gps?.latitude)
                 put(GPSlng, gps?.longitude)
+                put(GPSacc, gps?.accuracy)
                 put(WIFI_NAME, gson.toJson(wifiInformation))
                 put(BLUETOOTH, gson.toJson(bluetoothDevices))
                 put(WEATHER, weather)

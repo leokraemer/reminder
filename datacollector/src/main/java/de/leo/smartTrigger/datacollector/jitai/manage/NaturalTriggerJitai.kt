@@ -144,6 +144,6 @@ open class NaturalTriggerJitai(var id: Int,
 
     internal fun nextUpdate(): Long {
         return listOf(activitTrigger, geofenceTrigger, timeTrigger, wifiTrigger, weatherTrigger)
-            .maxBy { it?.nextUpdate() ?: 0 }?.nextUpdate() ?: 0
+            .map { it?.nextUpdate() ?: 0 }.max() ?: 0
     }
 }

@@ -22,7 +22,7 @@ class ActivityRecognizer(val context: Context) {
         val iterator = jitaiList.iterator()
         while (iterator.hasNext()) {
             val jitai = iterator.next()
-            if (jitai.id == id && jitai is NaturalTriggerJitai) {
+            if (jitai.id == id) {
                 iterator.remove()
                 break
             }
@@ -36,6 +36,9 @@ class ActivityRecognizer(val context: Context) {
         }
     }
 
-    fun nextUpdate(): Long = jitaiList.maxBy { it.nextUpdate() }?.nextUpdate() ?: 0
+    fun nextUpdate(): Long =
+        if (jitaiList.isEmpty()) Long.MAX_VALUE
+        else jitaiList.map { it.nextUpdate() }.min() ?: 0
+
 
 }

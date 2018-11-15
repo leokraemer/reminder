@@ -1,10 +1,14 @@
 package de.leo.smartTrigger.datacollector.jitai
 
 import android.content.Context
+import android.util.Log
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToLong
 
+
+const val UNKNOWN_LOCATION = "unknown location"
 
 /**
  * Created by Leo on 16.11.2017.
@@ -91,30 +95,40 @@ open class GeofenceTrigger() : Trigger {
     val SIXTY_KM_H_IN_M_S = 16.66F
 
     fun updateNextUpdateTimestamp(sensorData: SensorDataSet) {
+        //location currently unknown
+        if (sensorData.gps?.provider == UNKNOWN_LOCATION) {
+            nextupdate = 0L
+            return
+        }
         val location = getCurrentLocation()
+        val accuracy = sensorData.gps?.accuracy?.roundToLong() ?: 0L
+        var distance = 0.0F
         if (location.enter || location.exit || location.dwellInside) {
             //handle all as enter, as exit and dwellInside must enter first
             if (location.exited) {
-                val distance = location.location.distanceTo(sensorData.gps) - location.radius
-                nextupdate = System.currentTimeMillis() + (distance / SIXTY_KM_H_IN_M_S).toLong()
+                distance = location.location.distanceTo(sensorData.gps) - location.radius
             } else {
                 //TODO there is room to improve for large areas
-                nextupdate = 0
             }
         } else if (location.dwellOutside) {
             if (location.entered) {
-                val distance = location.radius - location.location.distanceTo(sensorData.gps)
-                nextupdate = Math.min((System.currentTimeMillis() + (distance / SIXTY_KM_H_IN_M_S)).toLong(),
-                                      location.loiteringDelay)
+                distance = location.radius - location.location.distanceTo(sensorData.gps)
             } else {
                 //TODO there is room to improve for large areas
-                nextupdate = 0
             }
         }
+        nextupdate = TimeUnit.SECONDS.toMillis(((distance - accuracy) / SIXTY_KM_H_IN_M_S).toLong())
+        Log.d("geofence update", "distance $distance, accuracy $accuracy, next " +
+            "$nextupdate")
+        if (location.dwellInside || location.dwellOutside)
+            nextupdate = Math.min(nextupdate, location.loiteringDelay)
+        nextupdate += System.currentTimeMillis()
     }
 
     //wants to be checked again after some time, when the position can have changed
     override fun nextUpdate(): Long {
-        return Math.max(nextupdate - System.currentTimeMillis(), 0)
+        val delay = Math.max(nextupdate - System.currentTimeMillis(), 0)
+        Log.d("geofence update", "$delay")
+        return delay
     }
 }
