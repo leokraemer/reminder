@@ -10,6 +10,7 @@ import android.location.Location
 import android.os.Environment
 import android.preference.PreferenceManager
 import android.widget.Toast
+import androidx.core.database.sqlite.transaction
 import com.fatboyindustrial.gsonjavatime.Converters
 import com.google.android.gms.location.DetectedActivity
 import com.google.android.gms.location.Geofence
@@ -30,7 +31,6 @@ import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.LocationSele
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.creation.NaturalTriggerModel
 import de.leo.smartTrigger.datacollector.utils.fromJson
 import de.leo.smartTrigger.datacollector.utils.getObjectListFromCursor
-import org.jetbrains.anko.db.transaction
 import org.threeten.bp.LocalTime
 import java.io.File
 import java.io.FileInputStream

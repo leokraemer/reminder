@@ -119,6 +119,7 @@ class MyActivity(private val context: Context) : GoogleApiClient.ConnectionCallb
 
         override fun onReceive(context: Context, intent: Intent) {
             val detectedActivities = intent.getParcelableArrayListExtra<DetectedActivity>(Constants.STRING_EXTRA)
+            Log.i("recieved activities", detectedActivities.toString())
             myActivityListener.activityUpdate(detectedActivities)
         }
 
