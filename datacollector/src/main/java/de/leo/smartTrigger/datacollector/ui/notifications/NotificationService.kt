@@ -24,14 +24,14 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by Leo on 01.01.2018.
  */
-class NotificationService : IntentService("NotificationIntentService") {
+internal open class NotificationService : IntentService("NotificationIntentService") {
     companion object {
         const val NOTIFICATIONIDMODIFYER = 19921
         const val DAILY_REMINDER_REQUEST_CODE = 19034
         const val TRIGGERNOTIFICATIONIDMODIFYER = 4711
         private val TIMEOUT = TimeUnit.SECONDS.toMillis(5)
         private val TIMEOUT_LONG = TimeUnit.MINUTES.toMillis(1)
-        private val TIMEOUT_SNOOZE = TimeUnit.MINUTES.toMillis(15)
+
         private const val TAG = "notification service"
         private val notificationStore: HashMap<Int, Long> = hashMapOf()
         const val CHANNEL = "naturalTriggerReminder"
@@ -45,6 +45,8 @@ class NotificationService : IntentService("NotificationIntentService") {
         PreferenceManager.getDefaultSharedPreferences(this)
             .getString(getString(R.string.user_name), null)
     }
+
+    internal open val TIMEOUT_SNOOZE = TimeUnit.SECONDS.toMillis(10)
 
     override fun onHandleIntent(intent: Intent?) {
         val event = intent?.getStringExtra(JITAI_EVENT) ?: ""
@@ -130,7 +132,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                                            -1, "")
                     //set alarm to re-post notification in 15 minutes
                     val am = applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    val intent = applicationContext.intentFor<NotificationService>(
+                    val alarmIntent = applicationContext.intentFor<NotificationService>(
                         JITAI_EVENT to NaturalTriggerJitai.CONDITION_MET,
                         JITAI_ID to jitaiId,
                         JITAI_EVENT_SENSORDATASET_ID to sensorDataId,
@@ -138,7 +140,7 @@ class NotificationService : IntentService("NotificationIntentService") {
                         JITAI_MESSAGE to message)
                     val pendingIntent = PendingIntent.getService(applicationContext,
                                                                  12356,
-                                                                 intent,
+                                                                 alarmIntent,
                                                                  PendingIntent.FLAG_UPDATE_CURRENT)
                     am.setExact(AlarmManager.RTC,
                                 System.currentTimeMillis() + TIMEOUT_SNOOZE,

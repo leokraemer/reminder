@@ -80,7 +80,7 @@ class WifiListDialogFragment : DialogFragment() {
          list
         ) {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val view = convertView ?: LayoutInflater.from(context!!)
+            val view = convertView ?: LayoutInflater.from(context)
                 .inflate(R.layout.geofence_dialog_list_item, parent, false)
             val scanResult = getItem(position)
             /*val configs = wifiManager.configuredNetworks
@@ -94,8 +94,7 @@ class WifiListDialogFragment : DialogFragment() {
                 else -> R.drawable.ic_error_white_48dp
             }
             view.icon.setImageResource(drawableID)
-            view.geofence_name.setText("${getItem(position).SSID},\n${getItem(position)
-                .BSSID}")
+            view.geofence_name.setText("${getItem(position).SSID},\n${getItem(position).BSSID}")
             return view
         }
     }

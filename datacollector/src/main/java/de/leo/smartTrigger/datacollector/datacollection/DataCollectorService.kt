@@ -408,8 +408,9 @@ class DataCollectorService : Service(),
             .setContentTitle("Smart Trigger")
             .setAutoCancel(false)
             .setOngoing(true)
-            .setContentText("Service is running. Current rate: ${TimeUnit.MILLISECONDS
-                .toSeconds(updateDelay)}s")
+            .setContentText("Studienanwendung läuft."// Current rate: ${TimeUnit.MILLISECONDS
+                // .toSeconds(updateDelay)}s"
+                           )
             .setSmallIcon(R.drawable.ic_reminder_notification)
             .setColor(resources.getColor(R.color.green_800))
             .setPriority(NotificationCompat.PRIORITY_LOW)

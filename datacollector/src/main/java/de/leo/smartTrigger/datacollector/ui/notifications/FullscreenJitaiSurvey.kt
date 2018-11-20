@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.appcompat.app.AppCompatActivity
 import de.leo.smartTrigger.datacollector.R
-import de.leo.smartTrigger.datacollector.datacollection.database.*
+import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_EVENT
+import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_EVENT_SENSORDATASET_ID
+import de.leo.smartTrigger.datacollector.datacollection.database.JITAI_ID
+import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_DELETED
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_SNOOZE
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai.Companion.NOTIFICATION_SUCCESS
@@ -28,15 +31,13 @@ class FullscreenJitaiSurvey : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppBaseTheme_Light)
         setContentView(R.layout.activity_fullscreen_jitai_dialog)
-        val event = intent?.getStringExtra(JITAI_EVENT)?: ""
+        val event = intent?.getStringExtra(JITAI_EVENT) ?: ""
         title = when (event) {
             NOTIFICATION_DELETED -> "Falscher Moment"
             NOTIFICATION_SUCCESS -> "Richtiger Moment"
             NOTIFICATION_SNOOZE  -> "Snooze"
-            else                 -> "unbekannter status"
+            else                 -> "Unbekannter Status"
         }
-        val goalText = intent?.getStringExtra(JITAI_GOAL) ?: ""
-        val messageText = intent?.getStringExtra(JITAI_MESSAGE) ?: ""
         jitaiId = intent?.getIntExtra(JITAI_ID, -1) ?: -1
         sensorDataId = intent?.getLongExtra(JITAI_EVENT_SENSORDATASET_ID, -1) ?: -1L
         val model = db.getNaturalTrigger(jitaiId)

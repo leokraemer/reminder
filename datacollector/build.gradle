@@ -17,7 +17,7 @@ android {
         applicationId 'de.leo.smartTrigger'
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 17
+        versionCode 18
 
         versionName "1.0"
         multiDexEnabled true
@@ -134,8 +134,9 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     androidTestImplementation "com.github.ranaparamveer:android-sqlite-asset-helper:v2.0.7"
     androidTestImplementation 'androidx.annotation:annotation:1.0.0'
-    androidTestImplementation 'androidx.test:runner:1.1.0'
+    androidTestImplementation "androidx.test.ext:junit:1.0.0"
     androidTestImplementation 'androidx.test:rules:1.1.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.0.0'
 
     // Optional -- Hamcrest library
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'

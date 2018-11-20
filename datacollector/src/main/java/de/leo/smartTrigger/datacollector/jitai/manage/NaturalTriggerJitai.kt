@@ -28,7 +28,7 @@ open class NaturalTriggerJitai(var id: Int,
         //"the_notification_was_wrong"
         const val NOTIFICATION_FAIL = "wrong"
         //sooze for 15 minutes
-        const val NOTIFICATION_SNOOZE = "snoozw"
+        const val NOTIFICATION_SNOOZE = "snooze"
         const val NOTIFICATION_SNOOZE_FINISHED = "end snooze"
         //"The_notification_timed_out_(conditions_not_met_any_more)"
         const val NOTIFICATION_NOT_VALID_ANY_MORE = "timed out"
