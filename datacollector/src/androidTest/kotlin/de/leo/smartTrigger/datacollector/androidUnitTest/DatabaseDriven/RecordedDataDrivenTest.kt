@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.runner.AndroidJUnit4
 import android.util.Log
 import androidx.test.filters.LargeTest
+import de.leo.smartTrigger.datacollector.datacollection.database.DATABASE_VERSION
 import de.leo.smartTrigger.datacollector.datacollection.database.JitaiDatabase
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.jitai.manage.NaturalTriggerJitai
@@ -63,7 +64,7 @@ class RecordedDataDrivenTest {
 
     @Test
     fun testGetEventFromDB() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testdb.sql", 1018, 1025).take(100)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testdb.sql", 1018, DATABASE_VERSION).take(100)
 
         val trigger = testDb.getAllActiveNaturalTriggerJitai()
         assertTrue(trigger.size > 0)
@@ -83,7 +84,7 @@ class RecordedDataDrivenTest {
 
     @Test
     fun testAllSensorDataTest() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testdb.sql", 1018, 1025)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testdb.sql", 1018, DATABASE_VERSION)
 
         val trigger = testDb.getAllActiveNaturalTriggerJitai()
         assertTrue(trigger.size > 0)
@@ -109,7 +110,7 @@ class RecordedDataDrivenTest {
     @LargeTest
     @Test
     fun testLinksRechts() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION)
         val trigger = testDb.getAllActiveNaturalTriggerJitai()
         assertTrue(trigger.size > 0)
         val hits = MutableList(trigger.size) { i -> HitResult(trigger[i], 0) }
@@ -133,7 +134,7 @@ class RecordedDataDrivenTest {
     @LargeTest
     @Test
     fun testLinksRechtsIndividualJitai() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION)
         val trigger = testDb.getAllActiveNaturalTriggerJitai()
         db.insertSensorDataBatch(sensorDataSets)
         assertTrue(trigger.size > 0)
@@ -166,7 +167,7 @@ class RecordedDataDrivenTest {
 
     @Test
     fun testLinksRechts50() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION)
         //sit for 120000 ms dwell inside for 300000 ms links from 00:00 to 23:59
         val trigger = testDb.getActiveNaturalTriggerJitai(50)
         val hits = mutableListOf<HitResult>()
@@ -184,7 +185,7 @@ class RecordedDataDrivenTest {
     @Test
     fun testSit2MinDwellInside5MinWlan() {
         //1539878328577, 1539878738637 == sit BadeWannenWlan
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025,
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION,
                                                          1539878328577, 1539878738637)
         //sit for 120000 ms dwell inside for 300000 ms BadewannenWlan from 00:00 to 23:59
         val trigger = testDb.getActiveNaturalTriggerJitai(66)
@@ -203,7 +204,7 @@ class RecordedDataDrivenTest {
 
     @Test
     fun testWalk0and5MinDwellOutside5MinBadeWannenWlan() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION)
         //sit for 120000 ms dwell inside for 300000 ms BadewannenWlan from 00:00 to 23:59
         val trigger0Min = testDb.getActiveNaturalTriggerJitai(91)!!
         val hits0Min = HitResult(trigger0Min, 0)
@@ -233,8 +234,8 @@ class RecordedDataDrivenTest {
     }
 
     @Test
-    fun testWalk2MindwellOutside5Minlinks() {
-        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, 1025)
+    fun testWalk2MinDwellOutside5Minlinks() {
+        val sensorDataSets = setUpDbAndGetSensorDataSets("testData_links_rechts.sql", 1025, DATABASE_VERSION)
         //sit for 120000 ms dwell inside for 300000 ms BadewannenWlan from 00:00 to 23:59
         val trigger = testDb.getActiveNaturalTriggerJitai(76)
         val hits = HitResult(trigger!!, 0)
@@ -252,15 +253,15 @@ class RecordedDataDrivenTest {
 
     @Test
     fun testS8VsAsusVsJ5() {
-        val sensorDataSetsS8 = setUpDbAndGetSensorDataSets("s8TestDataKaufi.sql", 1025, 1025)
+        val sensorDataSetsS8 = setUpDbAndGetSensorDataSets("s8TestDataKaufi.sql", 1025, DATABASE_VERSION)
         val triggerS8 = testDb.getAllActiveNaturalTriggerJitai()
         val jitaiEventsS8 = triggerS8.map { db.getJitaiEvents(it.id) }
         TestDatabase.reset()
-        val sensorDataSetsAsus = setUpDbAndGetSensorDataSets("asusTestDataKaufi.sql", 1025, 1025)
+        val sensorDataSetsAsus = setUpDbAndGetSensorDataSets("asusTestDataKaufi.sql", 1025, DATABASE_VERSION)
         val triggerAsus = testDb.getAllActiveNaturalTriggerJitai()
         val jitaiEventsAsus = triggerS8.map { db.getJitaiEvents(it.id) }
         TestDatabase.reset()
-        val sensorDataSetsJ5 = setUpDbAndGetSensorDataSets("j5TestDataKaufi.sql", 1025, 1025)
+        val sensorDataSetsJ5 = setUpDbAndGetSensorDataSets("j5TestDataKaufi.sql", 1025, DATABASE_VERSION)
         val triggerJ5 = testDb.getAllActiveNaturalTriggerJitai()
         val jitaiEventsJ5 = triggerS8.map { db.getJitaiEvents(it.id) }
         //sit for 120000 ms dwell inside for 300000 ms BadewannenWlan from 00:00 to 23:59

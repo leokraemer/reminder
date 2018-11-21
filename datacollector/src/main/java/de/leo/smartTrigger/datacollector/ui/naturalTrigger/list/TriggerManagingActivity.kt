@@ -70,12 +70,12 @@ class TriggerManagingActivity : AppCompatActivity() {
         when (item?.getItemId()) {
             R.id.action_settings  -> startActivity(Intent(this,
                                                           ServiceManagingActivity::class.java))
-            R.id.action_test_data -> {
+            /*R.id.action_test_data -> {
                 createTestNaturalTriggers().forEach {
                     db.enterNaturalTrigger(it)
                 }
                 updateDataset()
-            }
+            }*/
             else                  -> {
             }
         }

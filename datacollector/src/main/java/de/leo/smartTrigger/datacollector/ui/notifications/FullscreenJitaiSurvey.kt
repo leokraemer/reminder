@@ -62,7 +62,7 @@ class FullscreenJitaiSurvey : AppCompatActivity() {
             R.id.neutral or R.id.neutral                  -> 3
             R.id.agree or R.id.agree1                     -> 4
             R.id.strong_agree or R.id.strong_agree1       -> 5
-            else                                          -> -1
+            else                                          -> 0
         }
 
     override fun onBackPressed() {

@@ -3,8 +3,8 @@
     <item
         android:id="@+id/action_settings"
         android:title="Verwaltung"></item>
-    <item
+    <!--<item
         android:id="@+id/action_test_data"
-        android:title="Testziele Hinzufügen"></item>
+        android:title="Testziele Hinzufügen"></item>-->
 </menu>
 

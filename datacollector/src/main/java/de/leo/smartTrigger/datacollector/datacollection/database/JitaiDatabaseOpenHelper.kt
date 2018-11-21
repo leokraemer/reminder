@@ -12,6 +12,7 @@ import com.google.android.gms.location.DetectedActivity
 import com.google.gson.GsonBuilder
 import de.leo.smartTrigger.datacollector.datacollection.models.SensorDataSet
 import de.leo.smartTrigger.datacollector.datacollection.models.WifiInfo
+import de.leo.smartTrigger.datacollector.utils.fromJson
 import de.leo.smartTrigger.datacollector.utils.getObjectListFromCursor
 import org.jetbrains.anko.db.transaction
 
@@ -113,7 +114,13 @@ open class JitaiDatabaseOpenHelper(context: Context,
                     val timestamp = c.getLong(c.getColumnIndex(TIMESTAMP))
                     val user = c.getString(c.getColumnIndex(USERNAME))
                     val id = c.getLong(c.getColumnIndex(ID))
-                    val activity = deSerializeActivitys(c.getString(c.getColumnIndex(ACTIVITY)))
+                    val activity =
+                        if (oldVersion < 1025)
+                            deSerializeActivitys(c.getString(c.getColumnIndex(ACTIVITY)))
+                        else
+                            gson.fromJson<List<DetectedActivity>>(c.getString(c.getColumnIndex
+                            (ACTIVITY)))
+
                     val totalStepsToday = c.getLong(c.getColumnIndex(STEPS))
                     val ambientSound = c.getDouble(c.getColumnIndex(ABIENT_SOUND))
                     val location = c.getString(c.getColumnIndex(LOCATION))
