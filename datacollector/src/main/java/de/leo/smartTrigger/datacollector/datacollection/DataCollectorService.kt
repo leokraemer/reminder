@@ -280,8 +280,6 @@ class DataCollectorService : Service(),
             sensorDataSet.locationName = currentPlaceName
             sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
             activityRecognizer.recognizeActivity(sensorDataSet)
-            sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
-            activityRecognizer.recognizeActivity(sensorDataSet)
         }
         uploadMotionData()
         uploadEnvironmentData()

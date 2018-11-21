@@ -154,6 +154,10 @@ class TriggerManagingActivity : AppCompatActivity() {
             val description = getString(R.string.channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(NotificationService.CHANNEL, name, importance)
+            channel.lightColor = resources.getColor(R.color.green_800)
+            channel.setBypassDnd(true)
+            channel.enableLights(true)
+            channel.enableVibration(true)
             channel.description = description
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this

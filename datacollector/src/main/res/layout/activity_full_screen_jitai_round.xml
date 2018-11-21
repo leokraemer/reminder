@@ -51,6 +51,7 @@
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableImageView
         android:id="@+id/snooze"
         style="@style/CheckableImageViewStyle"
+        android:layout_marginBottom="4dp"
         android:src="@drawable/ic_schedule_black_48dp"
         app:layout_constraintBottom_toTopOf="@+id/snoozetext"
         app:layout_constraintEnd_toEndOf="parent"
@@ -109,6 +110,7 @@
         android:id="@+id/playtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Ja, mach ich!"
         app:layout_constraintEnd_toEndOf="@+id/play"
         app:layout_constraintStart_toStartOf="@+id/play"
@@ -118,6 +120,7 @@
         android:id="@+id/closetext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Nicht jetzt."
         app:layout_constraintEnd_toEndOf="@+id/close"
         app:layout_constraintStart_toStartOf="@+id/close"

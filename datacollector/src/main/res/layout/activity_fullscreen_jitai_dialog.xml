@@ -54,7 +54,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:checked="true"
             android:gravity="center"
             android:padding="2dp"
             app:layout_constraintEnd_toStartOf="@+id/disagree1"
