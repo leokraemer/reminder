@@ -171,6 +171,8 @@ class TriggerManagingActivity : AppCompatActivity() {
             val importance = NotificationManager.IMPORTANCE_MIN
             val channel = NotificationChannel(NotificationService.FOREGROUND_CHANNEL, name,
                                               importance)
+            channel.enableVibration(false)
+            channel.enableLights(false)
             channel.description = description
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
