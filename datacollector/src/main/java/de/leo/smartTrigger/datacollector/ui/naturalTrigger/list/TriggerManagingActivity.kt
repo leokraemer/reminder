@@ -171,6 +171,8 @@ class TriggerManagingActivity : AppCompatActivity() {
             val importance = NotificationManager.IMPORTANCE_MIN
             val channel = NotificationChannel(NotificationService.FOREGROUND_CHANNEL, name,
                                               importance)
+            //no sound, vibration or light
+            channel.setSound(null,null)
             channel.enableVibration(false)
             channel.enableLights(false)
             channel.description = description

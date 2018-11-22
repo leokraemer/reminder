@@ -33,6 +33,7 @@ import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WEATHER_ENABLED
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
+import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.FOREGROUND_CHANNEL
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -398,7 +399,7 @@ class DataCollectorService : Service(),
 
     fun startNotification(updateDelay: Long) {
         val contentIntent = intentFor<TriggerManagingActivity>().setAction("OPEN_TRIGGER_LIST")
-        val mNotifyBuilder = NotificationCompat.Builder(this, CHANNEL)
+        val mNotifyBuilder = NotificationCompat.Builder(this, FOREGROUND_CHANNEL)
             .setContentIntent(PendingIntent.getActivity(this,
                                                         6874,
                                                         contentIntent,
@@ -411,7 +412,9 @@ class DataCollectorService : Service(),
                            )
             .setSmallIcon(R.drawable.ic_reminder_notification)
             .setColor(resources.getColor(R.color.green_800))
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setSound(null)
+            .setVibrate(longArrayOf())
             .setOnlyAlertOnce(true)
         startForeground(notificationID, mNotifyBuilder.build())
     }
