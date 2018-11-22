@@ -107,9 +107,10 @@
     </style>
 
     <style name="CheckableImageViewStyle">
+        <item name="android:textColor">@color/green_disable</item>
         <item name="android:elevation">3dp</item>
         <item name="android:clipToPadding">false</item>
-        <item name="android:tint">@color/green_800</item>
+        <item name="android:tint">@color/green_disable</item>
         <item name="android:background">@drawable/ckeckable_ripple</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
@@ -134,7 +135,7 @@
         <item name="android:focusable">true</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textAppearance">@style/TextAppearance.AppCompat</item>
-        <item name="android:textColor">@color/green_800</item>
+        <item name="android:textColor">@color/green_disable</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
         <item name="android:textIsSelectable">false</item>

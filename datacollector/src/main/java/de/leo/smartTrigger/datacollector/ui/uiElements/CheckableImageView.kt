@@ -65,7 +65,10 @@ class CheckableImageView : ImageView, Checkable {
     private var defaultElevation = elevation
 
     override fun setEnabled(enabled: Boolean) {
-        elevation = if (enabled) defaultElevation else 0F
+        if (enabled != isEnabled) {
+            elevation = if (enabled) defaultElevation else 0F
+            refreshDrawableState()
+        }
         super.setEnabled(enabled)
     }
 }

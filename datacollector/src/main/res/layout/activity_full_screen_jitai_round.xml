@@ -132,7 +132,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:gravity="center_horizontal"
-        android:text="Snooze\n15 Minuten"
+        android:text="Snooze\n5 Minuten"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/snooze"

@@ -180,6 +180,7 @@
     <de.leo.smartTrigger.datacollector.ui.uiElements.CheckableTextView
         android:id="@+id/thirtyminutes"
         style="@style/CheckableTextViewStyle"
+        android:backgroundTintMode="multiply"
         android:text="30"
         app:layout_constraintEnd_toStartOf="@+id/moreminutes"
         app:layout_constraintHorizontal_bias="0.5"
