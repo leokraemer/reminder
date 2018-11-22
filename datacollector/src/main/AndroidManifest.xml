@@ -60,10 +60,13 @@
         <service android:name="de.leo.smartTrigger.datacollector.ui.notifications.NotificationService" />
 
         <receiver
-            android:name=".datacollection.OnBootCompleteReciever"
+            android:name=".datacollection.RestartServiceIntentReciever"
             android:label="StartMyServiceAtBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
