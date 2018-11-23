@@ -34,9 +34,18 @@ class LocationFinish : NaturalTriggerFragment() {
         outside.setOnClickListener { spendTimeOutside() }
         insidetv.setOnClickListener { spendTimeInside() }
         outsidetv.setOnClickListener { spendTimeOutside() }
-        fiveminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(5)) }
-        fiveteenminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(15)) }
-        thirtyminutes.setOnClickListener { updateLoiteringDelay(TimeUnit.MINUTES.toMillis(30)) }
+        fiveminutes.setOnClickListener {
+            updateLoiteringDelay(if (fiveminutes.isChecked) TimeUnit.MINUTES.toMillis(5)
+                                 else 0)
+        }
+        fiveteenminutes.setOnClickListener {
+            updateLoiteringDelay(if (fiveteenminutes.isChecked) TimeUnit.MINUTES.toMillis(15)
+                                 else 0)
+        }
+        thirtyminutes.setOnClickListener {
+            updateLoiteringDelay(if (thirtyminutes.isChecked) TimeUnit.MINUTES.toMillis(30)
+                                 else 0)
+        }
         moreminutes.setOnClickListener { showMinutePicker() }
         updateView()
     }
@@ -71,12 +80,13 @@ class LocationFinish : NaturalTriggerFragment() {
                                                   exit = false,
                                                   dwellInside = false,
                                                   dwellOutside = false)
-
+        updateView()
     }
 
     private fun updateLoiteringDelay(millis: Long) {
         model!!.geofence = model!!.geofence?.copy(loiteringDelay = millis)
         model!!.wifi = model!!.wifi?.copy(loiteringDelay = millis)
+        updateView()
     }
 
 
@@ -89,7 +99,7 @@ class LocationFinish : NaturalTriggerFragment() {
                                           exit = true,
                                           dwellInside = false,
                                           dwellOutside = false)
-
+        updateView()
     }
 
     private fun spendTimeInside() {
@@ -101,6 +111,7 @@ class LocationFinish : NaturalTriggerFragment() {
                                           exit = false,
                                           dwellInside = true,
                                           dwellOutside = false)
+        updateView()
     }
 
 
@@ -113,6 +124,7 @@ class LocationFinish : NaturalTriggerFragment() {
                                           exit = false,
                                           dwellInside = false,
                                           dwellOutside = true)
+        updateView()
     }
 
 

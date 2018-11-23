@@ -33,9 +33,15 @@ class ActivitySelection : NaturalTriggerFragment() {
         sitButton.setOnClickListener { sit() }
         sitText.setOnClickListener { sit() }
         moreminutes.setOnClickListener { showMinutePicker() }
-        fiveminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(5) }
-        fiveteenminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(15) }
-        thirtyminutes.setOnClickListener { model?.timeInActivity = TimeUnit.MINUTES.toMillis(30) }
+        fiveminutes.setOnClickListener {
+            model?.timeInActivity = if (fiveminutes.isChecked) TimeUnit.MINUTES.toMillis(5) else 0
+        }
+        fiveteenminutes.setOnClickListener {
+            model?.timeInActivity = if (fiveteenminutes.isChecked) TimeUnit.MINUTES.toMillis(15) else 0
+        }
+        thirtyminutes.setOnClickListener {
+            model?.timeInActivity = if (thirtyminutes.isChecked) TimeUnit.MINUTES.toMillis(30) else 0
+        }
         updateView()
     }
 

@@ -360,8 +360,7 @@ fun updateNaturalTriggerReminderCardView(naturalTriggerModel: NaturalTriggerMode
             if (walk || car || bike || sit) {
                 if (timeInActivity > 0) {
                     spendTimeActivity.visibility = View.VISIBLE
-                    spendTimeActivity.text = "${TimeUnit.MILLISECONDS.toMinutes(
-                        timeInActivity)}"
+                    spendTimeActivity.text = "${TimeUnit.MILLISECONDS.toMinutes(timeInActivity)}"
                 }
             }
 
@@ -399,7 +398,7 @@ private fun updateGeofenceView(cardView: View, geofence: MyAbstractGeofence) {
         cardView.geofenceDirection.setImageDrawable(
             cardView.resources.getDrawable(R.drawable.ic_outside10_white, null))
     }
-    if (geofence.dwellInside || geofence.dwellOutside) {
+    if ((geofence.dwellInside || geofence.dwellOutside) && geofence.loiteringDelay > 0) {
         cardView.spendTimeGeofence.visibility = View.VISIBLE
         cardView.spendTimeGeofence.text = "${TimeUnit.MILLISECONDS
             .toMinutes(geofence.loiteringDelay)}"
