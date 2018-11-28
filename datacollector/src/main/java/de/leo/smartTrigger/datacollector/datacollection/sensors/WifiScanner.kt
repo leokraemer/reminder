@@ -4,8 +4,8 @@ import android.content.*
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.util.Log
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * Created by Leo on 24.03.2018.
@@ -17,9 +17,11 @@ class WifiScanner(val context: ContextWrapper) {
         wifiManager = context.baseContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
     }
 
+
     suspend fun getCurrentScanResult(): List<ScanResult> =
-        suspendCoroutine { cont ->
+        suspendCancellableCoroutine { cont ->
             val wifiScanReceiver = object : BroadcastReceiver() {
+
                 override fun onReceive(c: Context, intent: Intent) {
                     if (intent.action?.equals(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION) == true) {
                         val scanResults = wifiManager.scanResults
@@ -30,6 +32,11 @@ class WifiScanner(val context: ContextWrapper) {
                         cont.resume(scanResults)
                     }
                 }
+            }
+            cont.invokeOnCancellation {
+                context.unregisterReceiver(wifiScanReceiver)
+                Log.d("wifi", "iscancelled")
+
             }
             context.registerReceiver(wifiScanReceiver,
                                      IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION))

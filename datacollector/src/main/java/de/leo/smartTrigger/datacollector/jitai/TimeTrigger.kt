@@ -97,7 +97,6 @@ class TimeTrigger() : Trigger {
             delay = Duration.between(now.toLocalTime(), startTime).toMillis()
         } else if (now.toLocalTime().isAfter(endInclusiveTime))
             delay = Duration.between(now.toLocalTime(), LocalTime.MAX).toMillis()
-        Log.d("time delay", "$delay")
         return delay
     }
 }

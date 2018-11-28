@@ -32,13 +32,9 @@ import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.SCREEN_ON_ENABLED
 import de.leo.smartTrigger.datacollector.ui.application.DataCollectorApplication.Companion.WEATHER_ENABLED
 import de.leo.smartTrigger.datacollector.ui.naturalTrigger.list.TriggerManagingActivity
-import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.CHANNEL
 import de.leo.smartTrigger.datacollector.ui.notifications.NotificationService.Companion.FOREGROUND_CHANNEL
 import de.leo.smartTrigger.datacollector.utils.UPDATE_JITAI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.intentFor
 import java.util.*
@@ -47,7 +43,6 @@ import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.TimeUnit.SECONDS
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class DataCollectorService : Service(),
                              FourSquareListener,
@@ -244,6 +239,8 @@ class DataCollectorService : Service(),
 
     fun checkScreenOn(): Boolean = pm.isInteractive
 
+    private var asyncSensorDataJob: Job? = null
+
     private fun uploadDataSet(currentTime: Long) {
         //trigger asynchronus processes
         if (WEATHER_ENABLED) {
@@ -268,11 +265,13 @@ class DataCollectorService : Service(),
             sensorDataSet.weather = currentWeatherId
         }
         if (SCREEN_ON_ENABLED) sensorDataSet.screenState = checkScreenOn()
-        GlobalScope.launch(Dispatchers.Main) {
+        asyncSensorDataJob = GlobalScope.launch(Dispatchers.Main) {
             val location = async { getLocation() }
             val wifi = async { getWifi() }
-            currentLocation = location.await()
             val currentWifiInfo = wifi.await()
+            Log.d("wifi", "was awaited")
+            currentLocation = location.await()
+            Log.d("location", "was awaited")
             Log.d(TAG, "lat: ${currentLocation.latitude}," +
                 " long: ${currentLocation.longitude}," +
                 " accuracy ${currentLocation.accuracy}")
@@ -282,7 +281,6 @@ class DataCollectorService : Service(),
             sensorDataSet.id = db!!.insertSensorDataSet(sensorDataSet)
             activityRecognizer.recognizeActivity(sensorDataSet)
         }
-        uploadMotionData()
         uploadEnvironmentData()
     }
 
@@ -354,7 +352,7 @@ class DataCollectorService : Service(),
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun getCurrentLocation(context: Context): Location? = suspendCoroutine { cont ->
+    suspend fun getCurrentLocation(context: Context): Location? = suspendCancellableCoroutine { cont ->
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -420,6 +418,7 @@ class DataCollectorService : Service(),
     }
 
     fun cancelNotification() {
+        asyncSensorDataJob?.cancel()
         stopForeground(true)
     }
 }

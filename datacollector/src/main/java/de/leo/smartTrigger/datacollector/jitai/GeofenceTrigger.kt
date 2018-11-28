@@ -118,17 +118,11 @@ open class GeofenceTrigger() : Trigger {
             }
         }
         nextupdate = TimeUnit.SECONDS.toMillis(((distance - accuracy) / SIXTY_KM_H_IN_M_S).toLong())
-        Log.d("geofence update", "distance $distance, accuracy $accuracy, next " +
-            "$nextupdate")
         if (location.dwellInside || location.dwellOutside)
             nextupdate = Math.min(nextupdate, location.loiteringDelay)
         nextupdate += System.currentTimeMillis()
     }
 
     //wants to be checked again after some time, when the position can have changed
-    override fun nextUpdate(): Long {
-        val delay = Math.max(nextupdate - System.currentTimeMillis(), 0)
-        Log.d("geofence update", "$delay")
-        return delay
-    }
+    override fun nextUpdate(): Long = Math.max(nextupdate - System.currentTimeMillis(), 0)
 }
