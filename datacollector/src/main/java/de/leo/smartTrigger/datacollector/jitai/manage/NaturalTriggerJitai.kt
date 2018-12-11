@@ -145,7 +145,8 @@ open class NaturalTriggerJitai(var id: Int,
     internal fun nextUpdate(): Long {
         val delays = listOf(activitTrigger, geofenceTrigger, timeTrigger, wifiTrigger,
                             weatherTrigger)
-        Log.d("delay ${naturalTriggerModel.situation}", "geo: ${delays[1]}, time: ${delays[3]}")
+        Log.d("delay ${naturalTriggerModel.situation}",
+              "geo: ${delays[1]}-${delays[1]?.nextUpdate()}, time: ${delays[2]}-${delays[2]?.nextUpdate()}")
         return delays.map { it?.nextUpdate() ?: 0 }.max() ?: 0
     }
 }
